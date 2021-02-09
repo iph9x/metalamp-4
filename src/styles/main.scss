@@ -1,0 +1,118 @@
+$darkshade50: rgba(31, 32, 65, 0.50);
+$darkshade25: rgba(31, 32, 65, 0.25);
+$purple: #BC9CFF;
+$green: #6FCF97;
+
+
+$light-blue: #66D2EA;
+$blue: rgb(75, 131, 235);
+
+$gradient: linear-gradient($purple, #8BA4F9);
+
+$h1-font-size: 24px;
+$h2-font-size: 19px;
+$h3-font-size: 12px;
+
+$body-font-size: 14px;
+
+@mixin gradient {
+  background: $gradient;
+}
+
+@mixin blue-green-gradient {
+  background: linear-gradient($green, $light-blue);
+}
+
+.my-slider {
+  width: 266px !important;
+  &__titles {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 23px;
+  }
+  &__wrapper {
+    width: 266px !important;
+    position: relative;
+    height: 6px;
+    margin: 0 6px;    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 3px;
+      border: 1px solid $darkshade25;
+    }
+  }  
+  &__range-box {
+    color: $darkshade50;
+    font-size: $h3-font-size;
+  }
+  &__label {
+    position: relative;
+    &_left {
+      margin-right: 4px;
+    }
+    &_right {
+      margin-left: 5px;
+    }
+  }
+  &__input {
+    position: absolute;
+    pointer-events: none;
+    -webkit-appearance: none;
+    z-index: 4;
+    height: 6px;
+    width: 100%;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+    &::-webkit-slider-thumb {
+      pointer-events: all;
+      width: 12px;
+      height: 12px;
+      z-index: 4;
+      border-radius: 0;
+      border: 0 none;
+      -webkit-appearance: none;
+      &:hover {
+        cursor: pointer
+      } 
+    }
+  }
+  &__track {
+    position: absolute;
+    top: 0;
+    left: 25%;
+    right: 25%;
+    height: 6px;
+    z-index: 1;
+    border-radius: 6px;
+    @include blue-green-gradient;
+  }
+  &__circle {
+    position: absolute;
+    z-index: 2;
+    width: 12px;
+    height: 12px;
+    box-shadow: 0 0 0 2px #fff;
+    @include blue-green-gradient;
+    border-radius: 50%;
+    &_left {
+      left: 25%;
+      transform: translate(-6px, -3px)
+    }
+    &_right {
+      right: 25%;
+      transform: translate(6px, -3px)
+    }
+  }
+  &__note {
+    font-size: $h3-font-size;
+    color: $darkshade50;
+    margin-top: 13px;
+  }
+}
