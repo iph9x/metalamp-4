@@ -1,3 +1,4 @@
+$darkshade: rgba(31, 32, 65);
 $darkshade50: rgba(31, 32, 65, 0.50);
 $darkshade25: rgba(31, 32, 65, 0.25);
 $purple: #BC9CFF;
@@ -23,8 +24,10 @@ $body-font-size: 14px;
   background: linear-gradient($green, $light-blue);
 }
 
-.my-slider {
+.mi-slider {
   width: 266px !important;
+  padding: 30px;
+  color: #fff;
   &__titles {
     display: flex;
     justify-content: space-between;
@@ -43,21 +46,27 @@ $body-font-size: 14px;
       left: 0;
       right: 0;
       bottom: 0;
+      transform: translateY(3px);
       border-radius: 3px;
       border: 1px solid $darkshade25;
     }
   }  
   &__range-box {
     color: $darkshade50;
+    margin-bottom: 10px;
     font-size: $h3-font-size;
+    font-size: 40px;
   }
   &__label {
-    position: relative;
+    position: absolute;
+    top: -450%;
+    visibility: hidden;
+    color: $darkshade;
     &_left {
-      margin-right: 4px;
+      transform: translateX(-50%)
     }
     &_right {
-      margin-left: 5px;
+      transform: translateX(50%)
     }
   }
   &__input {
@@ -85,7 +94,7 @@ $body-font-size: 14px;
   }
   &__track {
     position: absolute;
-    top: 0;
+    top: 3px;
     left: 25%;
     right: 25%;
     height: 6px;
@@ -103,11 +112,11 @@ $body-font-size: 14px;
     border-radius: 50%;
     &_left {
       left: 25%;
-      transform: translate(-6px, -3px)
+      transform: translateX(-6px);
     }
     &_right {
       right: 25%;
-      transform: translate(6px, -3px)
+      transform: translateX(6px);
     }
   }
   &__note {

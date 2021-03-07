@@ -25,14 +25,14 @@ module.exports = {
   context: PATHS.src,
   mode: 'development',
   entry: {
-    main: './index.js'
+    main: './index.ts'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: filename('js')
   },
   resolve: {
-    extensions: ['.js'],
+    extensions: ['.js', '.ts'],
     alias: {
       '@': PATHS.src
     }
@@ -60,10 +60,15 @@ module.exports = {
         ]
       },
       {
-        test: /\.js$/,
-        use: ['babel-loader'],
+        test: /\.tsx?$/,
+        use: 'ts-loader',
         exclude: /node_modules/,
       },
+      // {
+      //   test: /\.js$/,
+      //   use: ['babel-loader'],
+      //   exclude: /node_modules/,
+      // },
       {
         test: /\.(png|jpg|svg|gif)$/,
         use: {
