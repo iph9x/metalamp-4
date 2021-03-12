@@ -11,21 +11,26 @@ export default class Model implements ModelInterface {
 
   constructor(max: number, min?: number) {
     this.max = max;
-    this.setCurrentMax(max);
+    this.setCurrentMax = max;
     if (min) {
-      this.min = min;
-      this.setCurrentMin(min);
+      this.setMin = min;
+      this.setCurrentMin = min;
     }
   }
 
-  setCurrentMin(currentMin: number) {
+  public set setMax(max: number) {
+    this.max = max;
+  }
+
+  public set setMin(min: number) {
+    this.min = min;
+  }
+
+  public set setCurrentMin(currentMin: number) {
     this.currentMin = currentMin;
   }
 
-  setCurrentMax(currentMax: number) {
+  public set setCurrentMax(currentMax: number) {
     this.currentMax = currentMax;
   }
-
-
-
 }

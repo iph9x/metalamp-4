@@ -1,4 +1,5 @@
 import LabelSubView from '../subVeiw/label';
+import ThumbSubView from '../subVeiw/thumb';
 
 export interface ViewInterface {
   max: number,
@@ -18,6 +19,14 @@ export default class View implements ViewInterface {
   public isRange?: boolean;
   public slider: object;
   public step?: number;
+  // private right: {
+  //   start: number | null,
+  //   active: boolean,
+  //   position: number,
+  //   thumb: ThumbSubView,
+  //   thumbHTML: JQuery,
+  //   label: LabelSubView
+  // };
 
   private rightStartPos: number | null;
   private rightThumbActive: boolean = false;
@@ -30,14 +39,21 @@ export default class View implements ViewInterface {
   private shiftRightX: number;
   private shiftLeftX: number;
 
-  private leftThumb = $('<span class="mi-slider__circle mi-slider__circle_left"></span>');
-  private rightThumb = $('<span class="mi-slider__circle mi-slider__circle_right"></span>');
+  private wrapper = $('<div class="mi-slider__wrapper"></div>');
+  private track  = $('<div class="mi-slider__track"></div>');
+
+  private leftThumb: ThumbSubView;
+  private rightThumb: ThumbSubView;
+  private leftThumbHTML: JQuery;
+  private rightThumbHTML: JQuery;
+
   private rightLabel: LabelSubView;
   private leftLabel: LabelSubView;
-  private track  = $('<div class="mi-slider__track"></div>');
-  private wrapperBlock = $('<div class="mi-slider__wrapper"></div>');
-  
+  private observers: Array<object>;
+
   constructor(max: number, min: number, range: boolean, slider: object, step?: number,  defaultMin?: number, defaultMax?: number) {
+
+    this.observers = [];
 
     this.isRange = range;
     this.min = min || 0;
@@ -64,23 +80,25 @@ export default class View implements ViewInterface {
     this.rightLabel = new LabelSubView(defaultMax, 'right', this.rightThumbPosition);
     this.leftLabel = new LabelSubView(defaultMin, 'left', this.leftThumbPosition);
 
+    this.leftThumb = new ThumbSubView('left', this.leftThumbPosition);
+    this.rightThumb = new ThumbSubView('right', this.rightThumbPosition);
+
     $(this.track).css('left',  `${this.leftThumbPosition}%`);
     $(this.track).css('right',  `${this.rightThumbPosition}%`);
-    $(this.rightThumb).css('right',  `${this.rightThumbPosition}%`);
-    if (this.isRange) {
-      $(this.leftThumb).css('left', `${this.leftThumbPosition}%`);
-    }
 
-    if (this.isRange) {
-      this.wrapperBlock.append(this.leftThumb)
+    this.leftThumbHTML = this.leftThumb.render();
+    this.rightThumbHTML = this.rightThumb.render();
+
+    if (this.isRange || this.min) {
+      this.wrapper.append(this.leftThumbHTML)
     }
-    this.wrapperBlock
-      .append(this.rightThumb)
+    this.wrapper
+      .append(this.rightThumbHTML)
       .append(this.track)
       .append(this.rightLabel.render())
       .append(this.leftLabel.render());
 
-    that.append(this.wrapperBlock);
+    that.append(this.wrapper);
 
     this.onRightThumbClick();
     this.onRightThumbMouseUp();
@@ -90,30 +108,43 @@ export default class View implements ViewInterface {
     this.onLeftThumbMove();
   }
 
+  subscribe(observer: object) {
+    this.observers.push(observer);
+  }
+
+  unsubscribe(observer: object) {
+    this.observers.filter((obs) => obs !== observer);
+  }
+
+  init(action: {type: string, value?: number}) {
+    this.observers.forEach((observer: {update: Function}) => {
+      observer.update(action);
+    });
+  }
 
   onRightThumbClick() {
-    this.rightThumb.on('mousedown', (e: any) => {
+    this.rightThumbHTML.on('mousedown', (e: JQuery.Event) => {
       e.preventDefault();
       this.rightThumbActive = true;
       
       this.rightLabel.show();
 
-      this.shiftRightX = e.pageX - this.rightThumb.get(0).getBoundingClientRect().left - (this.rightThumb.width() / 2);
+      this.shiftRightX = e.pageX - this.rightThumbHTML.get(0).getBoundingClientRect().left - (this.leftThumbHTML.width() / 2);
     });
   }
 
   onRightThumbMove() {
-    $(document).on('mousemove', (e: any) => {
+    $(document).on('mousemove', (e: JQuery.Event) => {
       if (this.rightThumbActive === false) return;
 
       let step = this.getValueToPercent(this.step);
-      let newRightThumbPos: number = 100 - (e.pageX - this.shiftRightX - this.wrapperBlock.get(0).getBoundingClientRect().left) * 100 / this.wrapperBlock.width();
+      let newRightThumbPos: number = 100 - (e.pageX - this.shiftRightX - this.wrapper.get(0).getBoundingClientRect().left) * 100 / this.wrapper.width();
       
 
       newRightThumbPos = 100 - Math.round(((100 - newRightThumbPos) / step)) * step;
 
       newRightThumbPos = this.checkBorders(newRightThumbPos, this.leftThumbPosition);
-      this.rightThumb.css('right', `${newRightThumbPos}%`);
+      this.rightThumbHTML.css('right', `${newRightThumbPos}%`);
       this.track.css('right', `${newRightThumbPos}%`);
       
       this.rightLabel.setPosition(newRightThumbPos);
@@ -137,27 +168,27 @@ export default class View implements ViewInterface {
   }
 
   onLeftThumbClick() {
-    this.leftThumb.on('mousedown', (e: any) => {
+    this.leftThumbHTML.on('mousedown', (e: JQuery.Event) => {
       e.preventDefault();
       this.leftThumbActive = true;
       
       this.leftLabel.show();
 
-      this.shiftLeftX = e.pageX - this.leftThumb.get(0).getBoundingClientRect().left - (this.leftThumb.width() / 2);
+      this.shiftLeftX = e.pageX - this.leftThumbHTML.get(0).getBoundingClientRect().left - (this.leftThumbHTML.width() / 2);
     });
   }
 
   onLeftThumbMove() {
-    $(document).on('mousemove', (e: any) => {
+    $(document).on('mousemove', (e: JQuery.Event) => {
       if (this.leftThumbActive === false) return;
 
       let step = this.getValueToPercent(this.step);
-      let newLeftThumbPos: number = (e.pageX - this.shiftLeftX - this.wrapperBlock.get(0).getBoundingClientRect().left) * 100 / this.wrapperBlock.width();
+      let newLeftThumbPos: number = (e.pageX - this.shiftLeftX - this.wrapper.get(0).getBoundingClientRect().left) * 100 / this.wrapper.width();
 
       newLeftThumbPos = Math.round((newLeftThumbPos / step)) * step;
 
       newLeftThumbPos = this.checkBorders(newLeftThumbPos, this.rightThumbPosition);
-      this.leftThumb.css('left', `${newLeftThumbPos}%`);
+      this.leftThumbHTML.css('left', `${newLeftThumbPos}%`);
       this.track.css('left', `${newLeftThumbPos}%`);
 
       this.leftLabel.setPosition(newLeftThumbPos);
@@ -201,7 +232,8 @@ export default class View implements ViewInterface {
   }
 
   getValueToPercent(val: number): number {
-    return val / (this.max - this.min) * 100;
+    const that = this;
+    return val / (that.max - that.min) * 100;
   }
 
   checkBorders = (position: number, border: number): number => {
@@ -218,9 +250,19 @@ export default class View implements ViewInterface {
 
   public setCurrentMax(max: number): void {
     this.currentMax = max;
+    this.init({type: 'SET_MAX', value: max});
   }
 
   public setCurrentMin(min: number): void {
     this.currentMin = min;
+    this.init({type: 'SET_MIN', value: min});
+  }
+
+  public get getCurrentMax(): number {
+    return this.currentMax;
+  }
+
+  public get getCurrentMin(): number {
+    return this.currentMin;
   }
 }
