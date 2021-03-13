@@ -1,12 +1,12 @@
 import Model from '../model/model';
 import View from '../view/view';
 
-interface PresenterInterface {
+interface IPresenter {
   model: Model,
   view: View
 }
 
-export default class Presenter implements PresenterInterface{
+export default class Presenter implements IPresenter{
   model: Model;
   view: View;
 

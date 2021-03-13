@@ -1,9 +1,9 @@
-export interface ModelInterface {
+export interface IModel {
   max: number;
   min?: number;
 }
 
-export default class Model implements ModelInterface {
+export default class Model implements IModel {
   public max: number;
   public min?: number;
   public currentMin: number;

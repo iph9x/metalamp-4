@@ -1,8 +1,8 @@
-export interface ThumbSubViewInterface {
+export interface IThumb {
   position: number,
 }
 
-export default class ThumbSubView implements ThumbSubViewInterface {
+export default class Thumb implements IThumb {
   public position: number;
   public label: object;
   public getValueToPercent: Function;

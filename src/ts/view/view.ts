@@ -1,7 +1,7 @@
-import LabelSubView from '../subVeiw/label';
-import ThumbSubView from '../subVeiw/thumb';
+import Label from '../subVeiw/label';
+import Thumb from '../subVeiw/thumb';
 
-export interface ViewInterface {
+export interface IView {
   max: number,
   min?: number,
   currentMin: number,
@@ -9,16 +9,12 @@ export interface ViewInterface {
   isRange?: boolean,
   slider: object,
   step?: number,
+  labelsVisibility?: boolean
 }
 
-export default class View implements ViewInterface {
-  public max: number;
-  public min?: number;
+export default class View implements IView {
   public currentMin: number;
   public currentMax: number;
-  public isRange?: boolean;
-  public slider: object;
-  public step?: number;
   // private right: {
   //   start: number | null,
   //   active: boolean,
@@ -28,11 +24,9 @@ export default class View implements ViewInterface {
   //   label: LabelSubView
   // };
 
-  private rightStartPos: number | null;
   private rightThumbActive: boolean = false;
   private rightThumbPosition: number;
   
-  private leftStartPos: number | null;
   private leftThumbActive: boolean = false;
   private leftThumbPosition: number;
 
@@ -42,29 +36,31 @@ export default class View implements ViewInterface {
   private wrapper = $('<div class="mi-slider__wrapper"></div>');
   private track  = $('<div class="mi-slider__track"></div>');
 
-  private leftThumb: ThumbSubView;
-  private rightThumb: ThumbSubView;
+  private leftThumb: Thumb;
+  private rightThumb: Thumb;
   private leftThumbHTML: JQuery;
   private rightThumbHTML: JQuery;
 
-  private rightLabel: LabelSubView;
-  private leftLabel: LabelSubView;
+  private rightLabel: Label;
+  private leftLabel: Label;
+
   private observers: Array<object>;
 
-  constructor(max: number, min: number, range: boolean, slider: object, step?: number,  defaultMin?: number, defaultMax?: number) {
+  constructor(
+    public max: number,
+    public min: number,
+    public slider: object,
+    public isRange?: boolean,
+    public step?: number,
+    public leftStartPos?: number,
+    public rightStartPos?: number,
+    public labelsVisibility?: boolean
+  ) {
 
     this.observers = [];
 
-    this.isRange = range;
-    this.min = min || 0;
-    this.max = max || 100;
+    this.labelsVisibility = typeof labelsVisibility === 'undefined' ? true : labelsVisibility;
 
-    this.rightStartPos = defaultMax;
-
-    this.leftStartPos = defaultMin;
-
-
-    this.slider = slider;
     const that = $(this.slider);
 
     that.addClass('mi-slider');
@@ -74,14 +70,15 @@ export default class View implements ViewInterface {
     this.setCurrentMin(min || 0);
     this.setCurrentMax(max || 100);
 
-    this.setLeftPositionByVal(this.leftStartPos);
-    this.setRightPositionByVal(this.rightStartPos);
+    this.setLeftPositionByVal(leftStartPos);
+    this.setRightPositionByVal(rightStartPos);
 
-    this.rightLabel = new LabelSubView(defaultMax, 'right', this.rightThumbPosition);
-    this.leftLabel = new LabelSubView(defaultMin, 'left', this.leftThumbPosition);
+    this.rightLabel = new Label(rightStartPos, 'right', this.rightThumbPosition);
+    this.leftLabel = new Label(leftStartPos, 'left', this.leftThumbPosition);
 
-    this.leftThumb = new ThumbSubView('left', this.leftThumbPosition);
-    this.rightThumb = new ThumbSubView('right', this.rightThumbPosition);
+
+    this.leftThumb = new Thumb('left', this.leftThumbPosition);
+    this.rightThumb = new Thumb('right', this.rightThumbPosition);
 
     $(this.track).css('left',  `${this.leftThumbPosition}%`);
     $(this.track).css('right',  `${this.rightThumbPosition}%`);
@@ -94,9 +91,13 @@ export default class View implements ViewInterface {
     }
     this.wrapper
       .append(this.rightThumbHTML)
-      .append(this.track)
-      .append(this.rightLabel.render())
-      .append(this.leftLabel.render());
+      .append(this.track);
+
+    if (this.labelsVisibility) {
+      this.wrapper
+        .append(this.rightLabel.render())
+        .append(this.leftLabel.render());
+    }
 
     that.append(this.wrapper);
 

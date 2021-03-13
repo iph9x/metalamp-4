@@ -11,9 +11,10 @@ import Presenter from './presenter/presenter';
     step?: number,
     defaultMin?: number,
     defaultMax?: number,
+    labels?: boolean,
   }) {
     const model: Model = new Model(props.max, props.min);
-    const view: View = new View(props.max, props.min, props.range, this, props.step, props.defaultMin, props.defaultMax);
+    const view: View = new View(props.max, props.min, this, props.range, props.step, props.defaultMin, props.defaultMax, props.labels);
     const presenter: Presenter = new Presenter(model, view);
 
   };

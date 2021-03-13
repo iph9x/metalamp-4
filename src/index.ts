@@ -8,4 +8,5 @@ $('.slider').miSlider({
   defaultMax: 1000,
   range: true,
   step: 1,
+  labels: true
 });

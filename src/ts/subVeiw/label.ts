@@ -1,9 +1,9 @@
-export interface LabelSubViewInterface {
+export interface ILabel {
   value: number,
   position: number,
 }
 
-export default class LabelSubView implements LabelSubViewInterface {
+export default class Label implements ILabel {
   public value: number;
   public position: number;
   private label: JQuery = $(`<span class="mi-slider__label"></span>`);
