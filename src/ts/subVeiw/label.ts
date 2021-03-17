@@ -20,9 +20,13 @@ export default class Label implements ILabel {
     this.render();
   }
 
+
+  
   public render() {
     return this.label;
   }
+
+
 
   public setValue(value: number) {
     this.value = value;
