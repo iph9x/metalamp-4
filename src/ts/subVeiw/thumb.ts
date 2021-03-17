@@ -1,17 +1,16 @@
 export interface IThumb {
+  readonly type: string,
   position: number,
 }
 
 export default class Thumb implements IThumb {
-  public position: number;
   public label: object;
-  public getValueToPercent: Function;
+  public getValueToPercent: () => number;
   private thumb: JQuery = $('<span class="mi-slider__circle"></span>');
-  private type: string;
   private shiftX: number;
   private isActive: boolean;
 
-  constructor(type: string, position: number) {
+  constructor(public type: string, public position: number) {
 
     this.type = type;
     this.thumb.addClass(`mi-slider__circle_${type}`);
@@ -27,10 +26,6 @@ export default class Thumb implements IThumb {
 
   public setPosition(value: number) {
     this.position = value;
-    if (this.type === 'right') {
-      this.thumb.css('right', `${value}%`);
-    } else {
-      this.thumb.css('left', `${value}%`);
-    }
+    this.thumb.css(this.type, `${value}%`);
   }
 }

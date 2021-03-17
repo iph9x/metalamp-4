@@ -168,6 +168,19 @@ export default class View implements IView {
     });
   }
 
+  onThumbClick(element: JQuery, isActive: boolean, label: Label, shift: number) {
+    element.on('mousedown', (e: JQuery.Event) => {
+      e.preventDefault();
+
+      isActive = true;
+
+      label.show();
+
+      shift = e.pageX - element.get(0).getBoundingClientRect().left - (element.width() / 2);
+    })
+
+  }
+
   onLeftThumbClick() {
     this.leftThumbHTML.on('mousedown', (e: JQuery.Event) => {
       e.preventDefault();

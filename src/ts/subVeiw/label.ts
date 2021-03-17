@@ -1,17 +1,17 @@
 export interface ILabel {
   value: number,
   position: number,
+  readonly type: string,
 }
 
 export default class Label implements ILabel {
-  public value: number;
-  public position: number;
   private label: JQuery = $(`<span class="mi-slider__label"></span>`);
-  private type: string;
   
-  constructor(value: number, type: string, position: number) {
-
-    this.type = type;
+  constructor(
+    public value: number,
+    public readonly type: string,
+    public position: number
+  ) {
     this.label.addClass(`mi-slider__label_${type}`);
 
     this.setValue(value);
@@ -20,7 +20,7 @@ export default class Label implements ILabel {
     this.render();
   }
 
-  render() {
+  public render() {
     return this.label;
   }
 
@@ -31,11 +31,7 @@ export default class Label implements ILabel {
 
   public setPosition(value: number) {
     this.position = value;
-    if (this.type === 'right') {
-      this.label.css('right', `${value}%`);
-    } else {
-      this.label.css('left', `${value}%`);
-    }
+    this.label.css(this.type, `${value}%`);
   }
 
   public show() {

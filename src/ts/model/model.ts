@@ -4,17 +4,14 @@ export interface IModel {
 }
 
 export default class Model implements IModel {
-  public max: number;
-  public min?: number;
-  public currentMin: number;
-  public currentMax: number;
+  // public currentMin: number;
+  // public currentMax: number;
 
-  constructor(max: number, min?: number) {
-    this.max = max;
-    this.setCurrentMax = max;
-    if (min) {
-      this.setMin = min;
-      this.setCurrentMin = min;
+  constructor(public max: number, public min?: number) {
+    // this.setCurrentMax = max;
+    if (typeof min === 'undefined') {
+      this.setMin = 0;
+      // this.setCurrentMin = min;
     }
   }
 
@@ -26,11 +23,11 @@ export default class Model implements IModel {
     this.min = min;
   }
 
-  public set setCurrentMin(currentMin: number) {
-    this.currentMin = currentMin;
-  }
+  // public set setCurrentMin(currentMin: number) {
+  //   this.currentMin = currentMin;
+  // }
 
-  public set setCurrentMax(currentMax: number) {
-    this.currentMax = currentMax;
-  }
+  // public set setCurrentMax(currentMax: number) {
+  //   this.currentMax = currentMax;
+  // }
 }
