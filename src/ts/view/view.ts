@@ -1,5 +1,6 @@
 import Label from '../subVeiw/label';
 import Thumb from '../subVeiw/thumb';
+import ProgressBar from '../subVeiw/progressBar';
 
 export interface IView {
   max: number,
@@ -22,7 +23,8 @@ export default class View implements IView {
   private stepInPercent: number;
 
   private wrapper = $('<div class="mi-slider__wrapper"></div>');
-  private track  = $('<div class="mi-slider__track"></div>');
+
+  private progressBar: ProgressBar;
 
   private minThumbThumb: Thumb;
   private maxThumbThumb: Thumb;
@@ -51,7 +53,6 @@ export default class View implements IView {
     const that = $(this.slider);
     if (vertical) {
       (this.wrapper).addClass('mi-slider__wrapper_vertical');
-      (this.track).addClass('mi-slider__track_vertical')
     }
     that.addClass('mi-slider');
 
@@ -71,6 +72,7 @@ export default class View implements IView {
     this.maxThumbLabel = new Label(this.maxThumbStartPos, 'maxThumb', this.maxThumbPosition, this.vertical);
     this.minThumbLabel = new Label(this.minThumbStartPos, 'minThumb', this.minThumbPosition, this.vertical);
 
+    this.progressBar = new ProgressBar(this.minThumbStartPos, this.maxThumbStartPos, this.vertical);
 
     this.minThumbThumb = new Thumb({
       type: 'minThumb',
@@ -78,7 +80,7 @@ export default class View implements IView {
       label: this.minThumbLabel,
       step: this.stepInPercent,
       wrapper: this.wrapper,
-      track: this.track,
+      progressBar: this.progressBar,
       max: this.max,
       min: this.min,
       otherThumbPosition: this.maxThumbPosition,
@@ -91,7 +93,7 @@ export default class View implements IView {
       label: this.maxThumbLabel,
       step: this.stepInPercent,
       wrapper: this.wrapper,
-      track: this.track,
+      progressBar: this.progressBar,
       max: this.max,
       min: this.min,
       otherThumbPosition: this.minThumbPosition,
@@ -109,7 +111,7 @@ export default class View implements IView {
     }
     this.wrapper
       .append(maxThumbThumbHTML)
-      .append(this.track);
+      .append(this.progressBar.render());
 
     if (this.labelsVisibility) {
       this.wrapper

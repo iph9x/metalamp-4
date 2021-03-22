@@ -1,4 +1,5 @@
 import Label from '../subVeiw/label';
+import ProgressBar from '../subVeiw/progressBar';
 
 export interface IThumb {
   readonly type: string,
@@ -11,7 +12,7 @@ type Props = {
   label?: Label;
   step?: number;
   wrapper: JQuery;
-  track: JQuery;
+  progressBar: ProgressBar;
   max: number;
   min: number;
   otherThumbPosition?: number;
@@ -34,7 +35,7 @@ export default class Thumb implements IThumb {
   public label: Label;
   private step: number;
   private wrapper: JQuery;
-  private track: JQuery;
+  private progressBar: ProgressBar;
   private max: number;
   private min: number;
   public otherThumbPosition?: number;
@@ -48,7 +49,7 @@ export default class Thumb implements IThumb {
     label,
     step,
     wrapper,
-    track,
+    progressBar,
     max,
     min,
     otherThumbPosition,
@@ -59,7 +60,7 @@ export default class Thumb implements IThumb {
     this.label = label;
     this.step = step;
     this.wrapper = wrapper;
-    this.track = track;
+    this.progressBar = progressBar;
     this.max = max;
     this.min = min;
     this.otherThumbPosition = otherThumbPosition;
@@ -114,70 +115,59 @@ export default class Thumb implements IThumb {
     return this.thumb;
   }
 
-  onThumbClick() {
+  private onThumbClick() {
     this.thumb.on('mousedown', (e: JQuery.Event) => {
       e.preventDefault();
 
-      this.setIsActive(true)
-
+      this.setIsActive(true);
       this.label.show();
-      if (this.vertical) {
-        this.shift = e.pageY - this.thumb.get(0).getBoundingClientRect().top - (this.thumb.height() / 2);
-      } else {
-        this.shift = e.pageX - this.thumb.get(0).getBoundingClientRect().left - (this.thumb.width() / 2);
-      }
+      this.shift = this.vertical ? this.calcShift(e.pageY, 'top', 'height') : this.calcShift(e.pageX, 'left', 'width');
       $('html').css('cursor', 'pointer');
     })
   }
 
-  onThumbMove() {
+  private onThumbMove() {
     $(document).on('mousemove', (e: JQuery.Event) => {
       if (this.isActive === false) return;
 
+      let calcedY: number = this.calcNewPos(e.pageY, 'top', 'height');
+      let calcedX: number = this.calcNewPos(e.pageX, 'left', 'width');
+
       let step = this.step;
       let newPosition: number;
+
       if (this.isMaxThumb) {
-        if (this.vertical) {
-          newPosition = 100 - (e.pageY - this.shift - this.wrapper.get(0).getBoundingClientRect().top) * 100 / this.wrapper.height();
-        } else {
-          newPosition = 100 - (e.pageX - this.shift - this.wrapper.get(0).getBoundingClientRect().left) * 100 / this.wrapper.width();
-        }
+        newPosition = this.vertical ? 100 - calcedY : 100 - calcedX;
         newPosition = 100 - Math.round(((100 - newPosition) / step)) * step;
       } else {
-        if (this.vertical) {
-          newPosition = (e.pageY - this.shift - this.wrapper.get(0).getBoundingClientRect().top) * 100 / this.wrapper.height()
-        } else {
-          newPosition = (e.pageX - this.shift - this.wrapper.get(0).getBoundingClientRect().left) * 100 / this.wrapper.width()
-        }
+        newPosition = this.vertical ? calcedY : calcedX;
         newPosition = Math.round((newPosition / step)) * step;
       }
 
       newPosition = this.checkBorders(newPosition, this.otherThumbPosition);
 
-      this.thumb.css(this.cssType, `${newPosition}%`);
-      this.track.css(this.cssType, `${newPosition}%`);
-      
-      this.label.setPosition(newPosition);
-
-      this.position = newPosition;
-      this.setParentState('SET_MAX_THUMB_POSITION', 'SET_MIN_THUMB_POSITION', newPosition);
-  
       if (this.isMaxThumb) {
+        this.progressBar.setMaxPosition(newPosition);
         let value = Math.round(this.min + (1 - newPosition / 100) * (this.max - this.min))
         this.current = value;
         this.init({type: 'SET_CURRENT_MAX', value})
       } else {
-
+        this.progressBar.setMinPosition(newPosition);
         let value = Math.round(this.min + (newPosition / 100) * (this.max - this.min));
         this.current = value;
         this.init({type: 'SET_CURRENT_MIN', value})
       }
 
+      this.thumb.css(this.cssType, `${newPosition}%`);
+      this.label.setPosition(newPosition);
       this.label.setValue(this.current);
+      this.position = newPosition;
+
+      this.setParentState('SET_MAX_THUMB_POSITION', 'SET_MIN_THUMB_POSITION', newPosition);
     })
   }
 
-  onThumbMouseUp() {
+  private onThumbMouseUp() {
     $(document).on('mouseup', () => {
       if (this.isActive) {
         this.setIsActive(false);
@@ -188,7 +178,15 @@ export default class Thumb implements IThumb {
     });
   }
 
-  checkBorders = (position: number, border: number): number => {
+  private calcShift (mousePos: number, type: 'top' | 'left', dimension: 'width' | 'height'): number {
+    return mousePos - this.thumb.get(0).getBoundingClientRect()[type] - (this.thumb[dimension]() / 2);
+  };
+
+  private calcNewPos (mousePos: number, type: 'left' | 'top', dimension: 'height' | 'width'): number {
+    return (mousePos - this.shift - this.wrapper.get(0).getBoundingClientRect()[type]) * 100 / this.wrapper[dimension]();
+  }
+
+  private checkBorders = (position: number, border: number): number => {
     if (position < 0) {
       return 0;
     } else if (Number((position).toFixed(8)) >= Number((100 - border).toFixed(8))) {
@@ -200,7 +198,7 @@ export default class Thumb implements IThumb {
     }
   } 
 
-  setPositionByVal(val: number): void {
+  private setPositionByVal(val: number): void {
     if (val < this.min) {
       this.position = 0;
     } else if (val > this.max) {
@@ -213,7 +211,12 @@ export default class Thumb implements IThumb {
     this.setCurrent(val);
     this.thumb.css(this.cssType, `${this.position}%`);
     this.setParentState('SET_MAX_THUMB_POSITION', 'SET_MIN_THUMB_POSITION', this.position);
-    this.track.css(this.cssType,  `${this.position}%`);
+    if (this.isMaxThumb) {
+      this.progressBar.setMaxPosition(this.position);
+    } else {
+      this.progressBar.setMinPosition(this.position);
+    }
+    (this.cssType,  `${this.position}%`);
     this.label.setPosition(this.position);
   }
 
@@ -222,16 +225,12 @@ export default class Thumb implements IThumb {
     this.setParentState('SET_CURRENT_MAX', 'SET_CURRENT_MIN', value);
   }
 
-  public setIsActive(value: boolean): void {
+  private setIsActive(value: boolean): void {
     this.isActive = value;
   }
 
   private setParentState(typeOfMaxThumb: string, typeOfMinThumb: string, value: boolean | number): void {
-    if (this.type === 'maxThumb') {
-      this.init({type: typeOfMaxThumb, value})
-    } else {
-      this.init({type: typeOfMinThumb, value})
-    }
+    this.isMaxThumb ? this.init({type: typeOfMaxThumb, value}) : this.init({type: typeOfMinThumb, value});
   }
 
   public setPosition(value: number) {
