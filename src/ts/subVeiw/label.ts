@@ -2,17 +2,33 @@ export interface ILabel {
   value: number,
   position: number,
   readonly type: string,
+  vertical?: boolean
 }
 
 export default class Label implements ILabel {
   private label: JQuery = $(`<span class="mi-slider__label"></span>`);
-  
+  private cssType: string;
+
   constructor(
     public value: number,
     public readonly type: string,
-    public position: number
+    public position: number,
+    public vertical?: boolean
   ) {
-    this.label.addClass(`mi-slider__label_${type}`);
+    if (this.type === 'minThumb') {
+      if (this.vertical) {
+        this.cssType = 'top';
+      } else {
+        this.cssType = 'left';
+      }
+    } else {
+      if (this.vertical) {
+        this.cssType = 'bottom';
+      } else {
+        this.cssType = 'right';
+      }
+    }
+    this.label.addClass(`mi-slider__label_${this.cssType}`);
 
     this.setValue(value);
     this.setPosition(position);
@@ -35,7 +51,7 @@ export default class Label implements ILabel {
 
   public setPosition(value: number) {
     this.position = value;
-    this.label.css(this.type, `${value}%`);
+    this.label.css(this.cssType, `${value}%`);
   }
 
   public show() {

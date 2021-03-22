@@ -5,6 +5,19 @@ export interface IThumb {
   position: number,
 }
 
+type Props = {
+  type: 'minThumb' | 'maxThumb';
+  startPosition?: number;
+  label?: Label;
+  step?: number;
+  wrapper: JQuery;
+  track: JQuery;
+  max: number;
+  min: number;
+  otherThumbPosition?: number;
+  vertical?: boolean
+}
+
 export default class Thumb implements IThumb {
   public getValueToPercent: () => number;
   private thumb: JQuery = $('<span class="mi-slider__circle"></span>');
@@ -12,25 +25,69 @@ export default class Thumb implements IThumb {
   private isActive: boolean = false;
   private observers: Array<object> = [];
   private current: number;
-  private isRight: boolean;
+  private isMaxThumb: boolean;
   public position: number;
 
-  constructor(
-    public type: 'right' | 'left',
-    public startPosition: number,
-    public label: Label,
-    private step: number,
-    private wrapper: JQuery,
-    private track: JQuery,
-    private max: number,
-    private min: number,
-    public otherThumbPosition?: number,
-  ) {
-    this.type = type;
-    this.thumb.addClass(`mi-slider__circle_${type}`);
-    this.isRight = this.type === 'right'; 
 
-    this.current = this.isRight ? max : min;
+  public type: 'minThumb' | 'maxThumb';
+  public startPosition: number;
+  public label: Label;
+  private step: number;
+  private wrapper: JQuery;
+  private track: JQuery;
+  private max: number;
+  private min: number;
+  public otherThumbPosition?: number;
+  public vertical?: boolean;
+
+  private cssType: string;
+
+  constructor({
+    type,
+    startPosition,
+    label,
+    step,
+    wrapper,
+    track,
+    max,
+    min,
+    otherThumbPosition,
+    vertical
+  }: Props) {
+    this.type = type;
+    this.startPosition = startPosition;
+    this.label = label;
+    this.step = step;
+    this.wrapper = wrapper;
+    this.track = track;
+    this.max = max;
+    this.min = min;
+    this.otherThumbPosition = otherThumbPosition;
+    this.vertical = vertical;
+    if (this.type === 'minThumb') {
+      if (this.vertical) {
+        this.cssType = 'top';
+      } else {
+        this.cssType = 'left';
+      }
+    } else {
+      if (this.vertical) {
+        this.cssType = 'bottom';
+      } else {
+        this.cssType = 'right';
+      }
+    }
+
+    this.thumb.addClass(`mi-slider__circle_${this.cssType}`);
+    this.isMaxThumb = this.type === 'maxThumb'; 
+
+    this.current = this.isMaxThumb ? max : min;
+    if (this.isMaxThumb) {
+      this.startPosition = startPosition ? startPosition : max;
+    } else {
+      this.startPosition = startPosition ? startPosition : min;
+    }
+
     this.setPositionByVal(startPosition)
     this.render();
 
@@ -64,8 +121,12 @@ export default class Thumb implements IThumb {
       this.setIsActive(true)
 
       this.label.show();
-
-      this.shift = e.pageX - this.thumb.get(0).getBoundingClientRect().left - (this.thumb.width() / 2);
+      if (this.vertical) {
+        this.shift = e.pageY - this.thumb.get(0).getBoundingClientRect().top - (this.thumb.height() / 2);
+      } else {
+        this.shift = e.pageX - this.thumb.get(0).getBoundingClientRect().left - (this.thumb.width() / 2);
+      }
+      $('html').css('cursor', 'pointer');
     })
   }
 
@@ -75,25 +136,33 @@ export default class Thumb implements IThumb {
 
       let step = this.step;
       let newPosition: number;
-      if (this.isRight) {
-        newPosition = 100 - (e.pageX - this.shift - this.wrapper.get(0).getBoundingClientRect().left) * 100 / this.wrapper.width()
+      if (this.isMaxThumb) {
+        if (this.vertical) {
+          newPosition = 100 - (e.pageY - this.shift - this.wrapper.get(0).getBoundingClientRect().top) * 100 / this.wrapper.height();
+        } else {
+          newPosition = 100 - (e.pageX - this.shift - this.wrapper.get(0).getBoundingClientRect().left) * 100 / this.wrapper.width();
+        }
         newPosition = 100 - Math.round(((100 - newPosition) / step)) * step;
       } else {
-        newPosition = (e.pageX - this.shift - this.wrapper.get(0).getBoundingClientRect().left) * 100 / this.wrapper.width()
+        if (this.vertical) {
+          newPosition = (e.pageY - this.shift - this.wrapper.get(0).getBoundingClientRect().top) * 100 / this.wrapper.height()
+        } else {
+          newPosition = (e.pageX - this.shift - this.wrapper.get(0).getBoundingClientRect().left) * 100 / this.wrapper.width()
+        }
         newPosition = Math.round((newPosition / step)) * step;
       }
 
       newPosition = this.checkBorders(newPosition, this.otherThumbPosition);
 
-      this.thumb.css(this.type, `${newPosition}%`);
-      this.track.css(this.type, `${newPosition}%`);
+      this.thumb.css(this.cssType, `${newPosition}%`);
+      this.track.css(this.cssType, `${newPosition}%`);
       
       this.label.setPosition(newPosition);
 
       this.position = newPosition;
-      this.setParentState('SET_RIGHT_POSITION', 'SET_LEFT_POSITION', newPosition);
+      this.setParentState('SET_MAX_THUMB_POSITION', 'SET_MIN_THUMB_POSITION', newPosition);
   
-      if (this.isRight) {
+      if (this.isMaxThumb) {
         let value = Math.round(this.min + (1 - newPosition / 100) * (this.max - this.min))
         this.current = value;
         this.init({type: 'SET_CURRENT_MAX', value})
@@ -113,6 +182,8 @@ export default class Thumb implements IThumb {
       if (this.isActive) {
         this.setIsActive(false);
         this.label.hide();
+
+        $('html').css('cursor', 'default');
       }
     });
   }
@@ -134,15 +205,15 @@ export default class Thumb implements IThumb {
       this.position = 0;
     } else if (val > this.max) {
       this.position = 100;
-    } else if (this.isRight) {
+    } else if (this.isMaxThumb) {
       this.position = ((this.max - val) / (this.max - this.min)) * 100;
     } else {
       this.position = (1 - (this.max - val) / (this.max - this.min)) * 100;
     }
     this.setCurrent(val);
-    this.thumb.css(this.type, `${this.position}%`);
-    this.setParentState('SET_RIGHT_POSITION', 'SET_LEFT_POSITION', this.position);
-    this.track.css(this.type,  `${this.position}%`);
+    this.thumb.css(this.cssType, `${this.position}%`);
+    this.setParentState('SET_MAX_THUMB_POSITION', 'SET_MIN_THUMB_POSITION', this.position);
+    this.track.css(this.cssType,  `${this.position}%`);
     this.label.setPosition(this.position);
   }
 
@@ -155,11 +226,11 @@ export default class Thumb implements IThumb {
     this.isActive = value;
   }
 
-  private setParentState(typeOfRightThumb: string, typeOfLeftThumb: string, value: boolean | number): void {
-    if (this.type === 'right') {
-      this.init({type: typeOfRightThumb, value})
+  private setParentState(typeOfMaxThumb: string, typeOfMinThumb: string, value: boolean | number): void {
+    if (this.type === 'maxThumb') {
+      this.init({type: typeOfMaxThumb, value})
     } else {
-      this.init({type: typeOfLeftThumb, value})
+      this.init({type: typeOfMinThumb, value})
     }
   }
 

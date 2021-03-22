@@ -29,6 +29,7 @@ $body-font-size: 14px;
   width: 100%;
   padding-top: 30px;  
   padding-bottom: 10px;
+  margin-left: 50px;
   color: #fff;
   &__titles {
     display: flex;
@@ -51,7 +52,14 @@ $body-font-size: 14px;
       border-radius: 3px;
       border: 1px solid $darkshade25;
     }
-  }  
+    &_vertical {
+      width: 6px;
+      height: 400px;
+      &::before {
+        transform: translateX(3px);
+      }
+    }
+  }
   &__range-box {
     color: $darkshade50;
     margin-bottom: 10px;
@@ -60,14 +68,20 @@ $body-font-size: 14px;
   }
   &__label {
     position: absolute;
-    top: -450%;
     visibility: hidden;
     color: $darkshade;
     &_left {
-      transform: translateX(-50%)
+      transform: translate(-50%, -120%)
     }
     &_right {
-      transform: translateX(50%)
+      transform: translate(50%, -120%)
+    }
+    &_top {
+      transform: translate(20px, -50%);
+    
+    }
+    &_bottom {
+      transform: translate(20px, 50%);
     }
   }
   &__input {
@@ -96,12 +110,15 @@ $body-font-size: 14px;
   &__track {
     position: absolute;
     top: 3px;
-    left: 25%;
-    right: 25%;
     height: 6px;
     z-index: 1;
     border-radius: 6px;
     @include blue-green-gradient;
+    &_vertical {
+      left: 3px;
+      width: 6px;
+      height: auto;
+    }
   }
   &__circle {
     position: absolute;
@@ -110,14 +127,18 @@ $body-font-size: 14px;
     height: 12px;
     box-shadow: 0 0 0 2px #fff;
     @include blue-green-gradient;
-    border-radius: 50%;
+    border-radius: 50%;    
     &_left {
-      left: 25%;
       transform: translateX(-6px);
     }
     &_right {
-      right: 25%;
       transform: translateX(6px);
+    }
+    &_top {
+      transform: translateY(-6px);
+    }
+    &_bottom {
+      transform: translateY(6px);
     }
   }
   &__note {

@@ -16,19 +16,19 @@ export default class View implements IView {
   public currentMin: number;
   public currentMax: number;
 
-  private rightThumbPosition: number;
-  private leftThumbPosition: number;
+  private minThumbPosition: number;
+  private maxThumbPosition: number;
 
   private stepInPercent: number;
 
   private wrapper = $('<div class="mi-slider__wrapper"></div>');
   private track  = $('<div class="mi-slider__track"></div>');
 
-  private leftThumb: Thumb;
-  private rightThumb: Thumb;
+  private minThumbThumb: Thumb;
+  private maxThumbThumb: Thumb;
 
-  private rightLabel: Label;
-  private leftLabel: Label;
+  private minThumbLabel: Label;
+  private maxThumbLabel: Label;
 
   private observers: Array<object>;
 
@@ -38,9 +38,10 @@ export default class View implements IView {
     public slider: object,
     public isRange?: boolean,
     public step?: number,
-    public leftStartPos?: number,
-    public rightStartPos?: number,
-    public labelsVisibility?: boolean
+    public minThumbStartPos?: number,
+    public maxThumbStartPos?: number,
+    public labelsVisibility?: boolean,
+    public vertical?: boolean
   ) {
 
     this.observers = [];
@@ -48,63 +49,72 @@ export default class View implements IView {
     this.labelsVisibility = typeof labelsVisibility === 'undefined' ? true : labelsVisibility;
 
     const that = $(this.slider);
-
+    if (vertical) {
+      (this.wrapper).addClass('mi-slider__wrapper_vertical');
+      (this.track).addClass('mi-slider__track_vertical')
+    }
     that.addClass('mi-slider');
 
     this.step = step ? step : (this.max - this.min) / $(this.slider).width();
     this.stepInPercent = this.getValueToPercent(this.step);
 
-    this.setCurrentMin(leftStartPos || min || 0);
-    this.setCurrentMax(rightStartPos || max);
+    this.minThumbStartPos = (typeof minThumbStartPos !== 'undefined') && (minThumbStartPos >= min) && (minThumbStartPos < maxThumbStartPos) ? minThumbStartPos : min;
+    this.maxThumbStartPos = (typeof maxThumbStartPos !== 'undefined') && (maxThumbStartPos <= max) ? maxThumbStartPos : max;
 
-    this.leftThumbPosition = (1 - (this.max - leftStartPos) / (this.max - this.min)) * 100;
-    this.rightThumbPosition = ((this.max - rightStartPos) / (this.max - this.min)) * 100;
+    this.setCurrentMin(this.minThumbStartPos);
+    this.setCurrentMax(this.maxThumbStartPos);
+
+    this.minThumbPosition = (1 - (this.max - this.minThumbStartPos) / (this.max - this.min)) * 100;
+    this.maxThumbPosition = ((this.max - this.maxThumbStartPos) / (this.max - this.min)) * 100;
 
 
-    this.rightLabel = new Label(rightStartPos, 'right', this.rightThumbPosition);
-    this.leftLabel = new Label(leftStartPos, 'left', this.leftThumbPosition);
+    this.maxThumbLabel = new Label(this.maxThumbStartPos, 'maxThumb', this.maxThumbPosition, this.vertical);
+    this.minThumbLabel = new Label(this.minThumbStartPos, 'minThumb', this.minThumbPosition, this.vertical);
 
 
-    this.leftThumb = new Thumb(
-      'left',
-      leftStartPos,
-      this.leftLabel,
-      this.stepInPercent,
-      this.wrapper,
-      this.track,
-      this.max,
-      this.min,
-      this.rightThumbPosition,
-    );
-    this.rightThumb = new Thumb(
-      'right',
-      this.rightStartPos,
-      this.rightLabel,
-      this.stepInPercent,
-      this.wrapper,
-      this.track,
-      this.max,
-      this.min,
-      this.leftThumbPosition,
-    );
+    this.minThumbThumb = new Thumb({
+      type: 'minThumb',
+      startPosition: this.minThumbStartPos,
+      label: this.minThumbLabel,
+      step: this.stepInPercent,
+      wrapper: this.wrapper,
+      track: this.track,
+      max: this.max,
+      min: this.min,
+      otherThumbPosition: this.maxThumbPosition,
+      vertical: this.vertical
+    });
 
-    this.rightThumb.subscribe(this);
-    this.leftThumb.subscribe(this);
+    this.maxThumbThumb = new Thumb({
+      type: 'maxThumb',
+      startPosition: this.maxThumbStartPos,
+      label: this.maxThumbLabel,
+      step: this.stepInPercent,
+      wrapper: this.wrapper,
+      track: this.track,
+      max: this.max,
+      min: this.min,
+      otherThumbPosition: this.minThumbPosition,
+      vertical: this.vertical
+    });
 
-    const leftThumbHTML = this.leftThumb.render();
-    const rightThumbHTML = this.rightThumb.render();
+    this.maxThumbThumb.subscribe(this);
+    this.minThumbThumb.subscribe(this);
 
-    if (this.isRange || this.min) {
-      this.wrapper.append(leftThumbHTML)
+    const minThumbThumbHTML = this.minThumbThumb.render();
+    const maxThumbThumbHTML = this.maxThumbThumb.render();
+
+    if (this.isRange || (typeof this.minThumbStartPos !== 'undefined')) {
+      this.wrapper.append(minThumbThumbHTML)
     }
     this.wrapper
-      .append(rightThumbHTML)
+      .append(maxThumbThumbHTML)
       .append(this.track);
 
     if (this.labelsVisibility) {
       this.wrapper
-        .append(this.rightLabel.render())
-        .append(this.leftLabel.render());
+        .append(this.maxThumbLabel.render())
+        .append(this.minThumbLabel.render());
     }
 
     that.append(this.wrapper);
@@ -156,13 +166,13 @@ export default class View implements IView {
         this.currentMin = action.value;
         this.init({type: 'SET_MIN', value: action.value});
         break;
-      case ('SET_RIGHT_POSITION'):
-        this.rightThumbPosition = action.value;
-        this.leftThumb.otherThumbPosition = action.value;
+      case ('SET_MAX_THUMB_POSITION'):
+        this.maxThumbPosition = action.value;
+        this.minThumbThumb.otherThumbPosition = action.value;
         break;
-      case ('SET_LEFT_POSITION'):
-        this.leftThumbPosition = action.value;
-        this.rightThumb.otherThumbPosition = action.value;
+      case ('SET_MIN_THUMB_POSITION'):
+        this.minThumbPosition = action.value;
+        this.maxThumbThumb.otherThumbPosition = action.value;
         break;
       default:
         break;
