@@ -1,6 +1,7 @@
 import Label from '../subVeiw/label';
 import Thumb from '../subVeiw/thumb';
 import ProgressBar from '../subVeiw/progressBar';
+import Scale from '../subVeiw/scale';
 
 export interface IView {
   max: number,
@@ -23,7 +24,8 @@ export default class View implements IView {
   private stepInPercent: number;
 
   private wrapper = $('<div class="mi-slider__wrapper"></div>');
-
+  
+  private scale: Scale;
   private progressBar: ProgressBar;
 
   private minThumbThumb: Thumb;
@@ -56,6 +58,10 @@ export default class View implements IView {
     }
     that.addClass('mi-slider');
 
+
+    this.scale = new Scale(this.vertical);
+    this.progressBar = new ProgressBar(this.minThumbStartPos, this.maxThumbStartPos, this.vertical);
+
     this.step = step ? step : (this.max - this.min) / $(this.slider).width();
     this.stepInPercent = this.getValueToPercent(this.step);
 
@@ -68,11 +74,9 @@ export default class View implements IView {
     this.minThumbPosition = (1 - (this.max - this.minThumbStartPos) / (this.max - this.min)) * 100;
     this.maxThumbPosition = ((this.max - this.maxThumbStartPos) / (this.max - this.min)) * 100;
 
-
     this.maxThumbLabel = new Label(this.maxThumbStartPos, 'maxThumb', this.maxThumbPosition, this.vertical);
     this.minThumbLabel = new Label(this.minThumbStartPos, 'minThumb', this.minThumbPosition, this.vertical);
 
-    this.progressBar = new ProgressBar(this.minThumbStartPos, this.maxThumbStartPos, this.vertical);
 
     this.minThumbThumb = new Thumb({
       type: 'minThumb',
@@ -103,14 +107,12 @@ export default class View implements IView {
     this.maxThumbThumb.subscribe(this);
     this.minThumbThumb.subscribe(this);
 
-    const minThumbThumbHTML = this.minThumbThumb.render();
-    const maxThumbThumbHTML = this.maxThumbThumb.render();
-
     if (this.isRange || (typeof this.minThumbStartPos !== 'undefined')) {
-      this.wrapper.append(minThumbThumbHTML)
+      this.wrapper.append(this.minThumbThumb.render())
     }
     this.wrapper
-      .append(maxThumbThumbHTML)
+      .append(this.maxThumbThumb.render())
+      .append(this.scale.render())
       .append(this.progressBar.render());
 
     if (this.labelsVisibility) {

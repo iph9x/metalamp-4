@@ -20,7 +20,6 @@ type Props = {
 }
 
 export default class Thumb implements IThumb {
-  public getValueToPercent: () => number;
   private thumb: JQuery = $('<span class="mi-slider__circle"></span>');
   private shift: number;
   private isActive: boolean = false;
@@ -180,7 +179,7 @@ export default class Thumb implements IThumb {
 
   private calcShift (mousePos: number, type: 'top' | 'left', dimension: 'width' | 'height'): number {
     return mousePos - this.thumb.get(0).getBoundingClientRect()[type] - (this.thumb[dimension]() / 2);
-  };
+  }
 
   private calcNewPos (mousePos: number, type: 'left' | 'top', dimension: 'height' | 'width'): number {
     return (mousePos - this.shift - this.wrapper.get(0).getBoundingClientRect()[type]) * 100 / this.wrapper[dimension]();
@@ -216,7 +215,7 @@ export default class Thumb implements IThumb {
     } else {
       this.progressBar.setMinPosition(this.position);
     }
-    (this.cssType,  `${this.position}%`);
+    (this.cssType, `${this.position}%`);
     this.label.setPosition(this.position);
   }
 
