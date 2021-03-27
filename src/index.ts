@@ -4,7 +4,7 @@ import './ts/miSlider.ts';
 $('.slider').miSlider({
   min: 500,
   max: 1200,
-  defaultMin: 700,
+  defaultMin: 500,
   defaultMax: 1000,
   range: true,
   step: 5,
@@ -15,7 +15,7 @@ $('.slider').miSlider({
 $('.slider-2').miSlider({
   min: 500,
   max: 1200,
-  defaultMin: 700,
+  defaultMin: 600,
   defaultMax: 1000,
   range: true,
   step: 5,

@@ -28,8 +28,8 @@ export default class View implements IView {
   private scale: Scale;
   private progressBar: ProgressBar;
 
-  private minThumbThumb: Thumb;
-  private maxThumbThumb: Thumb;
+  private minThumb: Thumb;
+  private maxThumb: Thumb;
 
   private minThumbLabel: Label;
   private maxThumbLabel: Label;
@@ -59,7 +59,6 @@ export default class View implements IView {
     that.addClass('mi-slider');
 
 
-    this.scale = new Scale(this.vertical);
     this.progressBar = new ProgressBar(this.minThumbStartPos, this.maxThumbStartPos, this.vertical);
 
     this.step = step ? step : (this.max - this.min) / $(this.slider).width();
@@ -78,7 +77,7 @@ export default class View implements IView {
     this.minThumbLabel = new Label(this.minThumbStartPos, 'minThumb', this.minThumbPosition, this.vertical);
 
 
-    this.minThumbThumb = new Thumb({
+    this.minThumb = new Thumb({
       type: 'minThumb',
       startPosition: this.minThumbStartPos,
       label: this.minThumbLabel,
@@ -91,7 +90,7 @@ export default class View implements IView {
       vertical: this.vertical
     });
 
-    this.maxThumbThumb = new Thumb({
+    this.maxThumb = new Thumb({
       type: 'maxThumb',
       startPosition: this.maxThumbStartPos,
       label: this.maxThumbLabel,
@@ -104,14 +103,16 @@ export default class View implements IView {
       vertical: this.vertical
     });
 
-    this.maxThumbThumb.subscribe(this);
-    this.minThumbThumb.subscribe(this);
+    this.scale = new Scale(this.maxThumbPosition, this.maxThumb.setPositionHandler, this.maxThumb.setIsActive, this.minThumbPosition, this.minThumb.setPositionHandler, this.vertical, this.minThumb.setIsActive);
+
+    this.maxThumb.subscribe(this);
+    this.minThumb.subscribe(this);
 
     if (this.isRange || (typeof this.minThumbStartPos !== 'undefined')) {
-      this.wrapper.append(this.minThumbThumb.render())
+      this.wrapper.append(this.minThumb.render())
     }
     this.wrapper
-      .append(this.maxThumbThumb.render())
+      .append(this.maxThumb.render())
       .append(this.scale.render())
       .append(this.progressBar.render());
 
@@ -172,11 +173,13 @@ export default class View implements IView {
         break;
       case ('SET_MAX_THUMB_POSITION'):
         this.maxThumbPosition = action.value;
-        this.minThumbThumb.otherThumbPosition = action.value;
+        this.minThumb.otherThumbPosition = action.value;
+        this.scale.maxThumbPosition = action.value;
         break;
       case ('SET_MIN_THUMB_POSITION'):
         this.minThumbPosition = action.value;
-        this.maxThumbThumb.otherThumbPosition = action.value;
+        this.maxThumb.otherThumbPosition = action.value;
+        this.scale.minThumbPosition = action.value;
         break;
       default:
         break;

@@ -1,3 +1,4 @@
+import { ContextReplacementPlugin } from 'webpack';
 import Label from '../subVeiw/label';
 import ProgressBar from '../subVeiw/progressBar';
 
@@ -21,7 +22,7 @@ type Props = {
 
 export default class Thumb implements IThumb {
   private thumb: JQuery = $('<span class="mi-slider__circle"></span>');
-  private shift: number;
+  private shift: number = 0;
   private isActive: boolean = false;
   private observers: Array<object> = [];
   private current: number;
@@ -92,8 +93,12 @@ export default class Thumb implements IThumb {
     this.render();
 
     this.onThumbClick();
-    this.onThumbMove();
+    // this.onThumbMove();
     this.onThumbMouseUp();
+
+    this.setPositionHandler = this.setPositionHandler.bind(this);
+    this.calcNewPos = this.calcNewPos.bind(this);
+    this.setIsActive = this.setIsActive.bind(this);
   }
 
   subscribe(observer: object) {
@@ -115,55 +120,60 @@ export default class Thumb implements IThumb {
   }
 
   private onThumbClick() {
-    this.thumb.on('mousedown', (e: JQuery.Event) => {
-      e.preventDefault();
+    this.thumb.on('mousedown', (e: JQuery.Event) => this.clickHandler(e))
+  }
 
-      this.setIsActive(true);
-      this.label.show();
-      this.shift = this.vertical ? this.calcShift(e.pageY, 'top', 'height') : this.calcShift(e.pageX, 'left', 'width');
-      $('html').css('cursor', 'pointer');
-    })
+  public clickHandler(e: JQuery.Event): void {
+    e.preventDefault();
+
+    this.setIsActive(true);
+    this.label.show();
+    this.shift = this.vertical ? this.calcShift(e.pageY, 'top', 'height') : this.calcShift(e.pageX, 'left', 'width');
+    $('html').css('cursor', 'pointer');
+
+    this.onThumbMove();
   }
 
   private onThumbMove() {
-    $(document).on('mousemove', (e: JQuery.Event) => {
-      if (this.isActive === false) return;
+    $(document).on('mousemove', (e: JQuery.Event) => this.setPositionHandler(e))
+  }
 
-      let calcedY: number = this.calcNewPos(e.pageY, 'top', 'height');
-      let calcedX: number = this.calcNewPos(e.pageX, 'left', 'width');
+  public setPositionHandler(e: JQuery.Event): void {
+    if (!this.isActive) return;
+    
+    let calcedX: number = this.calcNewPos(e.pageX, 'left', 'width');
+    let calcedY: number = this.calcNewPos(e.pageY, 'top', 'height');
+    let step = this.step;
+    let newPosition: number;
+    
+    if (this.isMaxThumb) {
+      newPosition = this.vertical ? 100 - calcedY : 100 - calcedX;
+      newPosition = 100 - Math.round(((100 - newPosition) / step)) * step;
+    } else {
+      newPosition = this.vertical ? calcedY : calcedX;
+      newPosition = Math.round((newPosition / step)) * step;
+    }
 
-      let step = this.step;
-      let newPosition: number;
+    newPosition = this.checkBorders(newPosition, this.otherThumbPosition);
 
-      if (this.isMaxThumb) {
-        newPosition = this.vertical ? 100 - calcedY : 100 - calcedX;
-        newPosition = 100 - Math.round(((100 - newPosition) / step)) * step;
-      } else {
-        newPosition = this.vertical ? calcedY : calcedX;
-        newPosition = Math.round((newPosition / step)) * step;
-      }
+    if (this.isMaxThumb) {
+      this.progressBar.setMaxPosition(newPosition);
+      let value = Math.round(this.min + (1 - newPosition / 100) * (this.max - this.min));
+      this.current = value;
+      this.init({type: 'SET_CURRENT_MAX', value});
+    } else {
+      this.progressBar.setMinPosition(newPosition);
+      let value = Math.round(this.min + (newPosition / 100) * (this.max - this.min));
+      this.current = value;
+      this.init({type: 'SET_CURRENT_MIN', value});
+    }
 
-      newPosition = this.checkBorders(newPosition, this.otherThumbPosition);
+    this.thumb.css(this.cssType, `${newPosition}%`);
+    this.label.setPosition(newPosition);
+    this.label.setValue(this.current);
+    this.position = newPosition;
 
-      if (this.isMaxThumb) {
-        this.progressBar.setMaxPosition(newPosition);
-        let value = Math.round(this.min + (1 - newPosition / 100) * (this.max - this.min))
-        this.current = value;
-        this.init({type: 'SET_CURRENT_MAX', value})
-      } else {
-        this.progressBar.setMinPosition(newPosition);
-        let value = Math.round(this.min + (newPosition / 100) * (this.max - this.min));
-        this.current = value;
-        this.init({type: 'SET_CURRENT_MIN', value})
-      }
-
-      this.thumb.css(this.cssType, `${newPosition}%`);
-      this.label.setPosition(newPosition);
-      this.label.setValue(this.current);
-      this.position = newPosition;
-
-      this.setParentState('SET_MAX_THUMB_POSITION', 'SET_MIN_THUMB_POSITION', newPosition);
-    })
+    this.setParentState('SET_MAX_THUMB_POSITION', 'SET_MIN_THUMB_POSITION', newPosition);
   }
 
   private onThumbMouseUp() {
@@ -173,15 +183,16 @@ export default class Thumb implements IThumb {
         this.label.hide();
 
         $('html').css('cursor', 'default');
+        $(document).off('mousemove');
       }
     });
   }
 
-  private calcShift (mousePos: number, type: 'top' | 'left', dimension: 'width' | 'height'): number {
+  public calcShift (mousePos: number, type: 'top' | 'left', dimension: 'width' | 'height'): number {
     return mousePos - this.thumb.get(0).getBoundingClientRect()[type] - (this.thumb[dimension]() / 2);
   }
 
-  private calcNewPos (mousePos: number, type: 'left' | 'top', dimension: 'height' | 'width'): number {
+  public calcNewPos (mousePos: number, type: 'left' | 'top', dimension: 'height' | 'width'): number {
     return (mousePos - this.shift - this.wrapper.get(0).getBoundingClientRect()[type]) * 100 / this.wrapper[dimension]();
   }
 
@@ -224,7 +235,7 @@ export default class Thumb implements IThumb {
     this.setParentState('SET_CURRENT_MAX', 'SET_CURRENT_MIN', value);
   }
 
-  private setIsActive(value: boolean): void {
+  public setIsActive(value: boolean): void {
     this.isActive = value;
   }
 
@@ -234,5 +245,6 @@ export default class Thumb implements IThumb {
 
   public setPosition(value: number) {
     this.position = value;
+    this.setParentState('SET_MAX_THUMB_POSITION', 'SET_MIN_THUMB_POSITION', value);
   }
 }
