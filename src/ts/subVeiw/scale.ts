@@ -26,28 +26,31 @@ export default class Scale implements IScale {
     this.onScaleClick();
   }
 
-  private onScaleClick():void {
-    this.scale.on('mousedown', (e: JQuery.Event) => {
-      let offset: number = (e.pageX - this.scale.get(0).getBoundingClientRect().left ) * 100 / this.scale.width();
+  private onScaleClick(): void {
+    this.scale.on('mousedown', (e: JQuery.Event) => this.clickHandler(e))
+  }
 
-      if (offset > 100) {
-        offset = 100;
-      } else if (offset < 0) {
-        offset = 0;
-      }
+  public clickHandler(e: JQuery.Event): void {
+    let offset: number;
+    if (this.vertical) {
+      offset = (e.pageY - this.scale.get(0).getBoundingClientRect().top ) * 100 / this.scale.height();
+    } else {
+      offset = (e.pageX - this.scale.get(0).getBoundingClientRect().left ) * 100 / this.scale.width();
+    }
 
-      this.setClosestThumbPos(offset, e);
-    })
+    if (offset > 100) {
+      offset = 100;
+    } else if (offset < 0) {
+      offset = 0;
+    }
 
+    this.setClosestThumbPos(offset, e);
   }
 
   private setClosestThumbPos(offset: number, e: JQuery.Event): void {
     let offsetMin = Math.abs(offset - this.minThumbPosition);
     let offsetMax = Math.abs(offset - (100 - this.maxThumbPosition));
-    console.log('min:', this.minThumbPosition)
-    console.log('max:', 100 - this.maxThumbPosition)
-    console.log('offset:', offset)
-    console.log(offsetMax, '<=', offsetMin, offsetMax <= offsetMin);
+
     if (offsetMax <= offsetMin) {
       this.setMaxActive(true);
       this.setMax(e);

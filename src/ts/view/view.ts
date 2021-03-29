@@ -103,7 +103,16 @@ export default class View implements IView {
       vertical: this.vertical
     });
 
-    this.scale = new Scale(this.maxThumbPosition, this.maxThumb.setPositionHandler, this.maxThumb.setIsActive, this.minThumbPosition, this.minThumb.setPositionHandler, this.vertical, this.minThumb.setIsActive);
+    this.scale = new Scale(
+      this.maxThumbPosition,
+      this.maxThumb.setPositionHandler,
+      this.maxThumb.setIsActive,
+      this.minThumbPosition,
+      this.minThumb.setPositionHandler,
+      this.vertical,
+      this.minThumb.setIsActive
+    );
+    this.progressBar.onClick(this.scale.clickHandler.bind(this.scale));
 
     this.maxThumb.subscribe(this);
     this.minThumb.subscribe(this);

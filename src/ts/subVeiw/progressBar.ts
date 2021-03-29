@@ -25,6 +25,10 @@ export default class ProgressBar implements IProgressBar {
     return this.progressBar;
   }
 
+  public onClick(callback: Function): void {
+    this.progressBar.on('mousedown', (e: JQuery.Event) => callback(e));
+  }
+
   public setMinPosition(position: number) {
     if (!this.vertical) {
       this.progressBar.css('left', `${position}%`);
