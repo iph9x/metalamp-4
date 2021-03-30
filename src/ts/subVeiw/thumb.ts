@@ -1,6 +1,6 @@
-import { ContextReplacementPlugin } from 'webpack';
 import Label from '../subVeiw/label';
 import ProgressBar from '../subVeiw/progressBar';
+import Observer from '../pattern/observer';
 
 export interface IThumb {
   readonly type: string,
@@ -20,11 +20,10 @@ type Props = {
   vertical?: boolean
 }
 
-export default class Thumb implements IThumb {
+export default class Thumb extends Observer implements IThumb {
   private thumb: JQuery = $('<span class="mi-slider__circle"></span>');
   private shift: number = 0;
   private isActive: boolean = false;
-  private observers: Array<object> = [];
   private current: number;
   private isMaxThumb: boolean;
   public position: number;
@@ -55,6 +54,8 @@ export default class Thumb implements IThumb {
     otherThumbPosition,
     vertical
   }: Props) {
+    super();
+
     this.type = type;
     this.startPosition = startPosition;
     this.label = label;
@@ -93,28 +94,13 @@ export default class Thumb implements IThumb {
     this.render();
 
     this.onThumbClick();
-    // this.onThumbMove();
     this.onThumbMouseUp();
 
     this.setPositionHandler = this.setPositionHandler.bind(this);
     this.calcNewPos = this.calcNewPos.bind(this);
     this.setIsActive = this.setIsActive.bind(this);
   }
-
-  subscribe(observer: object) {
-    this.observers.push(observer);
-  }
-
-  unsubscribe(observer: object) {
-    this.observers.filter((obs) => obs !== observer);
-  }
-
-  init(action: {type: string, value?: number | boolean}) {
-    this.observers.forEach((observer: {update: Function}) => {
-      observer.update(action);
-    });
-  }
-
+  
   render() {
     return this.thumb;
   }

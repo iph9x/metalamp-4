@@ -39,11 +39,11 @@ export default class Presenter implements IPresenter{
   update(action: {type: string, value: number}) {
     switch(action.type) {
       case 'SET_MAX':
-        this.max = action.value;
+        this.state.max = action.value;
         this.model.setMax = action.value;
         break;
       case 'SET_MIN': 
-        this.min = action.value;
+        this.state.min = action.value;
         this.model.setMin = action.value;
         break;
       default:

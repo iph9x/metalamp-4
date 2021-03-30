@@ -25,7 +25,11 @@ type Props = {
     labels,
     vertical
   }: Props) {
-    const model: Model = new Model(max, min);
+    const modelState = {
+      max: defaultMax ? defaultMax : max,
+      min: defaultMin ? defaultMin : min,
+    }
+    const model: Model = new Model(modelState.max, modelState.min);
     const view: View = new View(max, min, this, range, step, defaultMin, defaultMax, labels, vertical);
     const presenter: Presenter = new Presenter(model, view);
 

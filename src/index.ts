@@ -13,11 +13,11 @@ $('.slider').miSlider({
 });
 
 $('.slider-2').miSlider({
-  min: 500,
+  min: 700,
   max: 1200,
   defaultMin: 600,
   defaultMax: 1000,
-  range: true,
-  step: 5,
+  // range: false,
+  step: 1,
   labels: true,
 });
