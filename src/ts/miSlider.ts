@@ -10,7 +10,11 @@ type Props = {
   defaultMin: number,
   defaultMax: number,
   labels: boolean,
-  vertical: boolean
+  vertical: boolean,
+  inputsId: {
+    inputFromId: string,
+    inputToId: string,
+  }
 }
 
 (function ($) {
@@ -23,14 +27,15 @@ type Props = {
     defaultMin,
     defaultMax,
     labels,
-    vertical
+    vertical,
+    inputsId
   }: Props) {
     const modelState = {
       max: defaultMax ? defaultMax : max,
       min: defaultMin ? defaultMin : min,
     }
     const model: Model = new Model(modelState.max, modelState.min);
-    const view: View = new View(max, min, this, range, step, defaultMin, defaultMax, labels, vertical);
+    const view: View = new View(max, min, this, range, step, defaultMin, defaultMax, labels, vertical, inputsId);
     const presenter: Presenter = new Presenter(model, view);
 
   };

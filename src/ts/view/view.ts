@@ -12,7 +12,8 @@ export interface IView {
   isRange?: boolean,
   slider: object,
   step?: number,
-  labelsVisibility?: boolean
+  labelsVisibility?: boolean,
+  inputsId?: object
 }
 
 export default class View extends Observer implements IView {
@@ -47,7 +48,11 @@ export default class View extends Observer implements IView {
     public minThumbStartPos?: number,
     public maxThumbStartPos?: number,
     public labelsVisibility?: boolean,
-    vertical?: boolean
+    vertical?: boolean,
+    public inputsId?: {
+      inputFromId: string,
+      inputToId: string,
+    }
   ) {
     super();
     this.vertical = vertical ? vertical : false;
@@ -70,6 +75,7 @@ export default class View extends Observer implements IView {
     this.maxThumbStartPos = (typeof maxThumbStartPos !== 'undefined') && (maxThumbStartPos <= max) ? maxThumbStartPos : max;
     
     this.progressBar = new ProgressBar(this.minThumbStartPos, this.maxThumbStartPos, this.vertical);
+
     this.setCurrentMin(this.minThumbStartPos);
     this.setCurrentMax(this.maxThumbStartPos);
 
@@ -145,11 +151,23 @@ export default class View extends Observer implements IView {
   public setCurrentMax(max: number): void {
     this.currentMax = max;
     this.init({type: 'SET_MAX', value: max});
+    // $(this.slider).data('to-value', max);
+    $(this.slider).attr('data-to-value', max);
+
+    if (typeof this.inputsId?.inputToId !== 'undefined') {
+      $(`#${this.inputsId.inputToId}`).val(max);
+    }
   }
 
   public setCurrentMin(min: number): void {
     this.currentMin = min;
     this.init({type: 'SET_MIN', value: min});
+    // $(this.slider).data('from-value', min);
+    $(this.slider).attr('data-from-value', min);
+
+    if (typeof this.inputsId?.inputFromId !== 'undefined') {
+      $(`#${this.inputsId.inputFromId}`).val(min);
+    }
   }
 
   public get getCurrentMax(): number {
@@ -160,15 +178,20 @@ export default class View extends Observer implements IView {
     return this.currentMin;
   }
 
+  onFromValueChange() {
+    $(document).on('change', 'div[data-from-value]', (e: JQuery.Event) => {
+
+    })
+  }
+
+
   update(action: {type: string, value: any }) {
     switch(action.type) {
       case ('SET_CURRENT_MAX'):
-        this.currentMax = action.value;
-        this.init({type: 'SET_MAX', value: action.value});
+        this.setCurrentMax(action.value);
         break;
       case ('SET_CURRENT_MIN'):
-        this.currentMin = action.value;
-        this.init({type: 'SET_MIN', value: action.value});
+        this.setCurrentMin(action.value);
         break;
       case ('SET_MAX_THUMB_POSITION'):
         this.maxThumbPosition = action.value;

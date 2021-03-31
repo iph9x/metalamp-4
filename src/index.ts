@@ -20,4 +20,8 @@ $('.slider-2').miSlider({
   // range: false,
   step: 1,
   labels: true,
+  inputsId: {
+    // inputFromId: 'first-input',
+    inputToId: 'second-input'
+  }
 });
