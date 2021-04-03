@@ -12,10 +12,35 @@
     </div>
     <div class="slider-2">
     </div>
-    <form action="">
-      <input type="text" id='first-input'>
-      <input type="text" id='second-input'>
+    <form action="" class="slider-panel slider-panel-2">
+      <label>
+        min
+        <input type="text" class="slider-panel__min" id='first-input'>
+      </label>
+      <label>
+        max
+        <input type="text" class="slider-panel__max" id='second-input'>
+      </label>
+      <label>
+        step
+        <input type="text" class="slider-panel__step">
+      </label>
+      <label>
+        range
+        <input type="checkbox" class="slider-panel__range" checked>
+      </label>
+      <br>
+      <label>
+        vertical
+        <input type="checkbox" class="slider-panel__vertical">
+      </label>
+      <br>
+      <label>
+        labels visibility
+        <input type="checkbox" class="slider-panel__labelsVisibility" checked>
+      </label>
     </form>
+    
   </main>
 </body>
 </html>

@@ -37,6 +37,9 @@ export default class View extends Observer implements IView {
   private minThumbLabel: Label;
   private maxThumbLabel: Label;
 
+  public inputFrom: JQuery;
+  public inputTo: JQuery;
+
   public observers: Array<object>;
 
   constructor(
@@ -55,12 +58,15 @@ export default class View extends Observer implements IView {
     }
   ) {
     super();
+    const that = $(this.slider);
+    if (that.find('.mi-slider__wrapper')[0]) {
+      that.empty();
+    }
     this.vertical = vertical ? vertical : false;
     this.isRange = typeof isRange !== 'undefined' ? isRange : true; 
 
     this.labelsVisibility = typeof labelsVisibility === 'undefined' ? true : labelsVisibility;
 
-    const that = $(this.slider);
     if (this.vertical) {
       (this.wrapper).addClass('mi-slider__wrapper_vertical');
     }
@@ -75,6 +81,13 @@ export default class View extends Observer implements IView {
     this.maxThumbStartPos = (typeof maxThumbStartPos !== 'undefined') && (maxThumbStartPos <= max) ? maxThumbStartPos : max;
     
     this.progressBar = new ProgressBar(this.minThumbStartPos, this.maxThumbStartPos, this.vertical);
+
+    if (this.inputsId?.inputFromId) {
+      this.inputFrom = $(`#${this.inputsId.inputFromId}`);
+    }
+    if (this.inputsId?.inputToId) {
+      this.inputTo = $(`#${this.inputsId.inputToId}`);
+    }
 
     this.setCurrentMin(this.minThumbStartPos);
     this.setCurrentMax(this.maxThumbStartPos);
@@ -140,6 +153,7 @@ export default class View extends Observer implements IView {
         .append(this.maxThumbLabel.render())
         .append(this.minThumbLabel.render());
     }
+    
 
     that.append(this.wrapper);
   }
@@ -151,22 +165,20 @@ export default class View extends Observer implements IView {
   public setCurrentMax(max: number): void {
     this.currentMax = max;
     this.init({type: 'SET_MAX', value: max});
-    // $(this.slider).data('to-value', max);
     $(this.slider).attr('data-to-value', max);
 
     if (typeof this.inputsId?.inputToId !== 'undefined') {
-      $(`#${this.inputsId.inputToId}`).val(max);
+      this.inputTo.val(max);
     }
   }
 
   public setCurrentMin(min: number): void {
     this.currentMin = min;
     this.init({type: 'SET_MIN', value: min});
-    // $(this.slider).data('from-value', min);
     $(this.slider).attr('data-from-value', min);
 
     if (typeof this.inputsId?.inputFromId !== 'undefined') {
-      $(`#${this.inputsId.inputFromId}`).val(min);
+      this.inputFrom.val(min);
     }
   }
 
@@ -180,7 +192,7 @@ export default class View extends Observer implements IView {
 
   onFromValueChange() {
     $(document).on('change', 'div[data-from-value]', (e: JQuery.Event) => {
-
+      console.log('kek')
     })
   }
 
