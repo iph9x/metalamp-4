@@ -1,0 +1,26 @@
+.main {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 30px 50px;
+  width: 70%;
+  margin: 0 auto;
+}
+
+.slider-panel {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ccc;
+  label {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    column-gap: 10px;
+    width: 300px;
+  }
+  input[type="text"] {
+    margin-bottom:  10px;
+  }
+  span {
+    text-align: right;
+  }
+}
