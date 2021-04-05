@@ -66,20 +66,19 @@ $body-font-size: 14px;
   }
   &__label {
     position: absolute;
-    visibility: hidden;
     color: $darkshade;
     &_left {
-      transform: translate(-50%, -120%)
+      transform: translate(-100%, -120%)
     }
     &_right {
-      transform: translate(50%, -120%)
+      transform: translate(100%, -120%)
     }
     &_top {
-      transform: translate(20px, -50%);
+      transform: translate(20px, -100%);
     
     }
     &_bottom {
-      transform: translate(20px, 50%);
+      transform: translate(20px, 100%);
     }
   }
   &__input {

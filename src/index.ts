@@ -35,7 +35,7 @@ const localState1: Props = {
 const localState2: Props = {
   min: 700,
   max: 1200,
-  defaultMin: 600,
+  defaultMin: 900,
   defaultMax: 1000,
   step: 1,
   labels: true,

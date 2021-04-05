@@ -113,7 +113,7 @@ export default class Thumb extends Observer implements IThumb {
     e.preventDefault();
 
     this.setIsActive(true);
-    this.label.show();
+    // this.label.show();
     this.shift = this.vertical ? this.calcShift(e.pageY, 'top', 'height') : this.calcShift(e.pageX, 'left', 'width');
     $('html').css('cursor', 'pointer');
 
@@ -166,7 +166,7 @@ export default class Thumb extends Observer implements IThumb {
     $(document).on('mouseup', () => {
       if (this.isActive) {
         this.setIsActive(false);
-        this.label.hide();
+        // this.label.hide();
 
         $('html').css('cursor', 'default');
         $(document).off('mousemove');
