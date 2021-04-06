@@ -9,8 +9,12 @@ export interface IScale {
 export default class Scale implements IScale {
   private scale: JQuery = $(`<div class="mi-slider__scale"></div>`);
   private isSingle: boolean;
+  private scaleNumbersArr: Array<number> = [];
+  private scaleElementsArr: Array<JQuery> = [];
 
   constructor(
+    min: number,
+    max: number,
     public maxThumbPosition: number,
     public setMax: Function,
     public setMaxActive: (value: boolean) => void,
@@ -23,7 +27,23 @@ export default class Scale implements IScale {
     if (this.vertical) {
       this.scale.addClass(`mi-slider__scale_vertical`);
     }
-    
+
+    let scaleStep = Math.trunc((max - min) / 4);
+
+    for (let i = 0; i < 5; i += 1) {
+      if (i === 0) {
+        this.scaleNumbersArr[i] = min;
+      } else if (i === 4) {
+        this.scaleNumbersArr[i] = max;
+      } else {
+        this.scaleNumbersArr[i] = this.scaleNumbersArr[i - 1] + scaleStep;
+      }
+    }    
+
+    this.scaleElementsArr = this.scaleNumbersArr.map((el) => {
+      return $(`<span class="mi-slider__scale-num">${el}</span>`)
+    })
+
     this.isSingle = !isRange
     this.render();
     this.onScaleClick();
@@ -66,6 +86,10 @@ export default class Scale implements IScale {
   }
 
   public render() {
+    for (let el of this.scaleElementsArr) {
+      this.scale.append(el);
+    }
+
     return this.scale;
   }
 }

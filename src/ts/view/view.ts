@@ -126,6 +126,8 @@ export default class View extends Observer implements IView {
     });
 
     this.scale = new Scale(
+      this.min,
+      this.max,
       this.maxThumbPosition,
       this.maxThumb.setPositionHandler,
       this.maxThumb.setIsActive,

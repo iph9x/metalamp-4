@@ -44,9 +44,18 @@ const localState2: Props = {
     inputToId: 'second-input'
   },
 }
+const localState3: Props = {
+  min: 0,
+  max: 100,
+  inputsId: {
+    inputFromId: 'first-input-3',
+    inputToId: 'second-input-3'
+  }
+}
 
 $('.slider').miSlider(localState1);
 $('.slider-2').miSlider(localState2);
+$('.slider-3').miSlider(localState3);
 
 function setSliderPanelHandlers(panelName: string, sliderName: string, state: Props): void {
   $(panelName).find('.slider-panel__step').val(state.step ? state.step : 1);
@@ -102,3 +111,4 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
 
 setSliderPanelHandlers('.slider-panel-2', '.slider-2', localState2);
 setSliderPanelHandlers('.slider-panel-1', '.slider', localState1);
+setSliderPanelHandlers('.slider-panel-3', '.slider-3', localState3);
