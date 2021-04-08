@@ -23,7 +23,7 @@ const localState1: Props = {
   defaultMin: 500,
   defaultMax: 1000,
   range: true,
-  step: 5,
+  // step: 5,
   labels: true,
   vertical: true,
   inputsId: {
@@ -37,7 +37,7 @@ const localState2: Props = {
   max: 1200,
   defaultMin: 900,
   defaultMax: 1000,
-  step: 1,
+  // step: 1,
   labels: true,
   inputsId: {
     inputFromId: 'first-input',
@@ -47,6 +47,7 @@ const localState2: Props = {
 const localState3: Props = {
   min: 0,
   max: 100,
+  step: 1,
   inputsId: {
     inputFromId: 'first-input-3',
     inputToId: 'second-input-3'
@@ -109,6 +110,6 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
   });
 }
 
-setSliderPanelHandlers('.slider-panel-2', '.slider-2', localState2);
 setSliderPanelHandlers('.slider-panel-1', '.slider', localState1);
+setSliderPanelHandlers('.slider-panel-2', '.slider-2', localState2);
 setSliderPanelHandlers('.slider-panel-3', '.slider-3', localState3);

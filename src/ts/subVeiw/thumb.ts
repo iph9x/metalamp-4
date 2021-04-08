@@ -129,27 +129,38 @@ export default class Thumb extends Observer implements IThumb {
     
     let calcedX: number = this.calcNewPos(e.pageX, 'left', 'width');
     let calcedY: number = this.calcNewPos(e.pageY, 'top', 'height');
-    let step = this.step;
+    // // let step = this.step;
+    // let stepInPx: number;
+    // if (this.vertical) {
+    //   stepInPx = (this.max - this.min) / $(this.wrapper).height();
+    // } else {
+    //   stepInPx = (this.max - this.min) / $(this.wrapper).width();
+    // }
+
+    // let step = this.getValueToPercent(stepInPx);
     let newPosition: number;
     
     if (this.isMaxThumb) {
       newPosition = this.vertical ? 100 - calcedY : 100 - calcedX;
-      newPosition = 100 - Math.round(((100 - newPosition) / step)) * step;
+      // newPosition = 100 - Math.round(((100 - newPosition) / step)) * step;
     } else {
       newPosition = this.vertical ? calcedY : calcedX;
-      newPosition = Math.round((newPosition / step)) * step;
+      // newPosition = Math.round((newPosition / step)) * step;
+      // newPosition = Math.round(newPosition);
     }
 
     newPosition = this.checkBorders(newPosition, this.otherThumbPosition);
 
     if (this.isMaxThumb) {
       this.progressBar.setMaxPosition(newPosition);
-      let value = Math.round(this.min + (1 - newPosition / 100) * (this.max - this.min));
+      // let value = Math.round(this.min + (1 - newPosition / 100) * (this.max - this.min));
+      let value = Math.round((this.min + (1 - newPosition / 100) * (this.max - this.min)) / this.step) * this.step;
       this.current = value;
       this.init({type: 'SET_CURRENT_MAX', value});
     } else {
       this.progressBar.setMinPosition(newPosition);
-      let value = Math.round(this.min + (newPosition / 100) * (this.max - this.min));
+      // let value = Math.round(this.min + (newPosition / 100) * (this.max - this.min));
+      let value = Math.round((this.min + (newPosition / 100) * (this.max - this.min)) / this.step) * this.step;
       this.current = value;
       this.init({type: 'SET_CURRENT_MIN', value});
     }
@@ -174,19 +185,24 @@ export default class Thumb extends Observer implements IThumb {
     });
   }
 
-  public calcShift (mousePos: number, type: 'top' | 'left', dimension: 'width' | 'height'): number {
+  private getValueToPercent(val: number): number {
+    return val / (this.max - this.min) * 100;
+  }
+
+  private calcShift (mousePos: number, type: 'top' | 'left', dimension: 'width' | 'height'): number {
     return mousePos - this.thumb.get(0).getBoundingClientRect()[type] - (this.thumb[dimension]() / 2);
   }
 
-  public calcNewPos (mousePos: number, type: 'left' | 'top', dimension: 'height' | 'width'): number {
+  private calcNewPos (mousePos: number, type: 'left' | 'top', dimension: 'height' | 'width'): number {
     return (mousePos - this.shift - this.wrapper.get(0).getBoundingClientRect()[type]) * 100 / this.wrapper[dimension]();
   }
 
   private checkBorders = (position: number, border: number): number => {
+    const stepInPercent = this.getValueToPercent(this.step) ;
     if (position < 0) {
       return 0;
-    } else if (Number((position).toFixed(8)) >= Number((100 - border).toFixed(8))) {
-      return 100 - border - this.step;
+    } else if (Number((position).toFixed(8)) >= Number((100 - border - stepInPercent).toFixed(8))) {
+      return 100 - border - stepInPercent;
     } else if (position > 100) {
       return 100;
     } else {

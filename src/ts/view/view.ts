@@ -74,8 +74,9 @@ export default class View extends Observer implements IView {
 
 
     this.min = (typeof this.min !== 'undefined') ? min : 0;
-    this.step = step ? step : (this.max - this.min) / $(this.slider).width();
-    this.stepInPercent = this.getValueToPercent(this.step);
+    // this.step = step ? step : (this.max - this.min) / $(this.slider).width();
+    this.step = step ? step : 1;
+    // this.stepInPercent = this.getValueToPercent(this.step);
     
     this.minThumbStartPos = (typeof minThumbStartPos !== 'undefined') && (minThumbStartPos >= min) && (minThumbStartPos < maxThumbStartPos) && this.isRange ? minThumbStartPos : min;
     this.maxThumbStartPos = (typeof maxThumbStartPos !== 'undefined') && (maxThumbStartPos <= max) ? maxThumbStartPos : max;
@@ -103,7 +104,7 @@ export default class View extends Observer implements IView {
       type: 'minThumb',
       startPosition: this.minThumbStartPos,
       label: this.minThumbLabel,
-      step: this.stepInPercent,
+      step: this.step,
       wrapper: this.wrapper,
       progressBar: this.progressBar,
       max: this.max,
@@ -116,7 +117,7 @@ export default class View extends Observer implements IView {
       type: 'maxThumb',
       startPosition: this.maxThumbStartPos,
       label: this.maxThumbLabel,
-      step: this.stepInPercent,
+      step: this.step,
       wrapper: this.wrapper,
       progressBar: this.progressBar,
       max: this.max,
@@ -158,10 +159,6 @@ export default class View extends Observer implements IView {
     
 
     that.append(this.wrapper);
-  }
-
-  getValueToPercent(val: number): number {
-    return val / (this.max - this.min) * 100;
   }
 
   public setCurrentMax(max: number): void {
