@@ -23,9 +23,6 @@ export default class View extends Observer implements IView {
   private minThumbPosition: number;
   private maxThumbPosition: number;
 
-  private stepInPercent: number;
-  public vertical: boolean;
-  public isRange: boolean;
   private wrapper = $('<div class="mi-slider__wrapper"></div>');
   
   private scale: Scale;
@@ -46,12 +43,12 @@ export default class View extends Observer implements IView {
     public max: number,
     public min: number,
     public slider: object,
-    isRange?: boolean,
+    public isRange?: boolean,
     public step?: number,
-    public minThumbStartPos?: number,
-    public maxThumbStartPos?: number,
+    public defaultFromValue?: number,
+    public defaultToValue?: number,
     public labelsVisibility?: boolean,
-    vertical?: boolean,
+    public vertical?: boolean,
     public inputsId?: {
       inputFromId: string,
       inputToId: string,
@@ -62,7 +59,7 @@ export default class View extends Observer implements IView {
     if (that.find('.mi-slider__wrapper')[0]) {
       that.empty();
     }
-    this.vertical = vertical ? vertical : false;
+    this.vertical = typeof vertical !== 'undefined' ? vertical : false;
     this.isRange = typeof isRange !== 'undefined' ? isRange : true; 
 
     this.labelsVisibility = typeof labelsVisibility === 'undefined' ? true : labelsVisibility;
@@ -70,18 +67,21 @@ export default class View extends Observer implements IView {
     if (this.vertical) {
       (this.wrapper).addClass('mi-slider__wrapper_vertical');
     }
+
     that.addClass('mi-slider');
 
-
     this.min = (typeof this.min !== 'undefined') ? min : 0;
-    // this.step = step ? step : (this.max - this.min) / $(this.slider).width();
+
     this.step = step ? step : 1;
-    // this.stepInPercent = this.getValueToPercent(this.step);
+
+    if (this.step > this.max - this.min) {
+      this.step = this.max - this.min;
+    }
     
-    this.minThumbStartPos = (typeof minThumbStartPos !== 'undefined') && (minThumbStartPos >= min) && (minThumbStartPos < maxThumbStartPos) && this.isRange ? minThumbStartPos : min;
-    this.maxThumbStartPos = (typeof maxThumbStartPos !== 'undefined') && (maxThumbStartPos <= max) ? maxThumbStartPos : max;
+    this.defaultToValue = (typeof defaultToValue !== 'undefined') && (defaultToValue <= max) ? defaultToValue : max;
+    this.defaultFromValue = (typeof defaultFromValue !== 'undefined') && (defaultFromValue >= min) && (defaultFromValue < defaultToValue) && this.isRange ? defaultFromValue : min;
     
-    this.progressBar = new ProgressBar(this.minThumbStartPos, this.maxThumbStartPos, this.vertical);
+    this.progressBar = new ProgressBar(this.defaultFromValue, this.defaultToValue, this.vertical);
 
     if (this.inputsId?.inputFromId) {
       this.inputFrom = $(`#${this.inputsId.inputFromId}`);
@@ -90,19 +90,19 @@ export default class View extends Observer implements IView {
       this.inputTo = $(`#${this.inputsId.inputToId}`);
     }
 
-    this.setCurrentMin(this.minThumbStartPos);
-    this.setCurrentMax(this.maxThumbStartPos);
+    this.setCurrentMin(this.defaultFromValue);
+    this.setCurrentMax(this.defaultToValue);
 
-    this.minThumbPosition = (1 - (this.max - this.minThumbStartPos) / (this.max - this.min)) * 100;
-    this.maxThumbPosition = ((this.max - this.maxThumbStartPos) / (this.max - this.min)) * 100;
+    this.minThumbPosition = (1 - (this.max - this.defaultFromValue) / (this.max - this.min)) * 100;
+    this.maxThumbPosition = ((this.max - this.defaultToValue) / (this.max - this.min)) * 100;
 
-    this.maxThumbLabel = new Label(this.maxThumbStartPos, 'maxThumb', this.maxThumbPosition, this.vertical);
-    this.minThumbLabel = new Label(this.minThumbStartPos, 'minThumb', this.minThumbPosition, this.vertical);
+    this.maxThumbLabel = new Label(this.defaultToValue, 'maxThumb', this.maxThumbPosition, this.vertical);
+    this.minThumbLabel = new Label(this.defaultFromValue, 'minThumb', this.minThumbPosition, this.vertical);
 
 
     this.minThumb = new Thumb({
       type: 'minThumb',
-      startPosition: this.minThumbStartPos,
+      startPosition: this.defaultFromValue,
       label: this.minThumbLabel,
       step: this.step,
       wrapper: this.wrapper,
@@ -115,7 +115,7 @@ export default class View extends Observer implements IView {
 
     this.maxThumb = new Thumb({
       type: 'maxThumb',
-      startPosition: this.maxThumbStartPos,
+      startPosition: this.defaultToValue,
       label: this.maxThumbLabel,
       step: this.step,
       wrapper: this.wrapper,
@@ -188,13 +188,6 @@ export default class View extends Observer implements IView {
   public get getCurrentMin(): number {
     return this.currentMin;
   }
-
-  onFromValueChange() {
-    $(document).on('change', 'div[data-from-value]', (e: JQuery.Event) => {
-      console.log('kek')
-    })
-  }
-
 
   update(action: {type: string, value: any }) {
     switch(action.type) {

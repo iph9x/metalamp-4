@@ -45,8 +45,8 @@ const localState2: Props = {
   },
 }
 const localState3: Props = {
-  min: 0,
-  max: 100,
+  min: 33,
+  max: 55,
   step: 1,
   inputsId: {
     inputFromId: 'first-input-3',

@@ -28,7 +28,7 @@ export default class Scale implements IScale {
       this.scale.addClass(`mi-slider__scale_vertical`);
     }
 
-    let scaleStep = Math.trunc((max - min) / 4);
+    let scaleStep = (max - min) / 4;
 
     for (let i = 0; i < 5; i += 1) {
       if (i === 0) {
@@ -36,14 +36,14 @@ export default class Scale implements IScale {
       } else if (i === 4) {
         this.scaleNumbersArr[i] = max;
       } else {
-        this.scaleNumbersArr[i] = this.scaleNumbersArr[i - 1] + scaleStep;
+        this.scaleNumbersArr[i] = Number((this.scaleNumbersArr[i - 1] + scaleStep).toFixed(1));
       }
-    }    
+    }
 
     this.scaleElementsArr = this.scaleNumbersArr.map((el) => {
-      return $(`<span class="mi-slider__scale-num">${el}</span>`)
+      return $(`<span class="mi-slider__scale-num"></span>`)
     })
-
+    
     this.isSingle = !isRange
     this.render();
     this.onScaleClick();
@@ -86,8 +86,10 @@ export default class Scale implements IScale {
   }
 
   public render() {
-    for (let el of this.scaleElementsArr) {
-      this.scale.append(el);
+    for (let i = 0; i < 5; i += 1) {
+      let newEl = this.scaleElementsArr[i];
+      newEl.attr('data-before', `${this.scaleNumbersArr[i]}`)
+      this.scale.append(newEl);
     }
 
     return this.scale;
