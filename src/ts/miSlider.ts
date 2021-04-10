@@ -5,13 +5,13 @@ import Presenter from './presenter/presenter';
 type Props = {
   max: number,
   min: number,
-  range: boolean,
-  step: number,
-  defaultFromValue: number,
-  defaultToValue: number,
-  labels: boolean,
-  vertical: boolean,
-  inputsId: {
+  range?: boolean,
+  step?: number,
+  defaultFromValue?: number,
+  defaultToValue?: number,
+  labels?: boolean,
+  vertical?: boolean,
+  inputsId?: {
     inputFromId: string,
     inputToId: string,
   }
@@ -35,9 +35,8 @@ type Props = {
       min: defaultFromValue ? defaultFromValue : min,
     }
     const model: Model = new Model(modelState.max, modelState.min);
-    const view: View = new View(max, min, this, range, step, defaultFromValue, defaultToValue, labels, vertical, inputsId);
+    const view: View = new View({max, min, slider: this, isRange: range, step, defaultFromValue, defaultToValue, labelsVisibility: labels, isVertical: vertical, inputsId});
     const presenter: Presenter = new Presenter(model, view);
-
   };
 
 }(jQuery));

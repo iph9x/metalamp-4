@@ -7,8 +7,8 @@ type Props = {
   min: number,
   range?: boolean,
   step?: number,
-  defaultMin?: number,
-  defaultMax?: number,
+  defaultFromValue?: number,
+  defaultToValue?: number,
   labels?: boolean,
   vertical?: boolean,
   inputsId?: {
@@ -20,8 +20,8 @@ type Props = {
 const localState1: Props = {
   min: 500,
   max: 1200,
-  defaultMin: 500,
-  defaultMax: 1000,
+  defaultFromValue: 500,
+  defaultToValue: 1000,
   range: true,
   // step: 5,
   labels: true,
@@ -35,8 +35,8 @@ const localState1: Props = {
 const localState2: Props = {
   min: 700,
   max: 1200,
-  defaultMin: 900,
-  defaultMax: 1000,
+  defaultFromValue: 900,
+  defaultToValue: 1000,
   // step: 1,
   labels: true,
   inputsId: {
@@ -65,47 +65,56 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
 
   $(panelName).on('change', '.slider-panel__step', function () {
     state.step = Number($(this).val());
-    state.defaultMin = Number($(panelName).find('.slider-panel__current-from').val());
-    state.defaultMax = Number($(panelName).find('.slider-panel__current-to').val());
+    state.defaultFromValue = Number($(panelName).find('.slider-panel__current-from').val());
+    state.defaultToValue = Number($(panelName).find('.slider-panel__current-to').val());
     $(sliderName).miSlider(state);
   });
   $(panelName).on('change', '.slider-panel__min', function () {
     state.min = Number($(this).val());
-    state.defaultMin = Number($(panelName).find('.slider-panel__current-from').val());
-    state.defaultMax = Number($(panelName).find('.slider-panel__current-to').val());
+    state.defaultFromValue = Number($(panelName).find('.slider-panel__current-from').val());
+    state.defaultToValue = Number($(panelName).find('.slider-panel__current-to').val());
     $(sliderName).miSlider(state);
   });
   $(panelName).on('change', '.slider-panel__max', function () {
     state.max = Number($(this).val());
-    state.defaultMin = Number($(panelName).find('.slider-panel__current-from').val());
-    state.defaultMax = Number($(panelName).find('.slider-panel__current-to').val());
+    state.defaultFromValue = Number($(panelName).find('.slider-panel__current-from').val());
+    state.defaultToValue = Number($(panelName).find('.slider-panel__current-to').val());
     $(sliderName).miSlider(state);
   });
   $(panelName).on('change', '.slider-panel__current-from', function () {
-    state.defaultMin = Number($(this).val());
+    let value = Number($(this).val());
+    if (value > state.defaultToValue) {
+      value = state.min;
+    }
+    state.defaultFromValue = value;
     $(sliderName).miSlider(state);
   });
   $(panelName).on('change', '.slider-panel__current-to', function () {
-    state.defaultMax = Number($(this).val());
+    let value = Number($(this).val());
+    if (value < state.defaultFromValue) {
+      value = state.max;
+    }
+
+    state.defaultToValue = value
     $(sliderName).miSlider(state);
   });  
   $(panelName).on('change', '.slider-panel__range', function () {
     state.range = this.checked;
-    state.defaultMin = Number($(panelName).find('.slider-panel__current-from').val());
-    state.defaultMax = Number($(panelName).find('.slider-panel__current-to').val());
+    state.defaultFromValue = Number($(panelName).find('.slider-panel__current-from').val());
+    state.defaultToValue = Number($(panelName).find('.slider-panel__current-to').val());
 
     $(sliderName).miSlider(state);
   });
   $(panelName).on('change', '.slider-panel__labelsVisibility', function () {
     state.labels = this.checked;
-    state.defaultMin = Number($(panelName).find('.slider-panel__current-from').val());
-    state.defaultMax = Number($(panelName).find('.slider-panel__current-to').val());
+    state.defaultFromValue = Number($(panelName).find('.slider-panel__current-from').val());
+    state.defaultToValue = Number($(panelName).find('.slider-panel__current-to').val());
     $(sliderName).miSlider(state);
   });
   $(panelName).on('change', '.slider-panel__vertical', function () {
     state.vertical = this.checked;
-    state.defaultMin = Number($(panelName).find('.slider-panel__current-from').val());
-    state.defaultMax = Number($(panelName).find('.slider-panel__current-to').val());
+    state.defaultFromValue = Number($(panelName).find('.slider-panel__current-from').val());
+    state.defaultToValue = Number($(panelName).find('.slider-panel__current-to').val());
     $(sliderName).miSlider(state);
   });
 }

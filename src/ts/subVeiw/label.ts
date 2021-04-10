@@ -1,64 +1,43 @@
 export interface ILabel {
-  value: number,
-  position: number,
-  readonly type: string,
-  vertical?: boolean
+  render(): JQuery,
+  setValue(value: number): void,
+  setPosition(value: number): void
 }
 
 export default class Label implements ILabel {
-  private label: JQuery = $(`<span class="mi-slider__label"></span>`);
-  private cssType: string;
+  private _label: JQuery = $(`<span class="mi-slider__label"></span>`);
+  private _cssType: string;
 
   constructor(
-    public value: number,
-    public readonly type: string,
-    public position: number,
-    public vertical?: boolean
+    private _value: number,
+    private _type: string,
+    private _position: number,
+    private _isVertical?: boolean
   ) {
-    if (this.type === 'minThumb') {
-      if (this.vertical) {
-        this.cssType = 'top';
-      } else {
-        this.cssType = 'left';
-      }
+    if (this._type === 'minThumb') {
+      this._cssType = this._isVertical ? 'top' : 'left';
     } else {
-      if (this.vertical) {
-        this.cssType = 'bottom';
-      } else {
-        this.cssType = 'right';
-      }
+      this._cssType = this._isVertical ? 'bottom' : 'right';
     }
-    this.label.addClass(`mi-slider__label_${this.cssType}`);
+    this._label.addClass(`mi-slider__label_${this._cssType}`);
 
-    this.setValue(value);
-    this.setPosition(position);
+    this.setValue(this._value);
+    this.setPosition(this._position);
     
     this.render();
   }
 
-
-  
-  public render() {
-    return this.label;
+  public render(): JQuery {
+    return this._label;
   }
 
-
-
-  public setValue(value: number) {
-    this.value = value;
-    this.label.html(`${value}`);
+  public setValue(value: number):void {
+    this._value = value;
+    this._label.html(`${value}`);
   }
 
-  public setPosition(value: number) {
-    this.position = value;
-    this.label.css(this.cssType, `${value}%`);
+  public setPosition(value: number):void {
+    this._position = value;
+    this._label.css(this._cssType, `${value}%`);
   }
-
-  public show() {
-    this.label.css('visibility', 'visible');
-  }
-
-  public hide() {
-    this.label.css('visibility', 'hidden');
-  }  
 }

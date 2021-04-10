@@ -1,33 +1,32 @@
 export interface IModel {
-  max: number;
-  min?: number;
+  fromValue: number;
+  toValue: number;
 }
 
 export default class Model implements IModel {
-  // public currentMin: number;
-  // public currentMax: number;
-
-  constructor(public max: number, public min?: number) {
-    // this.setCurrentMax = max;
-    if (typeof min === 'undefined') {
-      this.setMin = 0;
-      // this.setCurrentMin = min;
+  
+  constructor(
+    private _toValue: number,
+    private _fromValue: number
+  ) {
+    if (typeof _fromValue === 'undefined') {
+      this._fromValue = 0;
     }
   }
 
-  public set setMax(max: number) {
-    this.max = max;
+  public set fromValue(value: number) {
+    this._fromValue = value;
   }
 
-  public set setMin(min: number) {
-    this.min = min;
+  public set toValue(value: number) {
+    this._toValue = value;
   }
 
-  // public set setCurrentMin(currentMin: number) {
-  //   this.currentMin = currentMin;
-  // }
+  public get fromValue(): number {
+    return this._fromValue;
+  }
 
-  // public set setCurrentMax(currentMax: number) {
-  //   this.currentMax = currentMax;
-  // }
+  public get toValue(): number {
+    return this._toValue;
+  }
 }

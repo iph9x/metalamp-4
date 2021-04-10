@@ -1,24 +1,26 @@
 export interface IObserver {
-  observers: Array<object>
+  subscribe(observer: object): void,
+  unsubscribe(observer: object): void,
+  init(action: {type: string, value?: number | boolean}): void
 }
 
 export default class Observer implements IObserver {
-  public observers: Array<object>;
+  private _observers: Array<object>;
   
   constructor() {
-    this.observers = [];
+    this._observers = [];
   }
   
-  subscribe(observer: object) {
-    this.observers.push(observer);
+  subscribe(observer: object): void {
+    this._observers.push(observer);
   }
 
-  unsubscribe(observer: object) {
-    this.observers.filter((obs) => obs !== observer);
+  unsubscribe(observer: object): void {
+    this._observers.filter((obs) => obs !== observer);
   }
 
-  init(action: {type: string, value?: number | boolean}) {
-    this.observers.forEach((observer: {update: Function}) => {
+  init(action: {type: string, value?: number | boolean}): void {
+    this._observers.forEach((observer: {update: Function}) => {
       observer.update(action);
     });
   }

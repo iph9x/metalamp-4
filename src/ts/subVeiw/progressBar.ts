@@ -1,47 +1,48 @@
 export interface IProgressBar {
-  minPosition: number,
-  maxPosition: number,
-  vertical?: boolean
+  render(): JQuery,
+  onClick(callback: Function): void,
+  setMinPosition(position: number): void,
+  setMaxPosition(position: number): void
 }
 
 export default class ProgressBar implements IProgressBar {
-  private progressBar: JQuery = $('<div class="mi-slider__track"></div>');
+  private _progressBar: JQuery = $('<div class="mi-slider__track"></div>');
 
   constructor(
-    public minPosition: number,
-    public maxPosition: number,
-    public vertical?: boolean
+    private _isVertical?: boolean
   ) {
-    if (this.vertical) {
-      this.progressBar.addClass('mi-slider__track_vertical');
+    if (this._isVertical) {
+      this._progressBar.addClass('mi-slider__track_vertical');
     }
-
-    this.setMinPosition(this.minPosition);
     
     this.render();
   }
   
-  public render() {
-    return this.progressBar;
+  public render(): JQuery {
+    return this._progressBar;
   }
 
   public onClick(callback: Function): void {
-    this.progressBar.on('mousedown', (e: JQuery.Event) => callback(e));
+    this._progressBar.on('mousedown', (e: JQuery.Event) => callback(e));
   }
 
-  public setMinPosition(position: number) {
-    if (!this.vertical) {
-      this.progressBar.css('left', `${position}%`);
-    } else {
-      this.progressBar.css('top', `${position}%`);
+  public setMinPosition(position: number): void {
+    if (this._isVertical) {
+      return this._setStyle('top', position);
     }
+
+    this._setStyle('left', position);
   }
 
-  public setMaxPosition(position: number) {
-    if (!this.vertical) {
-      this.progressBar.css('right', `${position}%`);
-    } else {
-      this.progressBar.css('bottom', `${position}%`);
-    }
+  public setMaxPosition(position: number): void {
+    if (this._isVertical) {
+      return this._setStyle('bottom', position);
+    } 
+
+    this._setStyle('right', position);
+  }
+
+  private _setStyle(property: string, value: number) {
+    this._progressBar.css(property, `${value}%`);
   }
 }

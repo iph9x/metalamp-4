@@ -3,51 +3,52 @@ import View from '../view/view';
 
 interface IPresenter {
   model: Model,
-  view: View
+  view: View,
+  state: {}
 }
 
 export default class Presenter implements IPresenter{
-  private state: { 
-    min: number,
-    max: number
+  private _state: { 
+    fromValue: number,
+    toValue: number
   };
 
   constructor(public model: Model, public view: View) {
     view.subscribe(this);
 
-    this.state = {
-      min: view.getCurrentMin,
-      max: view.getCurrentMax,
+    this._state = {
+      fromValue: view.getFromValue,
+      toValue: view.getToValue,
     }
   }
 
-  public set min(value: number) {
-    this.state.min = value;
+  public set fromValue(value: number) {
+    this._state.fromValue = value;
   }
 
-  public set max(value: number) {
-    this.state.max = value;
+  public set toValue(value: number) {
+    this._state.toValue = value;
   }
 
-  public get getMinMax() {
+  public get state(): {} {
     return {
-      min: this.state.min,
-      max: this.state.max
+      fromValue: this._state.fromValue,
+      toValue: this._state.toValue
     };
   }
 
   update(action: {type: string, value: number}) {
     switch(action.type) {
-      case 'SET_MAX':
-        this.state.max = action.value;
-        this.model.setMax = action.value;
+      case 'SET_TO_VALUE':
+        this.toValue = action.value;
+        this.model.toValue = action.value;
         break;
-      case 'SET_MIN': 
-        this.state.min = action.value;
-        this.model.setMin = action.value;
+      case 'SET_FROM_VALUE': 
+        this.fromValue = action.value;
+        this.model.fromValue = action.value;
         break;
       default:
-        this.state;
+        this._state;
     }
   }
 }
