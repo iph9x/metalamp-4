@@ -9,12 +9,16 @@ export default class ProgressBar implements IProgressBar {
   private _progressBar: JQuery = $('<div class="mi-slider__track"></div>');
 
   constructor(
+    private _isRange: boolean,
     private _isVertical?: boolean
   ) {
     if (this._isVertical) {
       this._progressBar.addClass('mi-slider__track_vertical');
     }
-    
+    if (!this._isRange) {
+      this.setMinPosition(0);
+    }
+
     this.render();
   }
   

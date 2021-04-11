@@ -1,35 +1,32 @@
 $darkshade: rgba(31, 32, 65);
 $darkshade50: rgba(31, 32, 65, 0.50);
 $darkshade25: rgba(31, 32, 65, 0.25);
-$purple: #BC9CFF;
-$green: #6FCF97;
+$green: hsl(145, 50%, 62%);
+$slider-bg-color: #13b0fc;
+$label-bg-color: #5ac4f1;
+$num-dash-color: #afafaf;
+$num-color: #6a6a6a;
 
 
-$light-blue: #66D2EA;
-$blue: rgb(75, 131, 235);
+$slider-border-radius: 3px;
 
-$gradient: linear-gradient($purple, #8BA4F9);
+$thumb-width: 6px;
+$thumb-height: 18px;
 
 $h1-font-size: 24px;
 $h2-font-size: 19px;
 $h3-font-size: 12px;
 
 $body-font-size: 14px;
+$slider-height: 10px;
 
-@mixin gradient {
-  background: $gradient;
-}
-
-@mixin blue-green-gradient {
-  background: linear-gradient($green, $light-blue);
-}
 
 .mi-slider {
   display: flex;
   width: 100%;
-  padding-top: 30px;  
-  padding-bottom: 10px;
+  padding: 30px 40px 10px 40px;
   color: #fff;
+  font-family: sans-serif;
   &__titles {
     display: flex;
     justify-content: space-between;
@@ -39,9 +36,9 @@ $body-font-size: 14px;
   &__wrapper {
     position: relative;
     width: 100%;
-    height: 6px;
+    height: $slider-height;
     &_vertical {
-      width: 6px;
+      width: $slider-height;
       height: 400px;
       .mi-slider {
         &__scale {
@@ -49,10 +46,10 @@ $body-font-size: 14px;
           &-num {
             width: 7px;
             height: 1px;
-            transform: translateX(-10px);
+            transform: translateX(-14px);
             &::before {
-              top: -7px;
-              left: -4px;
+              top: -6px;
+              left: -5px;
               transform: translateX(-100%);
             }
           }
@@ -61,6 +58,10 @@ $body-font-size: 14px;
             height: 100%;
             transform: translateX(-100%);
           }
+        }
+        &__circle {
+          width: $thumb-height;
+          height: $thumb-width;
         }
       }
     }
@@ -73,9 +74,8 @@ $body-font-size: 14px;
     left: 0;
     right: 0;
     bottom: 0;
-    transform: translateY(3px);
-    border-radius: 3px;
-    border: 1px solid $darkshade25;
+    border-radius: $slider-border-radius;
+    background: rgba(61, 90, 134, 0.15);
     &::before {
       content: '';
       position: absolute;
@@ -89,36 +89,32 @@ $body-font-size: 14px;
       position: relative;
       width: 1px;
       height: 7px;
-      transform: translateY(7px);
-      background: rgb(73, 73, 73);
+      transform: translateY(16px);
+      background: $num-dash-color;
       &::before {
         content: attr(data-before);
         position: absolute;
-        top: 7px;
+        top: 10px;
         left: 50%;
         transform: translateX(-50%);
-        font-size: 14px;
-        color: rgb(73, 73, 73);
+        font-size: 12px;
+        font-weight: 300;
+        color: $num-color;
       }
     }
-    &_vertical {
-      transform: translateX(3px);
-    }
-  }
-  &__range-box {
-    margin-bottom: 10px;
-    font-size: $h3-font-size;
-    font-size: 40px;
-    color: $darkshade50;
   }
   &__label {
     position: absolute;
-    color: $darkshade;
+    padding: 2px 5px;
+    font-family: sans-serif;
+    font-size: 14px;
+    background: $label-bg-color;
+    border-radius: 2px;
     &_left {
-      transform: translate(-100%, -120%)
+      transform: translate(-100%, -130%)
     }
     &_right {
-      transform: translate(100%, -120%)
+      transform: translate(100%, -130%)
     }
     &_top {
       transform: translate(20px, -100%);
@@ -153,41 +149,35 @@ $body-font-size: 14px;
   }
   &__track {
     position: absolute;
-    top: 3px;
-    height: 6px;
+    height: $slider-height;
     z-index: 1;
-    border-radius: 6px;
-    @include blue-green-gradient;
+    border-radius: $slider-border-radius;
+    background: $slider-bg-color;
     &_vertical {
-      left: 3px;
-      width: 6px;
+      width: $slider-height;
       height: auto;
     }
   }
   &__circle {
     position: absolute;
     z-index: 2;
-    width: 12px;
-    height: 12px;
-    box-shadow: 0 0 0 2px #fff;
-    @include blue-green-gradient;
-    border-radius: 50%;    
+    width: $thumb-width;
+    height: $thumb-height;
+    background: $slider-bg-color;
+    &:hover {
+      cursor: pointer;
+    }
     &_left {
-      transform: translateX(-6px);
+      transform: translate(-50%, -4px);
     }
     &_right {
-      transform: translateX(6px);
+      transform: translate(50%, -4px);
     }
     &_top {
-      transform: translateY(-6px);
+      transform: translate(-4px, -50%);
     }
     &_bottom {
-      transform: translateY(6px);
+      transform: translate(-4px, 50%);
     }
-  }
-  &__note {
-    font-size: $h3-font-size;
-    color: $darkshade50;
-    margin-top: 13px;
   }
 }

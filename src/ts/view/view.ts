@@ -6,7 +6,8 @@ import Observer from '../pattern/observer';
 
 export interface IView {
   getToValue: number,
-  getFromValue: number
+  getFromValue: number,
+  update(action: {type: string, value: number}): void;
 }
 
 type Props = {
@@ -107,7 +108,7 @@ export default class View extends Observer implements IView {
 
     that.addClass('mi-slider');
 
-    this._progressBar = new ProgressBar(this._isVertical);
+    this._progressBar = new ProgressBar(this._isRange, this._isVertical);
     
     this._setCurrentMin(this._defaultFromValue);
     this._setCurrentMax(this._defaultToValue);
@@ -117,17 +118,38 @@ export default class View extends Observer implements IView {
     
     this._maxThumbLabel = new Label(this._defaultToValue, 'maxThumb', this._maxThumbPosition, this._isVertical);
     this._minThumbLabel = new Label(this._defaultFromValue, 'minThumb', this._minThumbPosition, this._isVertical);
-    
-    this._minThumb = this._createMinThumb();
+
+    if (this._isRange) {
+      this._minThumb = this._createMinThumb();
+      this._minThumb.subscribe(this);
+
+      this._inputFrom.on('blur', (e: Event) => {
+        let val = Number($(e.target).val());
+
+        val = isNaN(val) ? this._fromValue : val;  
+        val = val >= this._toValue ? this._fromValue : val;
+        val = val < this._min ? this._fromValue : val;    
+        this._minThumb.setPositionByVal(val);
+      });
+    }
+
     this._maxThumb = this._createMaxThumb();
+    this._maxThumb.subscribe(this);
     
 
     this._scale = this._createScale();
 
-    this._progressBar.onClick(this._scale.clickHandler.bind(this._scale));
+    this._progressBar.onClick(this._scale.clickHandler.bind(this._scale));    
+    
+    this._inputTo.on('blur', (e: Event) => {
+      let val = Number($(e.target).val());
 
-    this._maxThumb.subscribe(this);
-    this._minThumb.subscribe(this);
+      val = isNaN(val) ? this._toValue : val;  
+      val = val > this._max ? this._max : val;
+      val = val <= this._fromValue ? this._toValue : val;
+
+      this._maxThumb.setPositionByVal(val) ;
+    })
 
     this.render();
   }
@@ -178,7 +200,8 @@ export default class View extends Observer implements IView {
       max: this._max,
       min: this._min,
       otherThumbPosition: this._minThumbPosition,
-      vertical: this._isVertical
+      vertical: this._isVertical,
+      isRange: this._isRange
     });
   }
 
@@ -190,9 +213,9 @@ export default class View extends Observer implements IView {
       this._maxThumb.setPositionHandler,
       this._maxThumb.setIsActive,
       this._minThumbPosition,
-      this._minThumb.setPositionHandler,
+      this._minThumb?.setPositionHandler,
       this._isVertical,
-      this._minThumb.setIsActive,
+      this._minThumb?.setIsActive,
       this._isRange
     );
   }
@@ -216,15 +239,16 @@ export default class View extends Observer implements IView {
       .append(this._progressBar.render());
 
     if (this._labelsVisibility) {
-      this._wrapper
-        .append(this._maxThumbLabel.render())
-        .append(this._minThumbLabel.render());
+      if (this._isRange) {
+        this._wrapper.append(this._minThumbLabel.render())
+      }
+      this._wrapper.append(this._maxThumbLabel.render());
     }
     
     $(this._slider).append(this._wrapper);
   }
 
-  update(action: {type: string, value: any }) {
+  update(action: {type: string, value: number }): void {
     switch(action.type) {
       case ('SET_CURRENT_MAX'):
         this._setCurrentMax(action.value);
@@ -234,7 +258,9 @@ export default class View extends Observer implements IView {
         break;
       case ('SET_MAX_THUMB_POSITION'):
         this._maxThumbPosition = action.value;
-        this._minThumb.otherThumbPosition = action.value;
+        if (this._isRange) {
+          this._minThumb.otherThumbPosition = action.value;
+        }
         this._scale.maxThumbPosition = action.value;
         break;
       case ('SET_MIN_THUMB_POSITION'):

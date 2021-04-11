@@ -4,7 +4,8 @@ import View from '../view/view';
 interface IPresenter {
   model: Model,
   view: View,
-  state: {}
+  state: {},
+  update(action: {type: string, value: number}): void
 }
 
 export default class Presenter implements IPresenter{
@@ -37,7 +38,7 @@ export default class Presenter implements IPresenter{
     };
   }
 
-  update(action: {type: string, value: number}) {
+  update(action: {type: string, value: number}): void {
     switch(action.type) {
       case 'SET_TO_VALUE':
         this.toValue = action.value;

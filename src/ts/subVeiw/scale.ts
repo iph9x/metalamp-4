@@ -54,9 +54,9 @@ export default class Scale implements IScale {
     let offset: number;
 
     if (this._isVertical) {
-      offset = (e.pageY - this._scale.get(0).getBoundingClientRect().top ) * 100 / this._scale.height();
+      offset = (e.clientY - this._scale.get(0).getBoundingClientRect().top ) * 100 / this._scale.height();
     } else {
-      offset = (e.pageX - this._scale.get(0).getBoundingClientRect().left ) * 100 / this._scale.width();
+      offset = (e.clientX - this._scale.get(0).getBoundingClientRect().left ) * 100 / this._scale.width();
     }
 
     if (offset > 100) {

@@ -29,7 +29,7 @@ type Props = {
     labels,
     vertical,
     inputsId
-  }: Props) {
+  }: Props) {    
     const modelState = {
       max: defaultToValue ? defaultToValue : max,
       min: defaultFromValue ? defaultFromValue : min,

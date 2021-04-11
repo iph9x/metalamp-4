@@ -19,7 +19,8 @@ type Props = {
   max: number;
   min: number;
   otherThumbPosition?: number;
-  vertical?: boolean
+  vertical?: boolean;
+  isRange?: boolean;
 }
 
 export default class Thumb extends Observer implements IThumb {
@@ -37,6 +38,7 @@ export default class Thumb extends Observer implements IThumb {
   private _max: number;
   private _min: number;
   private _isVertical?: boolean;
+  private _isRange?: boolean;
   private cssType: string;
   
   public otherThumbPosition?: number;
@@ -51,7 +53,8 @@ export default class Thumb extends Observer implements IThumb {
     max,
     min,
     otherThumbPosition,
-    vertical
+    vertical,
+    isRange
   }: Props) {
     super();
 
@@ -64,6 +67,8 @@ export default class Thumb extends Observer implements IThumb {
     this._min = min;
     this.otherThumbPosition = otherThumbPosition;
     this._isVertical = vertical;
+    this._isRange = isRange;
+
     if (this._type === 'minThumb') {
       if (this._isVertical) {
         this.cssType = 'top';
@@ -90,7 +95,7 @@ export default class Thumb extends Observer implements IThumb {
     this.onThumbMouseUp();
 
     this.setPositionHandler = this.setPositionHandler.bind(this);
-    this.calcNewPos = this.calcNewPos.bind(this);
+    this._calcNewPos = this._calcNewPos.bind(this);
     this.setIsActive = this.setIsActive.bind(this);
   }
   
@@ -106,7 +111,7 @@ export default class Thumb extends Observer implements IThumb {
     e.preventDefault();
 
     this.setIsActive(true);
-    this._shift = this._isVertical ? this.calcShift(e.pageY, 'top', 'height') : this.calcShift(e.pageX, 'left', 'width');
+    this._shift = this._isVertical ? this._calcShift(e.clientY, 'top', 'height') : this._calcShift(e.clientX, 'left', 'width');
     $('html').css('cursor', 'pointer');
 
     this.onThumbMove();
@@ -119,8 +124,8 @@ export default class Thumb extends Observer implements IThumb {
   public setPositionHandler(e: JQuery.Event): void {
     if (!this._isActive) return;
     
-    let calcedX: number = this.calcNewPos(e.pageX, 'left', 'width');
-    let calcedY: number = this.calcNewPos(e.pageY, 'top', 'height');
+    let calcedX: number = this._calcNewPos(e.clientX, 'left', 'width');
+    let calcedY: number = this._calcNewPos(e.clientY, 'top', 'height');
 
     let newPosition: number;
     
@@ -130,7 +135,7 @@ export default class Thumb extends Observer implements IThumb {
       newPosition = this._isVertical ? calcedY : calcedX;
     }
 
-    newPosition = this.checkBorders(newPosition, this.otherThumbPosition);
+    newPosition = this._checkBorders(newPosition, this.otherThumbPosition);
 
     if (this._isMaxThumb) {
       this._progressBar.setMaxPosition(newPosition);
@@ -169,21 +174,29 @@ export default class Thumb extends Observer implements IThumb {
     });
   }
 
-  private getValueToPercent(val: number): number {
+  private _getValueToPercent(val: number): number {
     return val / (this._max - this._min) * 100;
   }
 
-  private calcShift (mousePos: number, type: 'top' | 'left', dimension: 'width' | 'height'): number {
+  private _calcShift (mousePos: number, type: 'top' | 'left', dimension: 'width' | 'height'): number {
     return mousePos - this._thumb.get(0).getBoundingClientRect()[type] - (this._thumb[dimension]() / 2);
   }
 
-  private calcNewPos (mousePos: number, type: 'left' | 'top', dimension: 'height' | 'width'): number {
+  private _calcNewPos (mousePos: number, type: 'left' | 'top', dimension: 'height' | 'width'): number {
     return (mousePos - this._shift - this._wrapper.get(0).getBoundingClientRect()[type]) * 100 / this._wrapper[dimension]();
   }
 
-  private checkBorders = (position: number, border: number): number => {
-    const stepInPercent = this.getValueToPercent(this._step);
-
+  private _checkBorders = (position: number, border: number): number => {
+    const stepInPercent = this._getValueToPercent(this._step);
+    if (typeof this._isRange !== 'undefined' && !this._isRange) {
+      if (position < 0) {
+        return 0;
+      } 
+      if (position > 100) {
+        return 100;
+      }
+      return position;
+    }
     if (position < 0) {
       return 0;
     } 
@@ -199,15 +212,15 @@ export default class Thumb extends Observer implements IThumb {
     return position;
   } 
 
-  private setPositionByVal(val: number): void {
+  public setPositionByVal(val: number): void {
     if (val < this._min) {
       this._position = 0;
     } else if (val > this._max) {
       this._position = 100;
     } else if (this._isMaxThumb) {
-      this._position = this.getValueToPercent(this._max - val);
+      this._position = this._getValueToPercent(this._max - val);
     } else {
-      this._position = 100 - this.getValueToPercent(this._max - val);
+      this._position = 100 - this._getValueToPercent(this._max - val);
     }
     this.setCurrent(val);
     this._thumb.css(this.cssType, `${this._position}%`);
@@ -219,6 +232,7 @@ export default class Thumb extends Observer implements IThumb {
     }
     (this.cssType, `${this._position}%`);
     this._label.setPosition(this._position);
+    this._label.setValue(val);
   }
 
   public setCurrent(value: number): void {

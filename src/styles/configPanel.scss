@@ -1,24 +1,39 @@
 .main {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 30px 50px;
-  width: 70%;
+  gap: 60px 50px;
+  width: 100%;
   margin: 0 auto;
+  padding: 0 3vw;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 .slider-panel {
-  display: flex;
+  display: grid;
+  grid-auto-rows: 40px;
+  row-gap: 10px;
   flex-direction: column;
-  border: 1px solid #ccc;
+  font-family: sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  padding: 15px 10px;
+  color: rgb(39, 44, 66);
   label {
     display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: center;
     column-gap: 10px;
-    width: 300px;
+    width: 100%;
   }
   input[type="text"] {
-    margin-bottom:  10px;
+    padding: 7px 5px;
+    border: 2px solid #13b0fc;
+    font-size: 18px;
+    font-weight: 300;
+    width: 100%;
   }
   span {
     text-align: right;
