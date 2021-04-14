@@ -7,36 +7,90 @@ type Props = {
   min: number,
   range?: boolean,
   step?: number,
-  defaultFromValue?: number,
-  defaultToValue?: number,
+  from?: number,
+  to?: number,
   labels?: boolean,
   vertical?: boolean,
-  inputsId?: {
-    inputFromId: string,
-    inputToId: string,
-  }
+  inputFromId: string,
+  inputToId: string,
 }
 
 (function ($) {
 
-  $.fn.miSlider = function({
-    max,
-    min,
-    range,
-    step,
-    defaultFromValue,
-    defaultToValue,
-    labels,
-    vertical,
-    inputsId
-  }: Props) {    
-    const modelState = {
-      max: defaultToValue ? defaultToValue : max,
-      min: defaultFromValue ? defaultFromValue : min,
+  let model: Model;
+  let view: View;
+  let presenter: Presenter;
+
+  let methods = {
+
+    init({
+      max,
+      min,
+      range,
+      step,
+      from,
+      to,
+      labels,
+      vertical,
+      inputFromId,
+      inputToId
+    }: Props) { 
+      return this.each(function() {
+
+        var $this = $(this),
+             data = $this.data('miSlider'),
+             miSlider = $('<div />', {
+               text : $this.attr('title')
+             });
+         
+         if (!data) {
+            const modelState = {
+              max: to ? to : max,
+              min: from ? from : min,
+            }
+      
+            model = new Model(modelState.max, modelState.min);
+            view = new View({max, min, slider: $this, isRange: range, step, from, to, labelsVisibility: labels, isVertical: vertical, inputFromId, inputToId});
+            presenter = new Presenter(model, view);
+
+           $(this).data('miSlider', {
+               target: $this,
+               miSlider
+           });
+         }
+      });
+    },
+    destroy: function() {
+      return this.each(function(){
+        
+        var $this = $(this),
+        data = $this.data('miSlider');
+        
+        view.destroy($this);
+        $this.empty()
+        view = undefined;
+        model = undefined;
+        presenter = undefined;
+
+        $(window).unbind('.miSlider');
+
+        data.miSlider.remove();
+        $this.removeData('miSlider');
+      })
+
+    },
+  };
+
+  $.fn.miSlider = function(method: 'init' | 'destroy'): object {    
+
+    if (methods[method]) {
+      return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+    } 
+    if (typeof method === 'object' || !method) {
+      return methods.init.apply(this, arguments);
     }
-    const model: Model = new Model(modelState.max, modelState.min);
-    const view: View = new View({max, min, slider: this, isRange: range, step, defaultFromValue, defaultToValue, labelsVisibility: labels, isVertical: vertical, inputsId});
-    const presenter: Presenter = new Presenter(model, view);
+    $.error( `${method} method doesn't exist`);
+
   };
 
 }(jQuery));

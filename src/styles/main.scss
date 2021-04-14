@@ -3,7 +3,7 @@ $darkshade50: rgba(31, 32, 65, 0.50);
 $darkshade25: rgba(31, 32, 65, 0.25);
 $green: hsl(145, 50%, 62%);
 $slider-bg-color: #13b0fc;
-$label-bg-color: #5ac4f1;
+$label-bg-color: lighten($slider-bg-color, 20%);
 $num-dash-color: #afafaf;
 $num-color: #6a6a6a;
 
@@ -166,6 +166,10 @@ $slider-height: 10px;
     background: $slider-bg-color;
     &:hover {
       cursor: pointer;
+    }
+    &:active,
+    &:focus {
+      background: lighten($slider-bg-color, 20%);
     }
     &_left {
       transform: translate(-50%, -4px);

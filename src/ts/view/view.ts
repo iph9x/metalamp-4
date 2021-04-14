@@ -8,6 +8,7 @@ export interface IView {
   getToValue: number,
   getFromValue: number,
   update(action: {type: string, value: number}): void;
+  destroy(root: JQuery): void;
 }
 
 type Props = {
@@ -15,15 +16,14 @@ type Props = {
   min: number,
   isRange?: boolean,
   step?: number,
-  slider: object,
-  defaultFromValue?: number,
-  defaultToValue?: number,
+  slider: JQuery,
+  from?: number,
+  to?: number,
   labelsVisibility?: boolean,
   isVertical?: boolean,
-  inputsId?: {
-    inputFromId: string,
-    inputToId: string,
-  }
+  inputFromId?: string,
+  inputToId?: string,
+  // inputsId?: {
 }
 
 export default class View extends Observer implements IView {
@@ -52,13 +52,12 @@ export default class View extends Observer implements IView {
   private _slider: object;
   private _isRange?: boolean;
   private _step?: number;
-  private _defaultFromValue?: number;
-  private _defaultToValue?: number;
+  private _from?: number;
+  private _to?: number;
   private _labelsVisibility?: boolean;
-  private _inputsId?: {
-    inputFromId: string,
-    inputToId: string,
-  }
+  private _inputFromId: string;
+  private _inputToId: string;
+  // private _inputsId?: 
 
   constructor({
     max,
@@ -66,15 +65,17 @@ export default class View extends Observer implements IView {
     slider,
     isRange,
     step,
-    defaultFromValue,
-    defaultToValue,
+    from,
+    to,
     labelsVisibility,
     isVertical,
-    inputsId
+    inputFromId,
+    inputToId
   }: Props) {
     super();
 
     this._slider = slider;
+
     this._max = max;
     this._min = min;
     this._step = step ? step : 1;
@@ -84,53 +85,45 @@ export default class View extends Observer implements IView {
     this._isVertical = typeof isVertical !== 'undefined' ? isVertical : false;
     this._isRange = typeof isRange !== 'undefined' ? isRange : true; 
     this._labelsVisibility = typeof labelsVisibility !== 'undefined' ? labelsVisibility : true;
-    this._inputsId = {...inputsId};
-    this._defaultToValue = (typeof defaultToValue !== 'undefined') && (defaultToValue <= this._max) ? defaultToValue : this._max;
-    this._defaultFromValue = (typeof defaultFromValue !== 'undefined') && (defaultFromValue >= this._min) && (defaultFromValue < this._defaultToValue) && this._isRange ? defaultFromValue : this._min;
+
+    this._inputFromId = inputFromId;
+    this._inputToId = inputToId;
+
+    this._to = (typeof to !== 'undefined') && (to <= this._max) ? to : this._max;
+    this._from = (typeof from !== 'undefined') && (from >= this._min) && (from < this._to) && this._isRange ? from : this._min;
     
-    const that = $(this._slider);
-
-    if (that.find('.mi-slider__wrapper')[0]) {
-      that.empty();
-    }
-
+    const that = $(slider);
+    
     if (this._isVertical) {
       (this._wrapper).addClass('mi-slider__wrapper_vertical');
     }
 
-    if (this._inputsId?.inputFromId) {
-      this._inputFrom = $(`#${this._inputsId.inputFromId}`);
+    if (this._inputFromId) {
+      this._inputFrom = $(`#${this._inputFromId}`);
     }
-
-    if (this._inputsId?.inputToId) {
-      this._inputTo = $(`#${this._inputsId.inputToId}`);
+    
+    if (this._inputToId) {
+      this._inputTo = $(`#${this._inputToId}`);
     }
 
     that.addClass('mi-slider');
 
     this._progressBar = new ProgressBar(this._isRange, this._isVertical);
     
-    this._setCurrentMin(this._defaultFromValue);
-    this._setCurrentMax(this._defaultToValue);
+    this._setCurrentMin(this._from);
+    this._setCurrentMax(this._to);
     
-    this._minThumbPosition = (1 - (this._max - this._defaultFromValue) / (this._max - this._min)) * 100;
-    this._maxThumbPosition = ((this._max - this._defaultToValue) / (this._max - this._min)) * 100;
+    this._minThumbPosition = (1 - (this._max - this._from) / (this._max - this._min)) * 100;
+    this._maxThumbPosition = ((this._max - this._to) / (this._max - this._min)) * 100;
     
-    this._maxThumbLabel = new Label(this._defaultToValue, 'maxThumb', this._maxThumbPosition, this._isVertical);
-    this._minThumbLabel = new Label(this._defaultFromValue, 'minThumb', this._minThumbPosition, this._isVertical);
+    this._maxThumbLabel = new Label(this._to, 'maxThumb', this._maxThumbPosition, this._isVertical);
+    this._minThumbLabel = new Label(this._from, 'minThumb', this._minThumbPosition, this._isVertical);
 
     if (this._isRange) {
       this._minThumb = this._createMinThumb();
       this._minThumb.subscribe(this);
 
-      this._inputFrom.on('blur', (e: Event) => {
-        let val = Number($(e.target).val());
-
-        val = isNaN(val) ? this._fromValue : val;  
-        val = val >= this._toValue ? this._fromValue : val;
-        val = val < this._min ? this._fromValue : val;    
-        this._minThumb.setPositionByVal(val);
-      });
+      this._inputFrom.on('blur', (e: Event) => this.onBlurFromHandler(e));
     }
 
     this._maxThumb = this._createMaxThumb();
@@ -151,7 +144,25 @@ export default class View extends Observer implements IView {
       this._maxThumb.setPositionByVal(val) ;
     })
 
-    this.render();
+    this.render(that);
+    
+  }
+
+  public destroy(root: JQuery) {
+    this._wrapper = $('<div class="mi-slider__wrapper"></div>');
+    root.empty();
+    this._inputFrom.off()
+    this._inputTo.off()
+  }
+
+  public onBlurFromHandler(e: Event) {
+      let val = Number($(e.target).val());
+
+      val = isNaN(val) ? this._fromValue : val;  
+      val = val >= this._toValue ? this._fromValue : val;
+      val = val < this._min ? this._fromValue : val;    
+      this._minThumb.setPositionByVal(val);
+      console.log('min:', this._min);
   }
 
   private _setCurrentMax(max: number): void {
@@ -159,7 +170,7 @@ export default class View extends Observer implements IView {
     this.init({type: 'SET_TO_VALUE', value: max});
     $(this._slider).attr('data-to-value', max);
 
-    if (typeof this._inputsId?.inputToId !== 'undefined') {
+    if (typeof this._inputToId !== 'undefined') {
       this._inputTo.val(max);
     }
   }
@@ -169,15 +180,16 @@ export default class View extends Observer implements IView {
     this.init({type: 'SET_FROM_VALUE', value: min});
     $(this._slider).attr('data-from-value', min);
 
-    if (typeof this._inputsId?.inputFromId !== 'undefined') {
+    if (typeof this._inputFromId !== 'undefined') {
       this._inputFrom.val(min);
+
     }
   }
 
   private _createMinThumb(): Thumb {
     return new Thumb({
       type: 'minThumb',
-      startPosition: this._defaultFromValue,
+      startPosition: this._from,
       label: this._minThumbLabel,
       step: this._step,
       wrapper: this._wrapper,
@@ -192,7 +204,7 @@ export default class View extends Observer implements IView {
   private _createMaxThumb(): Thumb {
     return new Thumb({
       type: 'maxThumb',
-      startPosition: this._defaultToValue,
+      startPosition: this._to,
       label: this._maxThumbLabel,
       step: this._step,
       wrapper: this._wrapper,
@@ -228,7 +240,7 @@ export default class View extends Observer implements IView {
     return this._fromValue;
   }
 
-  public render(): void {
+  public render(root: JQuery): void {
     if (this._isRange) {
       this._wrapper.append(this._minThumb.render())
     }
@@ -245,7 +257,7 @@ export default class View extends Observer implements IView {
       this._wrapper.append(this._maxThumbLabel.render());
     }
     
-    $(this._slider).append(this._wrapper);
+    root.append(this._wrapper);
   }
 
   update(action: {type: string, value: number }): void {
@@ -253,8 +265,8 @@ export default class View extends Observer implements IView {
       case ('SET_CURRENT_MAX'):
         this._setCurrentMax(action.value);
         break;
-      case ('SET_CURRENT_MIN'):
-        this._setCurrentMin(action.value);
+        case ('SET_CURRENT_MIN'):
+          this._setCurrentMin(action.value);
         break;
       case ('SET_MAX_THUMB_POSITION'):
         this._maxThumbPosition = action.value;
