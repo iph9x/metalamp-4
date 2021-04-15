@@ -23,7 +23,6 @@ type Props = {
   isVertical?: boolean,
   inputFromId?: string,
   inputToId?: string,
-  // inputsId?: {
 }
 
 export default class View extends Observer implements IView {
@@ -34,7 +33,6 @@ export default class View extends Observer implements IView {
   private _maxThumbPosition: number;
 
   private _wrapper = $('<div class="mi-slider__wrapper"></div>');
-  
   private _scale: Scale;
   private _progressBar: ProgressBar;
 
@@ -57,7 +55,6 @@ export default class View extends Observer implements IView {
   private _labelsVisibility?: boolean;
   private _inputFromId: string;
   private _inputToId: string;
-  // private _inputsId?: 
 
   constructor({
     max,
@@ -73,7 +70,7 @@ export default class View extends Observer implements IView {
     inputToId
   }: Props) {
     super();
-
+    const that = $(slider);
     this._slider = slider;
 
     this._max = max;
@@ -85,14 +82,10 @@ export default class View extends Observer implements IView {
     this._isVertical = typeof isVertical !== 'undefined' ? isVertical : false;
     this._isRange = typeof isRange !== 'undefined' ? isRange : true; 
     this._labelsVisibility = typeof labelsVisibility !== 'undefined' ? labelsVisibility : true;
-
     this._inputFromId = inputFromId;
     this._inputToId = inputToId;
-
     this._to = (typeof to !== 'undefined') && (to <= this._max) ? to : this._max;
     this._from = (typeof from !== 'undefined') && (from >= this._min) && (from < this._to) && this._isRange ? from : this._min;
-    
-    const that = $(slider);
     
     if (this._isVertical) {
       (this._wrapper).addClass('mi-slider__wrapper_vertical');
@@ -123,26 +116,19 @@ export default class View extends Observer implements IView {
       this._minThumb = this._createMinThumb();
       this._minThumb.subscribe(this);
 
-      this._inputFrom.on('blur', (e: Event) => this.onBlurFromHandler(e));
+      this._inputFrom.off();
+      this._inputFrom.on('blur', (e: Event) => this._onBlurFromHandler(e));
     }
 
     this._maxThumb = this._createMaxThumb();
     this._maxThumb.subscribe(this);
     
-
     this._scale = this._createScale();
 
     this._progressBar.onClick(this._scale.clickHandler.bind(this._scale));    
-    
-    this._inputTo.on('blur', (e: Event) => {
-      let val = Number($(e.target).val());
 
-      val = isNaN(val) ? this._toValue : val;  
-      val = val > this._max ? this._max : val;
-      val = val <= this._fromValue ? this._toValue : val;
-
-      this._maxThumb.setPositionByVal(val) ;
-    })
+    this._inputTo.off();
+    this._inputTo.on('blur', (e: Event) => this._onBlurToHandler(e))
 
     this.render(that);
     
@@ -151,37 +137,44 @@ export default class View extends Observer implements IView {
   public destroy(root: JQuery) {
     this._wrapper = $('<div class="mi-slider__wrapper"></div>');
     root.empty();
-    this._inputFrom.off()
-    this._inputTo.off()
   }
 
-  public onBlurFromHandler(e: Event) {
+  private _onBlurFromHandler(e: Event) {
       let val = Number($(e.target).val());
 
       val = isNaN(val) ? this._fromValue : val;  
       val = val >= this._toValue ? this._fromValue : val;
       val = val < this._min ? this._fromValue : val;    
       this._minThumb.setPositionByVal(val);
-      console.log('min:', this._min);
   }
 
-  private _setCurrentMax(max: number): void {
-    this._toValue = max;
-    this.init({type: 'SET_TO_VALUE', value: max});
-    $(this._slider).attr('data-to-value', max);
+  private _onBlurToHandler(e: Event) {
+    let val = Number($(e.target).val());
+
+    val = isNaN(val) ? this._toValue : val;  
+    val = val > this._max ? this._max : val;
+    val = val <= this._fromValue ? this._toValue : val;
+
+    this._maxThumb.setPositionByVal(val) ;
+  }
+
+  private _setCurrentMax(value: number): void {
+    this._toValue = value;
+    this.init({type: 'SET_TO_VALUE', value: value});
+    $(this._slider).attr('data-to-value', value);
 
     if (typeof this._inputToId !== 'undefined') {
-      this._inputTo.val(max);
+      this._inputTo.val(value);
     }
   }
 
-  private _setCurrentMin(min: number): void {
-    this._fromValue = min;
-    this.init({type: 'SET_FROM_VALUE', value: min});
-    $(this._slider).attr('data-from-value', min);
+  private _setCurrentMin(value: number): void {
+    this._fromValue = value;
+    this.init({type: 'SET_FROM_VALUE', value: value});
+    $(this._slider).attr('data-from-value', value);
 
     if (typeof this._inputFromId !== 'undefined') {
-      this._inputFrom.val(min);
+      this._inputFrom.val(value);
 
     }
   }

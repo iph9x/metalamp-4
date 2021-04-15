@@ -11,8 +11,8 @@ type Props = {
   to?: number,
   labels?: boolean,
   vertical?: boolean,
-  inputFromId: string,
-  inputToId: string,
+  inputFromId?: string,
+  inputToId?: string,
 }
 
 (function ($) {
@@ -22,7 +22,6 @@ type Props = {
   let presenter: Presenter;
 
   let methods = {
-
     init({
       max,
       min,
@@ -82,12 +81,12 @@ type Props = {
   };
 
   $.fn.miSlider = function(method: 'init' | 'destroy'): object {    
-
+    var that = this;
     if (methods[method]) {
-      return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+      return methods[method].apply(that, Array.prototype.slice.call(arguments, 1));
     } 
     if (typeof method === 'object' || !method) {
-      return methods.init.apply(this, arguments);
+      return methods.init.apply(that, arguments);
     }
     $.error( `${method} method doesn't exist`);
 

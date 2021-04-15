@@ -21,7 +21,6 @@ const localState1: Props = {
   from: 500,
   to: 1000,
   range: true,
-  // step: 5,
   labels: true,
   vertical: true,
   inputFromId: 'first-input-1',
@@ -33,10 +32,9 @@ const localState2: Props = {
   max: 1200,
   from: 900,
   to: 1000,
-  // step: 1,
   labels: true,
-  inputFromId: 'first-input',
-  inputToId: 'second-input'
+  inputFromId: 'first-input-2',
+  inputToId: 'second-input-2'
 }
 const localState3: Props = {
   min: 33,
@@ -71,7 +69,6 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
     state.from = Number(inputFrom.val());
     state.to = Number(inputTo.val());
     
-    // $(sliderName).miSlider('update', state);
     $(sliderName).miSlider('destroy');
     $(sliderName).miSlider(state);
     
@@ -99,18 +96,6 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
     $(sliderName).miSlider('destroy');
     $(sliderName).miSlider(state);
   });
-  // inputFrom.on('blur', (e: Event) => {
-  //   let val = Number($(e.target).val());
-
-  //   val = isNaN(val) ? state.from : val;  
-  //   val = val >= state.to ? state.from : val;
-  //   val = val < state.min ? state.min : val;
-
-  //   state.from = val;
-  //   console.log(state)
-  //   $(sliderName).miSlider('destroy');
-  //   $(sliderName).miSlider(state);
-  // });
   $(panelName).on('change', '.slider-panel__labelsVisibility', function () {
     state.labels = this.checked;
     state.from = Number(inputFrom.val());
