@@ -13,15 +13,15 @@ type Props = {
   vertical?: boolean,
   inputFromId?: string,
   inputToId?: string,
-}
+};
 
+// eslint-disable-next-line
 (function ($) {
-
   let model: Model;
   let view: View;
   let presenter: Presenter;
 
-  let methods = {
+  const methods = {
     init({
       max,
       min,
@@ -32,41 +32,51 @@ type Props = {
       labels,
       vertical,
       inputFromId,
-      inputToId
-    }: Props) { 
-      return this.each(function() {
+      inputToId,
+    }: Props) {
+      // eslint-disable-next-line
+      return this.each(function initSlider() {
+        const $this = $(this);
+        const data = $this.data('miSlider');
+        const miSlider = $('<div />', {
+        });
 
-        var $this = $(this),
-             data = $this.data('miSlider'),
-             miSlider = $('<div />', {
-               text : $this.attr('title')
-             });
-         
-         if (!data) {
-            const modelState = {
-              max: to ? to : max,
-              min: from ? from : min,
-            }
-      
-            model = new Model(modelState.max, modelState.min);
-            view = new View({max, min, slider: $this, isRange: range, step, from, to, labelsVisibility: labels, isVertical: vertical, inputFromId, inputToId});
-            presenter = new Presenter(model, view);
+        if (!data) {
+          const modelState = {
+            max: to || max,
+            min: from || min,
+          };
 
-           $(this).data('miSlider', {
-               target: $this,
-               miSlider
-           });
-         }
+          model = new Model(modelState.max, modelState.min);
+          view = new View({
+            max,
+            min,
+            slider: $this,
+            isRange: range,
+            step,
+            from,
+            to,
+            labelsVisibility: labels,
+            isVertical: vertical,
+            inputFromId,
+            inputToId,
+          });
+          presenter = new Presenter(model, view);
+          $(this).data('miSlider', {
+            target: $this,
+            miSlider,
+          });
+          return presenter;
+        }
       });
     },
-    destroy: function() {
-      return this.each(function(){
-        
-        var $this = $(this),
-        data = $this.data('miSlider');
-        
+    destroy() {
+      return this.each(function destroySlider() {
+        const $this = $(this);
+        const data = $this.data('miSlider');
+
         view.destroy($this);
-        $this.empty()
+        $this.empty();
         view = undefined;
         model = undefined;
         presenter = undefined;
@@ -75,22 +85,20 @@ type Props = {
 
         data.miSlider.remove();
         $this.removeData('miSlider');
-      })
-
+      });
     },
   };
+  // eslint-disable-next-line
+  $.fn.miSlider = function jqSlider(method: 'init' | 'destroy' | Props, ...args: []): object {
+    const that = this;
 
-  $.fn.miSlider = function(method: 'init' | 'destroy'): object {    
-    var that = this;
-    if (methods[method]) {
-      return methods[method].apply(that, Array.prototype.slice.call(arguments, 1));
-    } 
-    if (typeof method === 'object' || !method) {
+    if (typeof method === 'string' && methods[method]) {
+      return methods[method].apply(that, args);
+    }
+    if (typeof method === 'object') {
+      // eslint-disable-next-line
       return methods.init.apply(that, arguments);
     }
-    $.error( `${method} method doesn't exist`);
-
+    return $.error(`${method} method doesn't exist`);
   };
-
 }(jQuery));
-

@@ -4,10 +4,9 @@ export interface IModel {
 }
 
 export default class Model implements IModel {
-  
   constructor(
     private _toValue: number,
-    private _fromValue: number
+    private _fromValue: number,
   ) {
     if (typeof _fromValue === 'undefined') {
       this._fromValue = 0;

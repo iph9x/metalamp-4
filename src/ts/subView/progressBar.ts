@@ -10,7 +10,7 @@ export default class ProgressBar implements IProgressBar {
 
   constructor(
     private _isRange: boolean,
-    private _isVertical?: boolean
+    private _isVertical?: boolean,
   ) {
     if (this._isVertical) {
       this._progressBar.addClass('mi-slider__track_vertical');
@@ -21,7 +21,7 @@ export default class ProgressBar implements IProgressBar {
 
     this.render();
   }
-  
+
   public render(): JQuery {
     return this._progressBar;
   }
@@ -34,16 +34,14 @@ export default class ProgressBar implements IProgressBar {
     if (this._isVertical) {
       return this._setStyle('top', position);
     }
-
-    this._setStyle('left', position);
+    return this._setStyle('left', position);
   }
 
   public setMaxPosition(position: number): void {
     if (this._isVertical) {
       return this._setStyle('bottom', position);
-    } 
-
-    this._setStyle('right', position);
+    }
+    return this._setStyle('right', position);
   }
 
   private _setStyle(property: string, value: number) {

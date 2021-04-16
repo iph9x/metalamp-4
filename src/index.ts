@@ -1,6 +1,6 @@
 import './styles/main.scss';
 import './styles/configPanel.scss';
-import './ts/miSlider.ts';
+import './ts/miSlider';
 
 type Props = {
   max: number,
@@ -13,7 +13,7 @@ type Props = {
   vertical?: boolean,
   inputFromId: string,
   inputToId: string,
-}
+};
 
 const localState1: Props = {
   min: 500,
@@ -24,8 +24,8 @@ const localState1: Props = {
   labels: true,
   vertical: true,
   inputFromId: 'first-input-1',
-  inputToId: 'second-input-1'
-}
+  inputToId: 'second-input-1',
+};
 
 const localState2: Props = {
   min: 700,
@@ -34,83 +34,82 @@ const localState2: Props = {
   to: 1000,
   labels: true,
   inputFromId: 'first-input-2',
-  inputToId: 'second-input-2'
-}
+  inputToId: 'second-input-2',
+};
+
 const localState3: Props = {
   min: 33,
   max: 55,
   step: 1,
   inputFromId: 'first-input-3',
-  inputToId: 'second-input-3'
-}
-
+  inputToId: 'second-input-3',
+};
 $('.slider').miSlider(localState1);
 $('.slider-2').miSlider(localState2);
 $('.slider-3').miSlider(localState3);
 
 function setSliderPanelHandlers(panelName: string, sliderName: string, state: Props): void {
-  $(panelName).find('.slider-panel__step').val(state.step ? state.step : 1);
-  $(panelName).find('.slider-panel__min').val(state.min);
-  $(panelName).find('.slider-panel__max').val(state.max);
-
+  const localState = { ...state };
+  $(panelName).find('.slider-panel__step').val(localState.step ? localState.step : 1);
+  $(panelName).find('.slider-panel__min').val(localState.min);
+  $(panelName).find('.slider-panel__max').val(localState.max);
   const inputFrom = $(panelName).find('.slider-panel__current-from');
   const inputTo = $(panelName).find('.slider-panel__current-to');
 
-  $(panelName).on('change', '.slider-panel__step', function () {
-    state.step = Number($(this).val());
-    state.from = Number(inputFrom.val());
-    state.to = Number(inputTo.val());
+  $(panelName).on('change', '.slider-panel__step', function stepHandler() {
+    localState.step = Number($(this).val());
+    localState.from = Number(inputFrom.val());
+    localState.to = Number(inputTo.val());
 
     $(sliderName).miSlider('destroy');
-    $(sliderName).miSlider(state);
+    $(sliderName).miSlider(localState);
   });
-  $(panelName).on('change', '.slider-panel__min', function () {
-    state.min = Number($(this).val());
-    state.from = Number(inputFrom.val());
-    state.to = Number(inputTo.val());
-    
-    $(sliderName).miSlider('destroy');
-    $(sliderName).miSlider(state);
-    
-  });
-  $(panelName).on('change', '.slider-panel__max', function () {
-    state.max = Number($(this).val());
-    state.from = Number(inputFrom.val());
-    state.to = Number(inputTo.val());
+  $(panelName).on('change', '.slider-panel__min', function minHandler() {
+    localState.min = Number($(this).val());
+    localState.from = Number(inputFrom.val());
+    localState.to = Number(inputTo.val());
 
     $(sliderName).miSlider('destroy');
-    $(sliderName).miSlider(state);
+    $(sliderName).miSlider(localState);
   });
-  $(panelName).on('change', '.slider-panel__range', function () {
-    state.range = this.checked;
-    let from = Number(inputFrom.val());
+  $(panelName).on('change', '.slider-panel__max', function maxHandler() {
+    localState.max = Number($(this).val());
+    localState.from = Number(inputFrom.val());
+    localState.to = Number(inputTo.val());
+
+    $(sliderName).miSlider('destroy');
+    $(sliderName).miSlider(localState);
+  });
+  $(panelName).on('change', '.slider-panel__range', function rangeHandler() {
+    localState.range = this.checked;
+    const from = Number(inputFrom.val());
     let to = Number(inputTo.val());
     if (this.checked) {
       if (from >= to) {
-        to = state.max;
+        to = localState.max;
       }
     }
-    state.from = from;
-    state.to = to;
-    
-    $(sliderName).miSlider('destroy');
-    $(sliderName).miSlider(state);
-  });
-  $(panelName).on('change', '.slider-panel__labelsVisibility', function () {
-    state.labels = this.checked;
-    state.from = Number(inputFrom.val());
-    state.to = Number(inputTo.val());
+    localState.from = from;
+    localState.to = to;
 
     $(sliderName).miSlider('destroy');
-    $(sliderName).miSlider(state);
+    $(sliderName).miSlider(localState);
   });
-  $(panelName).on('change', '.slider-panel__vertical', function () {
-    state.vertical = this.checked;
-    state.from = Number(inputFrom.val());
-    state.to = Number(inputTo.val());
+  $(panelName).on('change', '.slider-panel__labelsVisibility', function labelsHandler() {
+    localState.labels = this.checked;
+    localState.from = Number(inputFrom.val());
+    localState.to = Number(inputTo.val());
 
     $(sliderName).miSlider('destroy');
-    $(sliderName).miSlider(state);
+    $(sliderName).miSlider(localState);
+  });
+  $(panelName).on('change', '.slider-panel__vertical', function verticalHandler() {
+    localState.vertical = this.checked;
+    localState.from = Number(inputFrom.val());
+    localState.to = Number(inputTo.val());
+
+    $(sliderName).miSlider('destroy');
+    $(sliderName).miSlider(localState);
   });
 }
 

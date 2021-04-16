@@ -1,6 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 const webpack = require('webpack');
 const path = require('path');
 const fs = require('fs');
@@ -60,8 +61,12 @@ module.exports = {
         ]
       },
       {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
+        test: /\.(ts|tsx|js)$/,
+        // use: 'ts-loader',
+        enforce: 'pre',
+        use: {
+          loader: 'awesome-typescript-loader',
+        },
         exclude: /node_modules/,
       },
       // {
@@ -107,7 +112,8 @@ module.exports = {
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery'
-    })
+    }),
+    new ESLintPlugin()
   ],
   optimization: {
     splitChunks: {
