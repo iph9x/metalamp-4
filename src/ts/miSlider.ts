@@ -17,10 +17,6 @@ type Props = {
 
 // eslint-disable-next-line
 (function ($) {
-  let model: Model;
-  let view: View;
-  let presenter: Presenter;
-
   const methods = {
     init({
       max,
@@ -36,22 +32,17 @@ type Props = {
     }: Props) {
       // eslint-disable-next-line
       return this.each(function initSlider() {
-        const $this = $(this);
-        const data = $this.data('miSlider');
-        const miSlider = $('<div />', {
-        });
-
-        if (!data) {
+        if (!this.data) {
           const modelState = {
             max: to || max,
             min: from || min,
           };
 
-          model = new Model(modelState.max, modelState.min);
-          view = new View({
+          this.model = new Model(modelState.max, modelState.min);
+          this.view = new View({
             max,
             min,
-            slider: $this,
+            slider: this,
             isRange: range,
             step,
             from,
@@ -61,36 +52,54 @@ type Props = {
             inputFromId,
             inputToId,
           });
-          presenter = new Presenter(model, view);
-          $(this).data('miSlider', {
-            target: $this,
-            miSlider,
-          });
-          return presenter;
+          this.presenter = new Presenter(this.model, this.view);
+          $(this).data('miSlider', this);
+
+          return this.presenter;
         }
       });
     },
     destroy() {
       return this.each(function destroySlider() {
-        const $this = $(this);
-        const data = $this.data('miSlider');
+        const that = $(this);
+        const data = that.data('miSlider');
 
-        view.destroy($this);
-        $this.empty();
-        view = undefined;
-        model = undefined;
-        presenter = undefined;
+        data.view.destroy(that);
+        that.empty();
+        data.view = undefined;
+        data.model = undefined;
+        data.presenter = undefined;
 
-        $(window).unbind('.miSlider');
+        that.removeData('miSlider');
+      });
+    },
+    update(obj: { from?: number, to?: number }) {
+      return this.each(function updateSlider() {
+        const that = $(this);
+        const data = that.data('miSlider');
 
-        data.miSlider.remove();
-        $this.removeData('miSlider');
+        let { from, to } = obj;
+
+        if (from && to && from >= to) {
+          from = obj.to;
+          to = obj.from;
+        }
+
+        if (typeof from === 'number') {
+          data.presenter.updateFrom(from);
+        }
+        if (typeof to === 'number') {
+          data.presenter.updateTo(to);
+        }
       });
     },
   };
   // eslint-disable-next-line
-  $.fn.miSlider = function jqSlider(method: 'init' | 'destroy' | Props, ...args: []): object {
-    const that = this;
+  $.fn.miSlider = function jqSlider(
+    method: 'init' | 'destroy' | Props,
+    ...args: []
+  ): object {
+    const that = $(this);
 
     if (typeof method === 'string' && methods[method]) {
       return methods[method].apply(that, args);

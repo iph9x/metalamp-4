@@ -4,6 +4,7 @@ import Observer from '../pattern/observer';
 
 export interface IThumb {
   setPositionHandler(e: JQuery.Event): void,
+  setPositionByVal(value: number): void,
   setIsActive(value: boolean): void,
   render(): JQuery,
   otherThumbPosition?: number
@@ -233,17 +234,17 @@ export default class Thumb extends Observer implements IThumb {
     return position;
   }
 
-  public setPositionByVal(val: number): void {
-    if (val < this._min) {
+  public setPositionByVal(value: number): void {
+    if (value < this._min) {
       this._position = 0;
-    } else if (val > this._max) {
+    } else if (value > this._max) {
       this._position = 100;
     } else if (this._isMaxThumb) {
-      this._position = this._getValueToPercent(this._max - val);
+      this._position = this._getValueToPercent(this._max - value);
     } else {
-      this._position = 100 - this._getValueToPercent(this._max - val);
+      this._position = 100 - this._getValueToPercent(this._max - value);
     }
-    this.setCurrent(val);
+    this.setCurrent(value);
     this._thumb.css(this.cssType, `${this._position}%`);
     this.setParentState('SET_MAX_THUMB_POSITION', 'SET_MIN_THUMB_POSITION', this._position);
     if (this._isMaxThumb) {
@@ -251,12 +252,12 @@ export default class Thumb extends Observer implements IThumb {
     } else {
       this._progressBar.setMinPosition(this._position);
     }
-    // (this.cssType, `${this._position}%`);
+
     this._label.setPosition(this._position);
-    this._label.setValue(val);
+    this._label.setValue(value);
   }
 
-  public setCurrent(value: number): void {
+  private setCurrent(value: number): void {
     this._current = value;
     this.setParentState('SET_CURRENT_MAX', 'SET_CURRENT_MIN', value);
   }

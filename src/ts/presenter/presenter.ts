@@ -9,46 +9,41 @@ interface IPresenter {
 }
 
 export default class Presenter implements IPresenter {
-  private _state: {
-    fromValue: number,
-    toValue: number,
-  };
-
   constructor(public model: Model, public view: View) {
     view.subscribe(this);
-
-    this._state = {
-      fromValue: view.getFromValue,
-      toValue: view.getToValue,
-    };
+    model.subscribe(this);
 
     return this;
   }
 
-  public set fromValue(value: number) {
-    this._state.fromValue = value;
+  public updateFrom(value: number) {
+    this.model.updateFromValue(value);
   }
 
-  public set toValue(value: number) {
-    this._state.toValue = value;
+  public updateTo(value: number) {
+    this.model.updateToValue(value);
   }
 
   public get state(): {} {
     return {
-      fromValue: this._state.fromValue,
-      toValue: this._state.toValue,
+      fromValue: this.model.fromValue,
+      toValue: this.model.toValue,
     };
   }
 
   update(action: { type: string, value: number }): void {
     switch (action.type) {
       case 'SET_TO_VALUE':
-        this.toValue = action.value;
         this.model.toValue = action.value;
         break;
       case 'SET_FROM_VALUE':
-        this.fromValue = action.value;
         this.model.fromValue = action.value;
+        break;
+      case 'UPDATE_MODEL_FROM':
+        this.view.updateFrom(action.value);
+        break;
+      case 'UPDATE_MODEL_TO':
+        this.view.updateTo(action.value);
         break;
       default:
         break;

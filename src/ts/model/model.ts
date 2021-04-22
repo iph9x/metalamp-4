@@ -1,16 +1,26 @@
+import Observer from '../pattern/observer';
+
 export interface IModel {
-  fromValue: number;
-  toValue: number;
+  fromValue: number,
+  toValue: number,
+  updateFromValue(value: number): void;
+  updateToValue(value: number): void;
 }
 
-export default class Model implements IModel {
+export default class Model extends Observer implements IModel {
   constructor(
-    private _toValue: number,
     private _fromValue: number,
+    private _toValue: number,
   ) {
-    if (typeof _fromValue === 'undefined') {
-      this._fromValue = 0;
-    }
+    super();
+  }
+
+  public updateFromValue(value: number): void {
+    this.init({ type: 'UPDATE_MODEL_FROM', value });
+  }
+
+  public updateToValue(value: number): void {
+    this.init({ type: 'UPDATE_MODEL_TO', value });
   }
 
   public set fromValue(value: number) {

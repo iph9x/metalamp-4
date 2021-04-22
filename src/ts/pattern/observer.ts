@@ -19,7 +19,7 @@ export default class Observer implements IObserver {
     this._observers.filter((obs) => obs !== observer);
   }
 
-  init(action: { type: string, value?: number | boolean }): void {
+  init(action: { type: string, value?: number | boolean, isOutUpdate?: boolean }): void {
     this._observers.forEach((observer: { update: Function }) => observer.update(action));
   }
 }

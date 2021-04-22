@@ -7,6 +7,8 @@ import Observer from '../pattern/observer';
 export interface IView {
   getToValue: number,
   getFromValue: number,
+  updateFrom(value: number): void,
+  updateTo(value: number): void,
   update(action: { type: string, value: number }): void;
   destroy(root: JQuery): void;
 }
@@ -135,7 +137,10 @@ export default class View extends Observer implements IView {
       this._minThumb.subscribe(this);
 
       this._inputFrom.off();
-      this._inputFrom.on('blur', (e: Event) => this._onBlurFromHandler(e));
+      this._inputFrom.on('blur', (e: Event) => {
+        const val = this._checkNewFromValue(Number($(e.target).val()));
+        this._minThumb.setPositionByVal(val);
+      });
     }
 
     this._maxThumb = this._createMaxThumb();
@@ -146,7 +151,10 @@ export default class View extends Observer implements IView {
     this._progressBar.onClick(this._scale.clickHandler.bind(this._scale));
 
     this._inputTo.off();
-    this._inputTo.on('blur', (e: Event) => this._onBlurToHandler(e));
+    this._inputTo.on('blur', (e: Event) => {
+      const val = this._checkNewToValue(Number($(e.target).val()));
+      this._maxThumb.setPositionByVal(val);
+    });
 
     this.render(that);
   }
@@ -156,23 +164,24 @@ export default class View extends Observer implements IView {
     root.empty();
   }
 
-  private _onBlurFromHandler(e: Event) {
-    let val = Number($(e.target).val());
+  private _checkNewFromValue(value: number): number {
+    let val = value;
 
     val = Number.isNaN(val) ? this._fromValue : val;
     val = val >= this._toValue ? this._fromValue : val;
     val = val < this._min ? this._fromValue : val;
-    this._minThumb.setPositionByVal(val);
+
+    return val;
   }
 
-  private _onBlurToHandler(e: Event) {
-    let val = Number($(e.target).val());
+  private _checkNewToValue(value: number): number {
+    let val = value;
 
     val = Number.isNaN(val) ? this._toValue : val;
     val = val > this._max ? this._max : val;
     val = val <= this._fromValue ? this._toValue : val;
 
-    this._maxThumb.setPositionByVal(val);
+    return val;
   }
 
   private _setCurrentMax(value: number): void {
@@ -247,6 +256,16 @@ export default class View extends Observer implements IView {
 
   public get getFromValue(): number {
     return this._fromValue;
+  }
+
+  public updateFrom(value: number) {
+    const newVal = this._checkNewFromValue(value);
+    this._minThumb.setPositionByVal(newVal);
+  }
+
+  public updateTo(value: number) {
+    const newVal = this._checkNewToValue(value);
+    this._maxThumb.setPositionByVal(newVal);
   }
 
   public render(root: JQuery): void {
