@@ -18,8 +18,6 @@ export default class ProgressBar implements IProgressBar {
     if (!this._isRange) {
       this.setMinPosition(0);
     }
-
-    this.render();
   }
 
   public render(): JQuery {

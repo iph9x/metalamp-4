@@ -97,7 +97,6 @@ export default class Thumb extends Observer implements IThumb {
     this._current = this._isMaxThumb ? max : min;
 
     this.setPositionByVal(startPosition);
-    // this.render();
 
     this.onThumbClick();
     this.onThumbMouseUp();

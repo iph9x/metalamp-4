@@ -24,8 +24,6 @@ export default class Label implements ILabel {
 
     this.setValue(this._value);
     this.setPosition(this._position);
-
-    // this.render();
   }
 
   public render(): JQuery {

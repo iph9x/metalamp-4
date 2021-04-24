@@ -10,10 +10,17 @@ interface IPresenter {
 
 export default class Presenter implements IPresenter {
   constructor(public model: Model, public view: View) {
-    view.subscribe(this);
-    model.subscribe(this);
+    this.view.max = this.model.max;
+    this.view.min = this.model.min;
+    this.view.from = this.model.fromValue;
+    this.view.to = this.model.toValue;
 
-    return this;
+    this.view.subscribe(this);
+    this.model.subscribe(this);
+  }
+
+  public run() {
+    this.view.run();
   }
 
   public updateFrom(value: number) {

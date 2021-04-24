@@ -14,13 +14,9 @@ export interface IView {
 }
 
 type Props = {
-  max: number,
-  min: number,
   isRange?: boolean,
   step?: number,
   slider: JQuery,
-  from?: number,
-  to?: number,
   labelsVisibility?: boolean,
   isVertical?: boolean,
   inputFromId?: string,
@@ -28,10 +24,6 @@ type Props = {
 };
 
 export default class View extends Observer implements IView {
-  private _fromValue: number;
-
-  private _toValue: number;
-
   private _minThumbPosition: number;
 
   private _maxThumbPosition: number;
@@ -60,7 +52,7 @@ export default class View extends Observer implements IView {
 
   private _min: number;
 
-  private _slider: object;
+  private _slider: JQuery;
 
   private _isRange?: boolean;
 
@@ -72,40 +64,40 @@ export default class View extends Observer implements IView {
 
   private _labelsVisibility?: boolean;
 
-  private _inputFromId: string;
+  private _inputFromId?: string;
 
-  private _inputToId: string;
+  private _inputToId?: string;
 
   constructor({
-    max,
-    min,
     slider,
     isRange,
     step,
-    from,
-    to,
     labelsVisibility,
     isVertical,
     inputFromId,
     inputToId,
   }: Props) {
     super();
-    const that = $(slider);
-    this._slider = slider;
+    this._slider = $(slider);
 
-    this._max = max;
-    this._min = min;
     this._step = step || 1;
+    this._isVertical = typeof isVertical !== 'undefined' ? isVertical : false;
+    this._isRange = typeof isRange !== 'undefined' ? isRange : true;
+    this._inputFromId = inputFromId;
+    this._inputToId = inputToId;
+    this._labelsVisibility = typeof labelsVisibility !== 'undefined' ? labelsVisibility : true;
+  }
+
+  public run(): void {
+    const that = this._slider;
+
     if (this._step > this._max - this._min) {
       this._step = this._max - this._min;
     }
-    this._isVertical = typeof isVertical !== 'undefined' ? isVertical : false;
-    this._isRange = typeof isRange !== 'undefined' ? isRange : true;
-    this._labelsVisibility = typeof labelsVisibility !== 'undefined' ? labelsVisibility : true;
-    this._inputFromId = inputFromId;
-    this._inputToId = inputToId;
-    this._to = (typeof to !== 'undefined') && (to <= this._max) ? to : this._max;
-    this._from = (typeof from !== 'undefined') && (from >= this._min) && (from < this._to) && this._isRange ? from : this._min;
+
+    if (!this._isRange) {
+      this._from = this._min;
+    }
 
     if (this._isVertical) {
       (this._wrapper).addClass('mi-slider__wrapper_vertical');
@@ -120,11 +112,10 @@ export default class View extends Observer implements IView {
     }
 
     that.addClass('mi-slider');
-
     this._progressBar = new ProgressBar(this._isRange, this._isVertical);
 
-    this._setCurrentMin(this._from);
-    this._setCurrentMax(this._to);
+    this._changeInputFromValue(this._from);
+    this._changeInputToValue(this._to);
 
     this._minThumbPosition = (1 - (this._max - this._from) / (this._max - this._min)) * 100;
     this._maxThumbPosition = ((this._max - this._to) / (this._max - this._min)) * 100;
@@ -136,11 +127,14 @@ export default class View extends Observer implements IView {
       this._minThumb = this._createMinThumb();
       this._minThumb.subscribe(this);
 
-      this._inputFrom.off();
-      this._inputFrom.on('blur', (e: Event) => {
-        const val = this._checkNewFromValue(Number($(e.target).val()));
-        this._minThumb.setPositionByVal(val);
-      });
+      if (this._inputFromId) {
+        this._inputFrom.off();
+
+        this._inputFrom.on('blur', (e: Event) => {
+          const val = this._checkNewFromValue(Number($(e.target).val()));
+          this._minThumb.setPositionByVal(val);
+        });
+      }
     }
 
     this._maxThumb = this._createMaxThumb();
@@ -150,11 +144,14 @@ export default class View extends Observer implements IView {
 
     this._progressBar.onClick(this._scale.clickHandler.bind(this._scale));
 
-    this._inputTo.off();
-    this._inputTo.on('blur', (e: Event) => {
-      const val = this._checkNewToValue(Number($(e.target).val()));
-      this._maxThumb.setPositionByVal(val);
-    });
+    if (this._inputTo) {
+      this._inputTo.off();
+
+      this._inputTo.on('blur', (e: Event) => {
+        const val = this._checkNewToValue(Number($(e.target).val()));
+        this._maxThumb.setPositionByVal(val);
+      });
+    }
 
     this.render(that);
   }
@@ -167,9 +164,9 @@ export default class View extends Observer implements IView {
   private _checkNewFromValue(value: number): number {
     let val = value;
 
-    val = Number.isNaN(val) ? this._fromValue : val;
-    val = val >= this._toValue ? this._fromValue : val;
-    val = val < this._min ? this._fromValue : val;
+    val = Number.isNaN(val) ? this._from : val;
+    val = val >= this._to ? this._from : val;
+    val = val < this._min ? this._from : val;
 
     return val;
   }
@@ -177,30 +174,36 @@ export default class View extends Observer implements IView {
   private _checkNewToValue(value: number): number {
     let val = value;
 
-    val = Number.isNaN(val) ? this._toValue : val;
+    val = Number.isNaN(val) ? this._to : val;
     val = val > this._max ? this._max : val;
-    val = val <= this._fromValue ? this._toValue : val;
+    val = val <= this._from ? this._to : val;
 
     return val;
   }
 
   private _setCurrentMax(value: number): void {
-    this._toValue = value;
+    this._to = value;
     this.init({ type: 'SET_TO_VALUE', value });
-    $(this._slider).attr('data-to-value', value);
 
-    if (typeof this._inputToId !== 'undefined') {
-      this._inputTo.val(value);
-    }
+    this._changeInputToValue(value);
   }
 
   private _setCurrentMin(value: number): void {
-    this._fromValue = value;
+    this._from = value;
     this.init({ type: 'SET_FROM_VALUE', value });
-    $(this._slider).attr('data-from-value', value);
 
+    this._changeInputFromValue(value);
+  }
+
+  private _changeInputFromValue(value: number): void {
     if (typeof this._inputFromId !== 'undefined') {
       this._inputFrom.val(value);
+    }
+  }
+
+  private _changeInputToValue(value: number): void {
+    if (typeof this._inputToId !== 'undefined') {
+      this._inputTo.val(value);
     }
   }
 
@@ -251,11 +254,27 @@ export default class View extends Observer implements IView {
   }
 
   public get getToValue(): number {
-    return this._toValue;
+    return this._to;
   }
 
   public get getFromValue(): number {
-    return this._fromValue;
+    return this._from;
+  }
+
+  public set min(value: number) {
+    this._min = value;
+  }
+
+  public set max(value: number) {
+    this._max = value;
+  }
+
+  public set from(value: number) {
+    this._from = value;
+  }
+
+  public set to(value: number) {
+    this._to = value;
   }
 
   public updateFrom(value: number) {

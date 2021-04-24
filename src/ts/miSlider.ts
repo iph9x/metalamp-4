@@ -33,29 +33,28 @@ type Props = {
       // eslint-disable-next-line
       return this.each(function initSlider() {
         if (!this.data) {
-          const modelState = {
-            max: to || max,
-            min: from || min,
-          };
-
-          this.model = new Model(modelState.max, modelState.min);
-          this.view = new View({
+          this.model = new Model({
             max,
             min,
+            from,
+            to,
+          });
+
+          this.view = new View({
             slider: this,
             isRange: range,
             step,
-            from,
-            to,
             labelsVisibility: labels,
             isVertical: vertical,
             inputFromId,
             inputToId,
           });
+
           this.presenter = new Presenter(this.model, this.view);
+          
           $(this).data('miSlider', this);
 
-          return this.presenter;
+          this.presenter.run();
         }
       });
     },

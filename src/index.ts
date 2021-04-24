@@ -11,8 +11,8 @@ type Props = {
   to?: number,
   labels?: boolean,
   vertical?: boolean,
-  inputFromId: string,
-  inputToId: string,
+  inputFromId?: string,
+  inputToId?: string,
 };
 
 const localState1: Props = {
@@ -50,6 +50,7 @@ $('.slider-3').miSlider(localState3);
 
 function setSliderPanelHandlers(panelName: string, sliderName: string, state: Props): void {
   const localState = { ...state };
+
   $(panelName).find('.slider-panel__step').val(localState.step ? localState.step : 1);
   $(panelName).find('.slider-panel__min').val(localState.min);
   $(panelName).find('.slider-panel__max').val(localState.max);
@@ -58,24 +59,36 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
 
   $(panelName).on('change', '.slider-panel__step', function stepHandler() {
     localState.step = Number($(this).val());
-    localState.from = Number(inputFrom.val());
-    localState.to = Number(inputTo.val());
+    if (localState.inputFromId) {
+      localState.from = Number(inputFrom.val());
+    }
+    if (localState.inputToId) {
+      localState.to = Number(inputTo.val());
+    }
 
     $(sliderName).miSlider('destroy');
     $(sliderName).miSlider(localState);
   });
   $(panelName).on('change', '.slider-panel__min', function minHandler() {
     localState.min = Number($(this).val());
-    localState.from = Number(inputFrom.val());
-    localState.to = Number(inputTo.val());
+    if (localState.inputFromId) {
+      localState.from = Number(inputFrom.val());
+    }
+    if (localState.inputToId) {
+      localState.to = Number(inputTo.val());
+    }
 
     $(sliderName).miSlider('destroy');
     $(sliderName).miSlider(localState);
   });
   $(panelName).on('change', '.slider-panel__max', function maxHandler() {
     localState.max = Number($(this).val());
-    localState.from = Number(inputFrom.val());
-    localState.to = Number(inputTo.val());
+    if (localState.inputFromId) {
+      localState.from = Number(inputFrom.val());
+    }
+    if (localState.inputToId) {
+      localState.to = Number(inputTo.val());
+    }
 
     $(sliderName).miSlider('destroy');
     $(sliderName).miSlider(localState);
@@ -84,29 +97,43 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
     localState.range = this.checked;
     const from = Number(inputFrom.val());
     let to = Number(inputTo.val());
-    if (this.checked) {
-      if (from >= to) {
-        to = localState.max;
+    if (localState.inputFromId && localState.inputToId) {
+      if (this.checked) {
+        if (from >= to) {
+          to = localState.max;
+        }
       }
     }
-    localState.from = from;
-    localState.to = to;
+    if (localState.inputFromId) {
+      localState.from = from;
+    }
+    if (localState.inputToId) {
+      localState.to = to;
+    }
 
     $(sliderName).miSlider('destroy');
     $(sliderName).miSlider(localState);
   });
   $(panelName).on('change', '.slider-panel__labelsVisibility', function labelsHandler() {
     localState.labels = this.checked;
-    localState.from = Number(inputFrom.val());
-    localState.to = Number(inputTo.val());
+    if (localState.inputFromId) {
+      localState.from = Number(inputFrom.val());
+    }
+    if (localState.inputToId) {
+      localState.to = Number(inputTo.val());
+    }
 
     $(sliderName).miSlider('destroy');
     $(sliderName).miSlider(localState);
   });
   $(panelName).on('change', '.slider-panel__vertical', function verticalHandler() {
     localState.vertical = this.checked;
-    localState.from = Number(inputFrom.val());
-    localState.to = Number(inputTo.val());
+    if (localState.inputFromId) {
+      localState.from = Number(inputFrom.val());
+    }
+    if (localState.inputToId) {
+      localState.to = Number(inputTo.val());
+    }
 
     $(sliderName).miSlider('destroy');
     $(sliderName).miSlider(localState);
