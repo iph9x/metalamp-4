@@ -5,6 +5,7 @@ export interface IModel {
   max: number,
   fromValue: number,
   toValue: number,
+  step: number,
   updateFromValue(value: number): void;
   updateToValue(value: number): void;
 }
@@ -18,16 +19,20 @@ export default class Model extends Observer implements IModel {
 
   private _max: number;
 
+  private _step: number;
+
   constructor({
     min,
     max,
     from,
     to,
+    step,
   }: {
     min: number,
     max: number,
     from?: number,
-    to?: number
+    to?: number,
+    step?: number,
   }) {
     super();
 
@@ -41,6 +46,8 @@ export default class Model extends Observer implements IModel {
       this._min = max;
       this._max = min;
     }
+
+    this._step = typeof step !== 'undefined' ? step : 1;
 
     if (typeof to !== 'undefined' && to > this._min && to <= this._max) {
       this._toValue = to;
@@ -85,5 +92,9 @@ export default class Model extends Observer implements IModel {
 
   public get max(): number {
     return this._max;
+  }
+
+  public get step(): number {
+    return this._step;
   }
 }

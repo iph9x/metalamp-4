@@ -14,6 +14,7 @@ export default class Presenter implements IPresenter {
     this.view.min = this.model.min;
     this.view.from = this.model.fromValue;
     this.view.to = this.model.toValue;
+    this.view.step = this.model.step;
 
     this.view.subscribe(this);
     this.model.subscribe(this);

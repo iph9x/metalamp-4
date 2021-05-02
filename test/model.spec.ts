@@ -1,39 +1,7 @@
-import Model from '../src/ts/model/model';
+import Model from '../src/ts/model/model'
+import states from './states';
 
 describe('Model:', function() {
-  
-  let states = [
-    {
-      min: 100,
-      max: 200,
-    },
-    {
-      min: 100,
-      max: -200,
-    },
-    {
-      min: 0,
-      max: 500,
-      from: 100,
-      to: 350
-    },
-    {
-      min: 50,
-      max: 125,
-      from: 70
-    },
-    {
-      min: 50,
-      max: 125,
-      to: 80
-    },
-    {
-      min: 2000,
-      max: 5500,
-      from: 1000
-    }
-  ];
-
   let model: Model;
 
   for (let state of states) {
@@ -58,4 +26,4 @@ describe('Model:', function() {
       expect(model.fromValue).toBeLessThan(model.toValue);
     })
   }
-})
+});

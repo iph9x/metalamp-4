@@ -38,12 +38,12 @@ type Props = {
             min,
             from,
             to,
+            step,
           });
 
           this.view = new View({
             slider: this,
             isRange: range,
-            step,
             labelsVisibility: labels,
             isVertical: vertical,
             inputFromId,
@@ -61,14 +61,8 @@ type Props = {
     destroy() {
       return this.each(function destroySlider() {
         const that = $(this);
-        const data = that.data('miSlider');
 
-        data.view.destroy(that);
         that.empty();
-        data.view = undefined;
-        data.model = undefined;
-        data.presenter = undefined;
-
         that.removeData('miSlider');
       });
     },

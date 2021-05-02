@@ -7,7 +7,7 @@ export interface ILabel {
 export default class Label implements ILabel {
   private _label: JQuery = $('<span class="mi-slider__label"></span>');
 
-  private _cssType: string;
+  private _cssSide: 'top' | 'left' | 'bottom' | 'right';
 
   constructor(
     private _value: number,
@@ -16,11 +16,11 @@ export default class Label implements ILabel {
     private _isVertical?: boolean,
   ) {
     if (this._type === 'minThumb') {
-      this._cssType = this._isVertical ? 'top' : 'left';
+      this._cssSide = this._isVertical ? 'top' : 'left';
     } else {
-      this._cssType = this._isVertical ? 'bottom' : 'right';
+      this._cssSide = this._isVertical ? 'bottom' : 'right';
     }
-    this._label.addClass(`mi-slider__label_${this._cssType}`);
+    this._label.addClass(`mi-slider__label_${this._cssSide}`);
 
     this.setValue(this._value);
     this.setPosition(this._position);
@@ -30,13 +30,13 @@ export default class Label implements ILabel {
     return this._label;
   }
 
-  public setValue(value: number):void {
+  public setValue(value: number): void {
     this._value = value;
     this._label.html(`${value}`);
   }
 
-  public setPosition(value: number):void {
+  public setPosition(value: number): void {
     this._position = value;
-    this._label.css(this._cssType, `${value}%`);
+    this._label.css(this._cssSide, `${value}%`);
   }
 }

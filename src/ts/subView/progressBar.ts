@@ -6,14 +6,23 @@ export interface IProgressBar {
 }
 
 export default class ProgressBar implements IProgressBar {
-  private _progressBar: JQuery = $('<div class="mi-slider__track"></div>');
+  private _progressBar: JQuery = $('<div class="mi-slider__progress-bar"></div>');
+
+  private _cssFromSide: 'top' | 'left';
+
+  private _cssToSide: 'bottom' |'right';
 
   constructor(
     private _isRange: boolean,
     private _isVertical?: boolean,
   ) {
     if (this._isVertical) {
-      this._progressBar.addClass('mi-slider__track_vertical');
+      this._progressBar.addClass('mi-slider__progress-bar_vertical');
+      this._cssFromSide = 'top';
+      this._cssToSide = 'bottom';
+    } else {
+      this._cssFromSide = 'left';
+      this._cssToSide = 'right';
     }
     if (!this._isRange) {
       this.setMinPosition(0);
@@ -29,20 +38,10 @@ export default class ProgressBar implements IProgressBar {
   }
 
   public setMinPosition(position: number): void {
-    if (this._isVertical) {
-      return this._setStyle('top', position);
-    }
-    return this._setStyle('left', position);
+    this._progressBar.css(this._cssFromSide, `${position}%`);
   }
-
+  
   public setMaxPosition(position: number): void {
-    if (this._isVertical) {
-      return this._setStyle('bottom', position);
-    }
-    return this._setStyle('right', position);
-  }
-
-  private _setStyle(property: string, value: number) {
-    this._progressBar.css(property, `${value}%`);
+    this._progressBar.css(this._cssToSide, `${position}%`);
   }
 }

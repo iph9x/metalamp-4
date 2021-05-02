@@ -7,15 +7,18 @@ import Observer from '../pattern/observer';
 export interface IView {
   getToValue: number,
   getFromValue: number,
+  step: number,
+  min: number,
+  max: number,
+  from: number,
+  to: number,
   updateFrom(value: number): void,
   updateTo(value: number): void,
   update(action: { type: string, value: number }): void;
-  destroy(root: JQuery): void;
 }
 
 type Props = {
   isRange?: boolean,
-  step?: number,
   slider: JQuery,
   labelsVisibility?: boolean,
   isVertical?: boolean,
@@ -71,7 +74,6 @@ export default class View extends Observer implements IView {
   constructor({
     slider,
     isRange,
-    step,
     labelsVisibility,
     isVertical,
     inputFromId,
@@ -79,8 +81,6 @@ export default class View extends Observer implements IView {
   }: Props) {
     super();
     this._slider = $(slider);
-
-    this._step = step || 1;
     this._isVertical = typeof isVertical !== 'undefined' ? isVertical : false;
     this._isRange = typeof isRange !== 'undefined' ? isRange : true;
     this._inputFromId = inputFromId;
@@ -113,7 +113,11 @@ export default class View extends Observer implements IView {
 
     that.addClass('mi-slider');
     this._progressBar = new ProgressBar(this._isRange, this._isVertical);
-
+    if (!this._isRange && this._inputFrom) {
+      $(this._inputFrom).attr('disabled', 'disabled');
+    } else {
+      $(this._inputFrom).removeAttr('disabled');
+    }
     this._changeInputFromValue(this._from);
     this._changeInputToValue(this._to);
 
@@ -129,7 +133,6 @@ export default class View extends Observer implements IView {
 
       if (this._inputFromId) {
         this._inputFrom.off();
-
         this._inputFrom.on('blur', (e: Event) => {
           const val = this._checkNewFromValue(Number($(e.target).val()));
           this._minThumb.setPositionByVal(val);
@@ -154,11 +157,6 @@ export default class View extends Observer implements IView {
     }
 
     this.render(that);
-  }
-
-  public destroy(root: JQuery) {
-    this._wrapper = $('<div class="mi-slider__wrapper"></div>');
-    root.empty();
   }
 
   private _checkNewFromValue(value: number): number {
@@ -275,6 +273,10 @@ export default class View extends Observer implements IView {
 
   public set to(value: number) {
     this._to = value;
+  }
+
+  public set step(value: number) {
+    this._step = value;
   }
 
   public updateFrom(value: number) {

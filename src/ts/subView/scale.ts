@@ -10,8 +10,6 @@ export default class Scale implements IScale {
 
   private _scaleNumbersArr: Array<number> = [];
 
-  // private _scaleElementsArr: Array<JQuery> = [];
-
   constructor(
     min: number,
     max: number,
@@ -24,11 +22,11 @@ export default class Scale implements IScale {
     private _setMinActive?: (value: boolean) => void,
     isRange?: boolean,
   ) {
+    const scaleStep = (max - min) / 4;
+
     if (this._isVertical) {
       this._scale.addClass('mi-slider__scale_vertical');
     }
-
-    const scaleStep = (max - min) / 4;
 
     for (let i = 0; i < 5; i += 1) {
       if (i === 0) {
@@ -52,6 +50,7 @@ export default class Scale implements IScale {
   public clickHandler(e: JQuery.Event): void {
     let offset: number;
     const scaleClientRect = this._scale.get(0).getBoundingClientRect();
+
     if (this._isVertical) {
       offset = ((e.clientY - scaleClientRect.top) * 100) / this._scale.height();
     } else {
