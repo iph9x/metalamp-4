@@ -1,10 +1,10 @@
-import Model from '../src/ts/model/model'
+import Model from '../src/ts/model/model';
 import states from './states';
 
-describe('Model:', function() {
+describe('Model:', () => {
   let model: Model;
 
-  for (let state of states) {
+  states.forEach((state) => {
     model = new Model({
       min: state.min,
       max: state.max,
@@ -12,18 +12,18 @@ describe('Model:', function() {
       to: state.to,
     });
 
-    test('"from" must be a number', function () {
+    test('"from" must be a number', () => {
       expect(typeof model.fromValue).toBeDefined();
       expect(typeof model.fromValue).toBe('number');
     });
 
-    test('"to" must be a number', function () {
+    test('"to" must be a number', () => {
       expect(typeof model.toValue).toBeDefined();
       expect(typeof model.toValue).toBe('number');
     });
 
-    test(`"from" must be less than "to": ${model.fromValue} < ${model.toValue}`, function () {
+    test(`"from" must be less than "to": ${model.fromValue} < ${model.toValue}`, () => {
       expect(model.fromValue).toBeLessThan(model.toValue);
-    })
-  }
+    });
+  });
 });

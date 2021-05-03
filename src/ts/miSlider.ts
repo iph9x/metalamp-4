@@ -51,7 +51,7 @@ type Props = {
           });
 
           this.presenter = new Presenter(this.model, this.view);
-          
+
           $(this).data('miSlider', this);
 
           this.presenter.run();

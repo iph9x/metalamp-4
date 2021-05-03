@@ -1,4 +1,13 @@
-const states = [
+type States = Array<{
+  min: number,
+  max: number,
+  from?: number,
+  to?: number,
+  isVertical?: boolean,
+  step?: number,
+}>
+let states: States;
+states = [
   {
     min: 100,
     max: 200,

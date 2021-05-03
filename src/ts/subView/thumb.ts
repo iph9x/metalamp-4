@@ -165,11 +165,10 @@ export default class Thumb extends Observer implements IThumb {
     }
 
     this._thumb.css(this.cssType, `${newPosition}%`);
-    this._label.setPosition(newPosition);
-    this._label.setValue(this._current);
-    this._position = newPosition;
+    this._label?.setPosition(newPosition);
+    this._label?.setValue(this._current);
 
-    this.setParentState('SET_MAX_THUMB_POSITION', 'SET_MIN_THUMB_POSITION', newPosition);
+    this._setPosition(newPosition);
   }
 
   private onThumbMouseUp() {
@@ -243,29 +242,31 @@ export default class Thumb extends Observer implements IThumb {
     } else {
       this._position = 100 - this._getValueToPercent(this._max - value);
     }
+
     this.setCurrent(value);
+    this._setPosition(this._position);
     this._thumb.css(this.cssType, `${this._position}%`);
-    this.setParentState('SET_MAX_THUMB_POSITION', 'SET_MIN_THUMB_POSITION', this._position);
+
     if (this._isMaxThumb) {
       this._progressBar.setMaxPosition(this._position);
     } else {
       this._progressBar.setMinPosition(this._position);
     }
 
-    this._label.setPosition(this._position);
-    this._label.setValue(value);
+    this._label?.setPosition(this._position);
+    this._label?.setValue(value);
   }
 
   private setCurrent(value: number): void {
     this._current = value;
-    this.setParentState('SET_CURRENT_MAX', 'SET_CURRENT_MIN', value);
+    this._setParentState('SET_CURRENT_MAX', 'SET_CURRENT_MIN', value);
   }
 
   public setIsActive(value: boolean): void {
     this._isActive = value;
   }
 
-  private setParentState(
+  private _setParentState(
     typeOfMaxThumb: string,
     typeOfMinThumb: string,
     value: boolean | number,
@@ -273,8 +274,8 @@ export default class Thumb extends Observer implements IThumb {
     this.init({ type: this._isMaxThumb ? typeOfMaxThumb : typeOfMinThumb, value });
   }
 
-  public setPosition(value: number) {
+  private _setPosition(value: number) {
     this._position = value;
-    this.setParentState('SET_MAX_THUMB_POSITION', 'SET_MIN_THUMB_POSITION', value);
+    this._setParentState('SET_MAX_THUMB_POSITION', 'SET_MIN_THUMB_POSITION', value);
   }
 }

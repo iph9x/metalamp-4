@@ -40,7 +40,7 @@ export default class ProgressBar implements IProgressBar {
   public setMinPosition(position: number): void {
     this._progressBar.css(this._cssFromSide, `${position}%`);
   }
-  
+
   public setMaxPosition(position: number): void {
     this._progressBar.css(this._cssToSide, `${position}%`);
   }

@@ -2,59 +2,56 @@
  * @jest-environment jsdom
  */
 
- import Scale from '../src/ts/subView/scale'
- import Thumb from '../src/ts/subView/thumb'
- import ProgressBar from '../src/ts/subView/progressBar'
- import Label from '../src/ts/subView/label'
- import states from './states';
+import Scale from '../src/ts/subView/scale';
+import Thumb from '../src/ts/subView/thumb';
+import ProgressBar from '../src/ts/subView/progressBar';
+import Label from '../src/ts/subView/label';
+import states from './states';
 
- declare var window: any;
- declare var global: any;
- window.$ = require('jquery');
- global['$'] = global['jQuery'] = $;
+declare const window: any;
+declare const global: any;
+window.$ = require('jquery');
 
- jest.mock('../src/ts/subView/label');
- jest.mock('../src/ts/subView/thumb');
- jest.mock('../src/ts/subView/progressBar');
+global.jQuery = $;
+global.$ = global.jQuery;
 
-let minThumb: Thumb;
-let maxThumb: Thumb;
-let scale: Scale;
-let progressBar = new ProgressBar(true);
-let wrapper = $('<div class="mi-slider__wrapper"></div>');
-let minLabel: Label;
-let maxLabel: Label;
+jest.mock('../src/ts/subView/label');
+jest.mock('../src/ts/subView/thumb');
+jest.mock('../src/ts/subView/progressBar');
 
-const ThumbMock = Thumb as jest.MockedClass<typeof Thumb>;
-const ProgressBarMock = ProgressBar as jest.MockedClass<typeof ProgressBar>;
-const LabelMock = Label as jest.MockedClass<typeof Label>;
+describe('Scale:', () => {
+  const progressBar = new ProgressBar(true);
+  const $wrapper = $('<div class="mi-slider__wrapper"></div>');
 
-describe('Scale:', function () {
-  let state = states[0];
+  const ThumbMock = Thumb as jest.MockedClass<typeof Thumb>;
+  const ProgressBarMock = ProgressBar as jest.MockedClass<typeof ProgressBar>;
+  const LabelMock = Label as jest.MockedClass<typeof Label>;
 
-  maxLabel = new Label(state.to, 'maxThumb', 20);
-  minLabel = new Label(state.from, 'minThumb', 20);
-  minThumb = new Thumb({
+  const state = states[0];
+
+  const maxLabel = new Label(state.to, 'maxThumb', 20);
+  const minLabel = new Label(state.from, 'minThumb', 20);
+  const minThumb = new Thumb({
     type: 'minThumb',
     startPosition: state.from,
     step: state.step,
-    wrapper,
+    wrapper: $wrapper,
     progressBar,
     max: state.max,
     min: state.min,
     label: minLabel,
   });
-  maxThumb = new Thumb({
+  const maxThumb = new Thumb({
     type: 'maxThumb',
     step: state.step,
     startPosition: state.to,
-    wrapper,
+    wrapper: $wrapper,
     progressBar,
     max: state.max,
     min: state.min,
     label: maxLabel,
   });
-  scale = new Scale(
+  const scale = new Scale(
     state.min,
     state.max,
     70,
@@ -67,25 +64,29 @@ describe('Scale:', function () {
     true,
   );
 
-  const scaleEl = scale.render();
+  const $scale = scale.render();
   const spy = jest.spyOn(scale, 'clickHandler');
-  
-  test('the Scale called Label\'s construcotr', function () {
+
+  test('the Scale called Label\'s construcotr', () => {
     expect(LabelMock).toHaveBeenCalled();
   });
-  test('the Scale called Thumb\'s construcotr', function () {
+
+  test('the Scale called Thumb\'s construcotr', () => {
     expect(ThumbMock).toHaveBeenCalled();
   });
-  test('the Scale called ProgressBar\'s construcotr', function () {
+
+  test('the Scale called ProgressBar\'s construcotr', () => {
     expect(ProgressBarMock).toHaveBeenCalled();
   });
-  test('method clickHandler() must be called', function () {
-    $(document.body).append(`${wrapper}`);
-    $(document.body).append(`${scaleEl}`);
-    scaleEl.trigger('mousedown');
+
+  test('method clickHandler() must be called', () => {
+    $(document.body).append($wrapper);
+    $(document.body).append($scale);
+    $scale.trigger('mousedown');
     expect(spy).toHaveBeenCalled();
   });
-  test('method render() must return JQuery', function () {
-    expect(scaleEl.constructor).toBe($('<div></div>').constructor);
+
+  test('method render() must return JQuery', () => {
+    expect($scale.constructor).toBe($('<div></div>').constructor);
   });
 });
