@@ -5,8 +5,6 @@ import Scale from '../subView/scale';
 import Observer from '../pattern/observer';
 
 export interface IView {
-  getToValue: number,
-  getFromValue: number,
   step: number,
   min: number,
   max: number,
@@ -14,7 +12,8 @@ export interface IView {
   to: number,
   updateFrom(value: number): void,
   updateTo(value: number): void,
-  update(action: { type: string, value: number }): void;
+  update(action: { type: string, value: number }): void,
+  run(): void,
 }
 
 type Props = {
@@ -251,14 +250,6 @@ export default class View extends Observer implements IView {
     );
   }
 
-  public get getToValue(): number {
-    return this._to;
-  }
-
-  public get getFromValue(): number {
-    return this._from;
-  }
-
   public set min(value: number) {
     this._min = value;
   }
@@ -267,12 +258,20 @@ export default class View extends Observer implements IView {
     this._max = value;
   }
 
-  public set from(value: number) {
-    this._from = value;
+  public get to(): number {
+    return this._to;
+  }
+
+  public get from(): number {
+    return this._from;
   }
 
   public set to(value: number) {
     this._to = value;
+  }
+
+  public set from(value: number) {
+    this._from = value;
   }
 
   public set step(value: number) {
