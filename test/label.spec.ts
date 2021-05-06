@@ -12,41 +12,78 @@ global.jQuery = $;
 global.$ = global.jQuery;
 
 describe('Label: ', () => {
-  let label = new Label(50, 'maxThumb', 40, false);
-  const $label = label.render();
+  const labels = [
+    {
+      name: 'maxThumb',
+      isVertical: false,
+    },
+    {
+      name: 'maxThumb',
+      isVertical: true,
+    },
+    {
+      name: 'minThumb',
+      isVertical: true,
+    },
+    {
+      name: 'minThumb',
+      isVertical: false,
+    },
+  ];
   const newValue = 55;
+  let label: Label;
 
-  $(document.body).append($label);
+  labels.forEach(({ name, isVertical }) => {
+    const label = new Label(50, name, 40, isVertical);
+    const $label = label.render();
 
-  test('method setValue() must set position in the element', () => {
-    label.setValue(newValue);
-    expect(Number.parseFloat($label.html())).toBe(newValue);
+    $(document.body).append($label);
+
+    test('method setValue() must set position in the element', () => {
+      label.setValue(newValue);
+      expect(Number.parseFloat($label.html())).toBe(newValue);
+    });
+
+    test(`property right === ${newValue}%`, () => {
+      label.setPosition(newValue);
+      const computedStyleLabel = getComputedStyle($label[0]);
+      let labelPosition;
+
+      if (name === 'maxThumb') {
+        if (isVertical) {
+          labelPosition = computedStyleLabel.getPropertyValue('bottom');
+        } else {
+          labelPosition = computedStyleLabel.getPropertyValue('right');
+        }
+      } else if (isVertical) {
+        labelPosition = computedStyleLabel.getPropertyValue('top');
+      } else {
+        labelPosition = computedStyleLabel.getPropertyValue('left');
+      }
+
+      expect(Number.parseFloat(labelPosition)).toBe(newValue);
+    });
+
+    test('method render() must return JQuery', () => {
+      expect($label.constructor).toBe($('<div></div>').constructor);
+    });
   });
 
-  test(`property right === ${newValue}%`, () => {
-    label.setPosition(newValue);
-    const computedStyleLabel = getComputedStyle($label[0]).getPropertyValue('right');
+  labels.forEach(({ name, isVertical }) => {
+    test('method setValue() must be called', () => {
+      const spySetValue = jest.spyOn(Label.prototype, 'setValue');
+      spySetValue.mockImplementation(() => {});
+      label = new Label(50, name, 40, isVertical);
 
-    expect(Number.parseFloat(computedStyleLabel)).toBe(newValue);
-  });
+      expect(spySetValue).toHaveBeenCalled();
+    });
 
-  test('method render() must return JQuery', () => {
-    expect($label.constructor).toBe($('<div></div>').constructor);
-  });
+    test('method setPosition() must be called', () => {
+      const spySetPosition = jest.spyOn(Label.prototype, 'setPosition');
+      spySetPosition.mockImplementation(() => {});
+      label = new Label(50, name, 40, isVertical);
 
-  test('method setValue() must be called', () => {
-    const spySetValue = jest.spyOn(Label.prototype, 'setValue');
-    spySetValue.mockImplementation(() => {});
-    label = new Label(50, 'maxThumb', 40, false);
-
-    expect(spySetValue).toHaveBeenCalled();
-  });
-
-  test('method setPosition() must be called', () => {
-    const spySetPosition = jest.spyOn(Label.prototype, 'setPosition');
-    spySetPosition.mockImplementation(() => {});
-    label = new Label(50, 'maxThumb', 40, false);
-
-    expect(spySetPosition).toHaveBeenCalled();
+      expect(spySetPosition).toHaveBeenCalled();
+    });
   });
 });

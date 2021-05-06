@@ -5,9 +5,12 @@ type States = Array<{
   to?: number,
   isVertical?: boolean,
   step?: number,
-}>
-let states: States;
-states = [
+  isRange?: boolean,
+  inputFromId?: string,
+  inputToId?: string,
+}>;
+
+const states: States = [
   {
     min: 100,
     max: 200,
@@ -20,12 +23,14 @@ states = [
     min: 0,
     max: 500,
     from: 100,
-    to: 350
+    to: 350,
+    inputFromId: 'inputFrom',
+    inputToId: 'inputTo',
   },
   {
     min: 50,
     max: 125,
-    from: 70
+    from: 70,
   },
   {
     min: 50,
@@ -39,7 +44,13 @@ states = [
     from: 1000,
     step: 1,
     isVertical: false,
-  }
+  },
+  {
+    min: 100,
+    max: 199,
+    step: 105,
+    isRange: false,
+  },
 ];
 
 export default states;

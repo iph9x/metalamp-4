@@ -16,10 +16,10 @@ describe('ProgressBar: ', () => {
   const toPos = 39;
   const fromPos = 25;
 
-  states.forEach((state) => {
-    const progressBar = new ProgressBar(true, state.isVertical);
+  states.forEach(({ isRange, isVertical: vertical }) => {
+    const progressBar = new ProgressBar(isRange, vertical);
     const $progressBar = progressBar.render();
-    const isVertical = typeof state.isVertical !== 'undefined' ? state.isVertical : false;
+    const isVertical = typeof vertical !== 'undefined' ? vertical : false;
     const cssFromSide = isVertical ? 'top' : 'left';
     const cssToSide = isVertical ? 'bottom' : 'right';
 

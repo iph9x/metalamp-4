@@ -27,66 +27,74 @@ describe('Scale:', () => {
   const ProgressBarMock = ProgressBar as jest.MockedClass<typeof ProgressBar>;
   const LabelMock = Label as jest.MockedClass<typeof Label>;
 
-  const state = states[0];
+  states.forEach(({
+    max,
+    min,
+    step,
+    to,
+    from,
+    isVertical,
+    isRange,
+  }) => {
+    const maxLabel = new Label(to, 'maxThumb', 20);
+    const minLabel = new Label(from, 'minThumb', 20);
+    const minThumb = new Thumb({
+      type: 'minThumb',
+      startPosition: from,
+      step,
+      wrapper: $wrapper,
+      progressBar,
+      max,
+      min,
+      label: minLabel,
+    });
+    const maxThumb = new Thumb({
+      type: 'maxThumb',
+      step,
+      startPosition: to,
+      wrapper: $wrapper,
+      progressBar,
+      max,
+      min,
+      label: maxLabel,
+    });
+    const scale = new Scale(
+      min,
+      max,
+      70,
+      maxThumb.setPositionHandler,
+      maxThumb.setIsActive,
+      from,
+      minThumb?.setPositionHandler,
+      isVertical,
+      minThumb?.setIsActive,
+      isRange,
+    );
 
-  const maxLabel = new Label(state.to, 'maxThumb', 20);
-  const minLabel = new Label(state.from, 'minThumb', 20);
-  const minThumb = new Thumb({
-    type: 'minThumb',
-    startPosition: state.from,
-    step: state.step,
-    wrapper: $wrapper,
-    progressBar,
-    max: state.max,
-    min: state.min,
-    label: minLabel,
-  });
-  const maxThumb = new Thumb({
-    type: 'maxThumb',
-    step: state.step,
-    startPosition: state.to,
-    wrapper: $wrapper,
-    progressBar,
-    max: state.max,
-    min: state.min,
-    label: maxLabel,
-  });
-  const scale = new Scale(
-    state.min,
-    state.max,
-    70,
-    maxThumb.setPositionHandler,
-    maxThumb.setIsActive,
-    state.from,
-    minThumb?.setPositionHandler,
-    false,
-    minThumb?.setIsActive,
-    true,
-  );
+    const $scale = scale.render();
+    const spy = jest.spyOn(scale, 'clickHandler');
 
-  const $scale = scale.render();
-  const spy = jest.spyOn(scale, 'clickHandler');
+    test('the Scale called Label\'s construcotr', () => {
+      expect(LabelMock).toHaveBeenCalled();
+    });
 
-  test('the Scale called Label\'s construcotr', () => {
-    expect(LabelMock).toHaveBeenCalled();
-  });
+    test('the Scale called Thumb\'s construcotr', () => {
+      expect(ThumbMock).toHaveBeenCalled();
+    });
 
-  test('the Scale called Thumb\'s construcotr', () => {
-    expect(ThumbMock).toHaveBeenCalled();
-  });
+    test('the Scale called ProgressBar\'s construcotr', () => {
+      expect(ProgressBarMock).toHaveBeenCalled();
+    });
 
-  test('the Scale called ProgressBar\'s construcotr', () => {
-    expect(ProgressBarMock).toHaveBeenCalled();
-  });
+    test('method clickHandler() must be called', () => {
+      $(document.body).append($wrapper);
+      $(document.body).append($scale);
+      $scale.trigger('mousedown');
+      expect(spy).toHaveBeenCalled();
+    });
 
-  test('method clickHandler() must be called', () => {
-    $(document.body).append($wrapper);
-    $(document.body).append($scale);
-    $scale.trigger('mousedown');
-    expect(spy).toHaveBeenCalled();
-  });
-
-  test('method render() must return JQuery', () => {
-    expect($scale.constructor).toBe($('<div></div>').constructor);
+    test('method render() must return JQuery', () => {
+      expect($scale.constructor).toBe($('<div></div>').constructor);
+    });
   });
 });

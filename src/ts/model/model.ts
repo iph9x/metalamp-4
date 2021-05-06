@@ -47,7 +47,13 @@ export default class Model extends Observer implements IModel {
       this._max = min;
     }
 
-    this._step = typeof step !== 'undefined' ? step : 1;
+    if (typeof step === 'undefined') {
+      this._step = 1;
+    } else if (typeof step === 'number' && step > this._max - this._min) {
+      this._step = this._max - this._min;
+    } else {
+      this._step = step;
+    }
 
     if (typeof to !== 'undefined' && to > this._min && to <= this._max) {
       this._toValue = to;

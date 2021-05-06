@@ -63,7 +63,7 @@ export default class Thumb extends Observer implements IThumb {
     type,
     startPosition,
     label,
-    step,
+    step = 1,
     wrapper,
     progressBar,
     max,
@@ -99,7 +99,7 @@ export default class Thumb extends Observer implements IThumb {
     this.setPositionByVal(startPosition);
 
     this.onThumbClick();
-    this.onThumbMouseUp();
+    this._onThumbMouseUp();
 
     this.setPositionHandler = this.setPositionHandler.bind(this);
     this._calcNewPos = this._calcNewPos.bind(this);
@@ -171,17 +171,19 @@ export default class Thumb extends Observer implements IThumb {
     this._setPosition(newPosition);
   }
 
-  private onThumbMouseUp() {
-    $(document).on('mouseup', () => {
-      if (this._isActive) {
-        this.setIsActive(false);
+  private _onThumbMouseUp(): void {
+    $(document).on('mouseup', () => this._mouseupHandler());
+  }
 
-        $('html').css('cursor', 'default');
-        $(document).off('mousemove');
+  private _mouseupHandler(): void {
+    if (this._isActive) {
+      this.setIsActive(false);
 
-        this._shift = 0;
-      }
-    });
+      $('html').css('cursor', 'default');
+      $(document).off('mousemove');
+
+      this._shift = 0;
+    }
   }
 
   private _getValueToPercent(val: number): number {

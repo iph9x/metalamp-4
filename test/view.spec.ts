@@ -7,6 +7,7 @@ import Thumb from '../src/ts/subView/thumb';
 import Scale from '../src/ts/subView/scale';
 import ProgressBar from '../src/ts/subView/progressBar';
 import Label from '../src/ts/subView/label';
+import states from './states';
 
 declare const window: any;
 declare const global: any;
@@ -28,6 +29,7 @@ const ScaleMock = Scale as jest.MockedClass<typeof Scale>;
 describe('View: ', () => {
   const $root = $('<div></div>');
   let view: View;
+
   $(document.body).append($root);
 
   beforeEach(() => {
@@ -37,50 +39,78 @@ describe('View: ', () => {
     ScaleMock.mockClear();
   });
 
-  test('View called Thumb\'s constructor two times', () => {
-    view = new View({ slider: $root });
-    view.run();
-    expect(ThumbMock).toHaveBeenCalledTimes(2);
-  });
+  states.forEach(({
+    isVertical,
+    isRange,
+    min,
+    max,
+    from,
+    to,
+    inputFromId,
+    inputToId,
+  }) => {
+    test('View called Thumb\'s constructor two times', () => {
+      view = new View({
+        slider: $root,
+        isVertical,
+        isRange,
+        inputFromId,
+        inputToId,
+      });
+      view.min = min;
+      view.max = max;
 
-  test('View called Scale\'s constructor once', () => {
-    view = new View({ slider: $root });
-    view.run();
-    expect(ScaleMock).toHaveBeenCalledTimes(1);
-  });
+      view.run();
+      expect(ThumbMock).toHaveBeenCalled();
+    });
 
-  test('View called ProgressBar\'s constructor once', () => {
-    view = new View({ slider: $root });
-    view.run();
-    expect(ProgressBarMock).toHaveBeenCalledTimes(1);
-  });
+    test('View called Scale\'s constructor once', () => {
+      view = new View({ slider: $root });
+      view.run();
+      expect(ScaleMock).toHaveBeenCalledTimes(1);
+    });
 
-  test('View called Label\'s constructor once', () => {
-    view = new View({ slider: $root });
-    view.run();
-    expect(LabelMock).toHaveBeenCalledTimes(2);
-  });
+    test('View called ProgressBar\'s constructor once', () => {
+      view = new View({ slider: $root });
+      view.min = min;
+      view.max = max;
+      view.run();
+      expect(ProgressBarMock).toHaveBeenCalledTimes(1);
+    });
 
-  test('method render() must be called on run()', () => {
-    view = new View({ slider: $root });
-    const spyViewRender = jest.spyOn(view, 'run');
-    spyViewRender.mockImplementation(() => {});
+    test('View called Label\'s constructor once', () => {
+      view = new View({ slider: $root });
+      view.min = min;
+      view.max = max;
+      view.run();
+      expect(LabelMock).toHaveBeenCalledTimes(2);
+    });
 
-    view.run();
-    expect(spyViewRender).toHaveBeenCalled();
-  });
+    test('method render() must be called on run()', () => {
+      view = new View({ slider: $root });
+      view.min = min;
+      view.max = max;
+      const spyViewRender = jest.spyOn(view, 'run');
+      spyViewRender.mockImplementation(() => {});
 
-  test('typeof from is number', () => {
-    view = new View({ slider: $root });
-    const from = 10;
-    view.from = from;
-    expect(view.from).toBe(from);
-  });
+      view.run();
+      expect(spyViewRender).toHaveBeenCalled();
+    });
 
-  test('typeof to is number', () => {
-    view = new View({ slider: $root });
-    const to = 100;
-    view.to = to;
-    expect(view.to).toBe(to);
+    test('typeof from is number', () => {
+      view = new View({ slider: $root });
+      view.min = min;
+      view.max = max;
+      view.from = from;
+      expect(view.from).toBe(from);
+    });
+
+    test('typeof to is number', () => {
+      view = new View({ slider: $root });
+      view.min = min;
+      view.max = max;
+      view.to = to;
+      expect(view.to).toBe(to);
+    });
   });
 });

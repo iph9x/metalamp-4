@@ -90,10 +90,6 @@ export default class View extends Observer implements IView {
   public run(): void {
     const that = this._slider;
 
-    if (this._step > this._max - this._min) {
-      this._step = this._max - this._min;
-    }
-
     if (!this._isRange) {
       this._from = this._min;
     }
