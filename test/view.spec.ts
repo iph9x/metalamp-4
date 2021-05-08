@@ -49,7 +49,7 @@ describe('View: ', () => {
     inputFromId,
     inputToId,
   }) => {
-    test('View called Thumb\'s constructor two times', () => {
+    test('View called the Thumb constructor at least once', () => {
       view = new View({
         slider: $root,
         isVertical,
@@ -64,13 +64,13 @@ describe('View: ', () => {
       expect(ThumbMock).toHaveBeenCalled();
     });
 
-    test('View called Scale\'s constructor once', () => {
+    test('View called the Scale constructor once', () => {
       view = new View({ slider: $root });
       view.run();
       expect(ScaleMock).toHaveBeenCalledTimes(1);
     });
 
-    test('View called ProgressBar\'s constructor once', () => {
+    test('View called the ProgressBar constructor once', () => {
       view = new View({ slider: $root });
       view.min = min;
       view.max = max;
@@ -78,7 +78,7 @@ describe('View: ', () => {
       expect(ProgressBarMock).toHaveBeenCalledTimes(1);
     });
 
-    test('View called Label\'s constructor once', () => {
+    test('View called the Label constructor two times', () => {
       view = new View({ slider: $root });
       view.min = min;
       view.max = max;
@@ -97,7 +97,7 @@ describe('View: ', () => {
       expect(spyViewRender).toHaveBeenCalled();
     });
 
-    test('typeof from is number', () => {
+    test('typeof "from" is number', () => {
       view = new View({ slider: $root });
       view.min = min;
       view.max = max;
@@ -105,7 +105,7 @@ describe('View: ', () => {
       expect(view.from).toBe(from);
     });
 
-    test('typeof to is number', () => {
+    test('typeof "to" is number', () => {
       view = new View({ slider: $root });
       view.min = min;
       view.max = max;

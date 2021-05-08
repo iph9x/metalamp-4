@@ -70,6 +70,10 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
     $(sliderName).miSlider(localState);
   });
   $(panelName).on('change', '.slider-panel__min', function minHandler() {
+    const currentValue = Number($(this).val());
+    if(currentValue >= localState.max) {
+      return $(this).val(localState.min);
+    }
     localState.min = Number($(this).val());
     if (localState.inputFromId) {
       localState.from = Number(inputFrom.val());
@@ -82,7 +86,12 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
     $(sliderName).miSlider(localState);
   });
   $(panelName).on('change', '.slider-panel__max', function maxHandler() {
+    const currentValue = Number($(this).val());
+    if (currentValue <= localState.min) {
+      return $(this).val(localState.max);
+    }
     localState.max = Number($(this).val());
+  
     if (localState.inputFromId) {
       localState.from = Number(inputFrom.val());
     }

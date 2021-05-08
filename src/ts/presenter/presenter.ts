@@ -5,7 +5,10 @@ interface IPresenter {
   model: Model,
   view: View,
   state: {},
-  update(action: { type: string, value: number }): void
+  run(): void,
+  updateFrom(value: number): void,
+  updateTo(value: number): void,
+  update(action: { type: string, value: number }): void,
 }
 
 export default class Presenter implements IPresenter {
@@ -24,11 +27,11 @@ export default class Presenter implements IPresenter {
     this.view.run();
   }
 
-  public updateFrom(value: number) {
+  public updateFrom(value: number): void {
     this.model.updateFromValue(value);
   }
 
-  public updateTo(value: number) {
+  public updateTo(value: number): void {
     this.model.updateToValue(value);
   }
 

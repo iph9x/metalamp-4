@@ -1,3 +1,6 @@
+$blue: #13b0fc;
+$grey: rgb(214, 214, 214);
+
 .main {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -31,17 +34,60 @@
   input[type="text"] {
     padding: 3px 5px;
     border: 0;
-    border-bottom: 1px solid #13b0fc;
+    border-bottom: 1px solid $blue;
     font-size: 18px;
     font-weight: 300;
     width: 100%;
     &:focus,
     &:active {
       outline: none;
-      border-bottom: 2px solid #13b0fc;
+      border-bottom: 2px solid $blue;
     }
   }
   span {
     text-align: right;
+  }
+  &__checkbox {
+    position: absolute;
+    z-index: 1;
+    &-btn {
+      position: relative;  
+      width: 34px;
+      height: 20px;
+      border: 1px solid $grey;
+      border-radius: 16px;
+      transition: .15s;
+      z-index: 10;
+      background: $grey;
+      &::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        content: '';
+        height: 18px;
+        width: 18px;
+        background: #fff;
+        border-radius: 16px;
+        transition: .15s;
+      }
+      &:hover {
+        cursor: pointer;
+      }
+    }
+    &-wrapper {
+      position: relative;
+    }
+    &:checked {
+      top: 0;
+      left: 0;
+      opacity: 0;
+    }
+    &:checked + .slider-panel__checkbox-btn::before {
+      transform: translateX(14px);
+    }
+    &:checked + .slider-panel__checkbox-btn  {
+      background: $blue;
+      border-color: $blue;
+    }
   }
 }

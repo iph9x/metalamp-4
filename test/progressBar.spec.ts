@@ -19,7 +19,7 @@ describe('ProgressBar: ', () => {
   states.forEach(({ isRange, isVertical: vertical }) => {
     const progressBar = new ProgressBar(isRange, vertical);
     const $progressBar = progressBar.render();
-    const isVertical = typeof vertical !== 'undefined' ? vertical : false;
+    const isVertical = vertical ?? false;
     const cssFromSide = isVertical ? 'top' : 'left';
     const cssToSide = isVertical ? 'bottom' : 'right';
 
