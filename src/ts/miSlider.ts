@@ -89,7 +89,7 @@ type Props = {
   };
   // eslint-disable-next-line
   $.fn.miSlider = function jqSlider(
-    method: 'init' | 'destroy' | Props,
+    method: 'init' | 'destroy' | 'update' |Props,
     ...args: []
   ): object {
     const that = $(this);

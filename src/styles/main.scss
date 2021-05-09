@@ -23,10 +23,12 @@ $slider-height: 10px;
 
 .mi-slider {
   display: flex;
+  align-items: center;
   width: 100%;
+  height: 100%;
   padding: 30px 40px 10px 40px;
-  color: #fff;
   font-family: sans-serif;
+  color: #fff;
   &__titles {
     display: flex;
     justify-content: space-between;
@@ -39,7 +41,8 @@ $slider-height: 10px;
     height: $slider-height;
     &_vertical {
       width: $slider-height;
-      height: 400px;
+      min-height: 100px;
+      height: 100%;
       .mi-slider {
         &__scale {
           flex-direction: column;
@@ -83,7 +86,7 @@ $slider-height: 10px;
       left: 0;
       right: 0;
       bottom: 0;
-      height: 30px;
+      height: 40px;
     }
     &-num {
       position: relative;

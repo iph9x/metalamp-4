@@ -94,7 +94,7 @@ export default class View extends Observer implements IView {
 
     that.addClass('mi-slider');
     this._progressBar = new ProgressBar(this._isRange, this._isVertical);
-    
+
     this._changeInputFromValue(this._from);
     this._changeInputToValue(this._to);
 

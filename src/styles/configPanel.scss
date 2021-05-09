@@ -3,11 +3,14 @@ $grey: rgb(214, 214, 214);
 
 .main {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 60px 50px;
-  width: 100%;
+  grid-template-columns: 3fr 1fr;
+  grid-template-rows: repeat(3, 440px);
+  gap: 10px 50px;
+  max-width: 1070px;
   margin: 0 auto;
   padding: 0 3vw;
+  justify-items: end;
+  align-items: center;
 }
 
 * {
@@ -24,28 +27,36 @@ $grey: rgb(214, 214, 214);
   font-size: 18px;
   padding: 15px 10px;
   color: rgb(39, 44, 66);
-  label {
+  align-items: center;
+  width: 200px;
+  &__label {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 3fr;
     align-items: center;
     column-gap: 10px;
     width: 100%;
   }
-  input[type="text"] {
+  span {
+    text-align: right;
+  }
+  &__input {
     padding: 3px 5px;
     border: 0;
-    border-bottom: 1px solid $blue;
+    border-bottom: 1px solid $grey;
     font-size: 18px;
     font-weight: 300;
     width: 100%;
+    max-width: 100px;
     &:focus,
     &:active {
       outline: none;
-      border-bottom: 2px solid $blue;
     }
-  }
-  span {
-    text-align: right;
+    &:focus {
+      border-color: $blue;
+    }
+    &:disabled {
+      color: lighten($grey, 20%);
+    }
   }
   &__checkbox {
     position: absolute;
