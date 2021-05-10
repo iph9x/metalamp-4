@@ -14,19 +14,19 @@ global.$ = global.jQuery;
 describe('Label: ', () => {
   const labels = [
     {
-      name: 'maxThumb',
+      name: 'toThumb',
       isVertical: false,
     },
     {
-      name: 'maxThumb',
+      name: 'toThumb',
       isVertical: true,
     },
     {
-      name: 'minThumb',
+      name: 'fromThumb',
       isVertical: true,
     },
     {
-      name: 'minThumb',
+      name: 'fromThumb',
       isVertical: false,
     },
   ];
@@ -34,7 +34,12 @@ describe('Label: ', () => {
   let label: Label;
 
   labels.forEach(({ name, isVertical }) => {
-    const label = new Label(50, name, 40, isVertical);
+    const label = new Label({
+      value: 50,
+      type: name,
+      position: 40,
+      isVertical
+    });
     const $label = label.render();
 
     $(document.body).append($label);
@@ -49,7 +54,7 @@ describe('Label: ', () => {
       const computedStyleLabel = getComputedStyle($label[0]);
       let labelPosition;
 
-      if (name === 'maxThumb') {
+      if (name === 'toThumb') {
         if (isVertical) {
           labelPosition = computedStyleLabel.getPropertyValue('bottom');
         } else {
@@ -73,7 +78,12 @@ describe('Label: ', () => {
     test('method setValue() must be called', () => {
       const spySetValue = jest.spyOn(Label.prototype, 'setValue');
       spySetValue.mockImplementation(() => {});
-      label = new Label(50, name, 40, isVertical);
+      label = new Label({
+        value: 50,
+        type: name,
+        position: 40,
+        isVertical
+      });
 
       expect(spySetValue).toHaveBeenCalled();
     });
@@ -81,7 +91,12 @@ describe('Label: ', () => {
     test('method setPosition() must be called', () => {
       const spySetPosition = jest.spyOn(Label.prototype, 'setPosition');
       spySetPosition.mockImplementation(() => {});
-      label = new Label(50, name, 40, isVertical);
+      label = new Label({
+        value: 50,
+        type: name,
+        position: 40,
+        isVertical
+      });
 
       expect(spySetPosition).toHaveBeenCalled();
     });

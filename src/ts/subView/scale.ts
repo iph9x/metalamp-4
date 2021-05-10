@@ -1,6 +1,21 @@
 export interface IScale {
+  toThumbPosition: number,
+  fromThumbPosition?: number,
   render(): JQuery,
   clickHandler(e: JQuery.Event): void,
+}
+
+type ScaleArgs = {
+  min: number,
+  max: number,
+  fromThumbPosition: number,
+  toThumbPosition: number,
+  setFromThumb?: (e: JQuery.Event) => void,
+  setFromThumbActive?: (value: boolean) => void,
+  setToThumb: (e: JQuery.Event) => void,
+  setToThumbActive: (value: boolean) => void,
+  isRange?: boolean,
+  isVertical?: boolean,
 }
 
 export default class Scale implements IScale {
@@ -10,23 +25,44 @@ export default class Scale implements IScale {
 
   private _scaleNumbersArr: Array<number> = [];
 
-  constructor(
-    min: number,
-    max: number,
-    public maxThumbPosition: number,
-    private _setMax: (e: JQuery.Event) => void,
-    private _setMaxActive: (value: boolean) => void,
-    public minThumbPosition?: number,
-    private _setMin?: (e: JQuery.Event) => void,
-    private _isVertical?: boolean,
-    private _setMinActive?: (value: boolean) => void,
-    isRange?: boolean,
-  ) {
+  public fromThumbPosition?: number;
+
+  public toThumbPosition: number;
+  
+  private _setFromThumb?: (e: JQuery.Event) => void;
+
+  private _setFromThumbActive?: (value: boolean) => void;
+
+  private _setToThumb: (e: JQuery.Event) => void;
+  
+  private _setToThumbActive: (value: boolean) => void;
+
+  private _isVertical?: boolean;
+
+  constructor({
+    min,
+    max,
+    toThumbPosition,
+    setToThumb,
+    setToThumbActive,
+    fromThumbPosition,
+    setFromThumb,
+    isVertical,
+    setFromThumbActive,
+    isRange,
+  }: ScaleArgs) {
     const scaleStep = (max - min) / 4;
+    this._isVertical = isVertical;
 
     if (this._isVertical) {
       this._scale.addClass('mi-slider__scale_vertical');
     }
+    this.toThumbPosition = toThumbPosition;
+    this.fromThumbPosition = fromThumbPosition;
+    this._setToThumb = setToThumb;
+    this._setToThumbActive = setToThumbActive;
+    this._setFromThumb = setFromThumb;
+    this._setFromThumbActive = setFromThumbActive;
 
     for (let i = 0; i < 5; i += 1) {
       if (i === 0) {
@@ -39,12 +75,36 @@ export default class Scale implements IScale {
     }
 
     this._isSingle = !isRange;
-    this.renderNums();
+    this._renderNums();
     this._onScaleClick();
   }
 
   private _onScaleClick(): void {
     this._scale.on('mousedown', (e: JQuery.Event) => this.clickHandler(e));
+  }
+
+  private _setClosestThumbPos(offset: number, e: JQuery.Event): void {
+    const offsetFromThumb = Math.abs(offset - this.fromThumbPosition);
+    const offsetToThumb = Math.abs(offset - (100 - this.toThumbPosition));
+    const offsetFromThumbIsLess = offsetToThumb <= offsetFromThumb;
+    
+    if (offsetFromThumbIsLess || this._isSingle) {
+      this._setToThumbActive(true);
+      this._setToThumb(e);
+      this._setToThumbActive(false);
+    } else {
+      this._setFromThumbActive(true);
+      this._setFromThumb(e);
+      this._setFromThumbActive(false);
+    }
+  }
+
+  private _renderNums() {
+    for (let i = 0; i < 5; i += 1) {
+      const newEl = $('<span class="mi-slider__scale-num"></span>');
+      newEl.attr('data-before', `${this._scaleNumbersArr[i]}`);
+      this._scale.append(newEl);
+    }
   }
 
   public clickHandler(e: JQuery.Event): void {
@@ -66,30 +126,7 @@ export default class Scale implements IScale {
     this._setClosestThumbPos(offset, e);
   }
 
-  private _setClosestThumbPos(offset: number, e: JQuery.Event): void {
-    const offsetMin = Math.abs(offset - this.minThumbPosition);
-    const offsetMax = Math.abs(offset - (100 - this.maxThumbPosition));
-
-    if (offsetMax <= offsetMin || this._isSingle) {
-      this._setMaxActive(true);
-      this._setMax(e);
-      this._setMaxActive(false);
-    } else {
-      this._setMinActive(true);
-      this._setMin(e);
-      this._setMinActive(false);
-    }
-  }
-
   public render(): JQuery {
     return this._scale;
-  }
-
-  private renderNums() {
-    for (let i = 0; i < 5; i += 1) {
-      const newEl = $('<span class="mi-slider__scale-num"></span>');
-      newEl.attr('data-before', `${this._scaleNumbersArr[i]}`);
-      this._scale.append(newEl);
-    }
   }
 }

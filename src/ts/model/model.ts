@@ -69,11 +69,11 @@ export default class Model extends Observer implements IModel {
   }
 
   public updateFromValue(value: number): void {
-    this.init({ type: 'UPDATE_MODEL_FROM', value });
+    this.fire({ type: 'UPDATE_MODEL_FROM', value });
   }
 
   public updateToValue(value: number): void {
-    this.init({ type: 'UPDATE_MODEL_TO', value });
+    this.fire({ type: 'UPDATE_MODEL_TO', value });
   }
 
   public set fromValue(value: number) {

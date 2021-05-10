@@ -42,7 +42,7 @@ export default class Presenter implements IPresenter {
     };
   }
 
-  update(action: { type: string, value: number }): void {
+  public update(action: { type: string, value: number }): void {
     switch (action.type) {
       case 'SET_TO_VALUE':
         this.model.toValue = action.value;

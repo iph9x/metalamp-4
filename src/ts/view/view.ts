@@ -4,7 +4,7 @@ import ProgressBar from '../subView/progressBar';
 import Scale from '../subView/scale';
 import Observer from '../pattern/observer';
 
-export interface IView {
+interface IView {
   step: number,
   min: number,
   max: number,
@@ -16,9 +16,9 @@ export interface IView {
   run(): void,
 }
 
-type Props = {
-  isRange?: boolean,
+type ViewArgs = {
   slider: JQuery,
+  isRange?: boolean,
   labelsVisibility?: boolean,
   isVertical?: boolean,
   inputFromId?: string,
@@ -26,9 +26,9 @@ type Props = {
 };
 
 export default class View extends Observer implements IView {
-  private _minThumbPosition: number;
+  private _fromThumbPosition: number;
 
-  private _maxThumbPosition: number;
+  private _toThumbPosition: number;
 
   private _wrapper = $('<div class="mi-slider__wrapper"></div>');
 
@@ -36,13 +36,13 @@ export default class View extends Observer implements IView {
 
   private _progressBar: ProgressBar;
 
-  private _minThumb: Thumb;
+  private _fromThumb: Thumb;
 
-  private _maxThumb: Thumb;
+  private _toThumb: Thumb;
 
-  private _minThumbLabel: Label;
+  private _fromThumbLabel: Label;
 
-  private _maxThumbLabel: Label;
+  private _toThumbLabel: Label;
 
   private _inputFrom: JQuery;
 
@@ -77,7 +77,7 @@ export default class View extends Observer implements IView {
     isVertical,
     inputFromId,
     inputToId,
-  }: Props) {
+  }: ViewArgs) {
     super();
     this._slider = $(slider);
     this._isVertical = isVertical ?? false;
@@ -87,62 +87,27 @@ export default class View extends Observer implements IView {
     this._labelsVisibility = labelsVisibility ?? true;
   }
 
-  public run(): void {
-    const that = this._slider;
-
-    this._conditionsBlock();
-
-    that.addClass('mi-slider');
-    this._progressBar = new ProgressBar(this._isRange, this._isVertical);
-
-    this._changeInputFromValue(this._from);
-    this._changeInputToValue(this._to);
-
-    this._minThumbPosition = (1 - (this._max - this._from) / (this._max - this._min)) * 100;
-    this._maxThumbPosition = ((this._max - this._to) / (this._max - this._min)) * 100;
-
-    this._maxThumbLabel = new Label(this._to, 'maxThumb', this._maxThumbPosition, this._isVertical);
-    this._minThumbLabel = new Label(this._from, 'minThumb', this._minThumbPosition, this._isVertical);
-
-    if (this._isRange) {
-      this._minThumb = this._createMinThumb();
-      this._minThumb.subscribe(this);
-
-      this._initInputFrom();
-    }
-
-    this._maxThumb = this._createMaxThumb();
-    this._maxThumb.subscribe(this);
-
-    this._scale = this._createScale();
-
-    this._progressBar.onClick(this._scale.clickHandler.bind(this._scale));
-
-    this._inputInputTo();
-    this.render(that);
-  }
-
   private _initInputFrom(): void {
     if (this._inputFromId) {
       this._inputFrom.off();
       this._inputFrom.on('blur', (e: Event) => {
         const val = this._checkNewFromValue(Number($(e.target).val()));
-        this._minThumb.setPositionByVal(val);
+        this._fromThumb.setPositionByValue(val);
       });
     }
   }
 
-  private _inputInputTo(): void {
+  private _initInputTo(): void {
     if (this._inputTo) {
       this._inputTo.off();
       this._inputTo.on('blur', (e: Event) => {
         const val = this._checkNewToValue(Number($(e.target).val()));
-        this._maxThumb.setPositionByVal(val);
+        this._toThumb.setPositionByValue(val);
       });
     }
   }
 
-  private _conditionsBlock(): void {
+  private _runConditionsBlock(): void {
     if (!this._isRange) {
       this._from = this._min;
     }
@@ -188,14 +153,14 @@ export default class View extends Observer implements IView {
 
   private _setCurrentMax(value: number): void {
     this._to = value;
-    this.init({ type: 'SET_TO_VALUE', value });
+    this.fire({ type: 'SET_TO_VALUE', value });
 
     this._changeInputToValue(value);
   }
 
   private _setCurrentMin(value: number): void {
     this._from = value;
-    this.init({ type: 'SET_FROM_VALUE', value });
+    this.fire({ type: 'SET_FROM_VALUE', value });
 
     this._changeInputFromValue(value);
   }
@@ -212,50 +177,115 @@ export default class View extends Observer implements IView {
     }
   }
 
-  private _createMinThumb(): Thumb {
+  private _createFromThumb(): Thumb {
     return new Thumb({
-      type: 'minThumb',
+      type: 'fromThumb',
       startPosition: this._from,
-      label: this._minThumbLabel,
+      label: this._fromThumbLabel,
       step: this._step,
       wrapper: this._wrapper,
       progressBar: this._progressBar,
       max: this._max,
       min: this._min,
-      otherThumbPosition: this._maxThumbPosition,
+      otherThumbPosition: this._toThumbPosition,
       vertical: this._isVertical,
     });
   }
 
-  private _createMaxThumb(): Thumb {
+  private _createToThumb(): Thumb {
     return new Thumb({
-      type: 'maxThumb',
+      type: 'toThumb',
       startPosition: this._to,
-      label: this._maxThumbLabel,
+      label: this._toThumbLabel,
       step: this._step,
       wrapper: this._wrapper,
       progressBar: this._progressBar,
       max: this._max,
       min: this._min,
-      otherThumbPosition: this._minThumbPosition,
+      otherThumbPosition: this._fromThumbPosition,
       vertical: this._isVertical,
       isRange: this._isRange,
     });
   }
 
   private _createScale(): Scale {
-    return new Scale(
-      this._min,
-      this._max,
-      this._maxThumbPosition,
-      this._maxThumb.setPositionHandler,
-      this._maxThumb.setIsActive,
-      this._minThumbPosition,
-      this._minThumb?.setPositionHandler,
-      this._isVertical,
-      this._minThumb?.setIsActive,
-      this._isRange,
-    );
+    return new Scale({
+      min: this._min,
+      max: this._max,
+      toThumbPosition: this._toThumbPosition,
+      setToThumb: this._toThumb.setPositionHandler,
+      setToThumbActive: this._toThumb.setIsActive,
+      fromThumbPosition: this._fromThumbPosition,
+      setFromThumb: this._fromThumb?.setPositionHandler,
+      isVertical: this._isVertical,
+      setFromThumbActive: this._fromThumb?.setIsActive,
+      isRange: this._isRange,
+    });
+  }
+
+  private render(root: JQuery): void {
+    if (this._isRange) {
+      this._wrapper.append(this._fromThumb.render());
+    }
+
+    this._wrapper
+      .append(this._toThumb.render())
+      .append(this._scale.render())
+      .append(this._progressBar.render());
+
+    if (this._labelsVisibility) {
+      if (this._isRange) {
+        this._wrapper.append(this._fromThumbLabel.render());
+      }
+      this._wrapper.append(this._toThumbLabel.render());
+    }
+
+    root.append(this._wrapper);
+  }
+
+  public run(): void {
+    const that = this._slider;
+
+    this._runConditionsBlock();
+
+    that.addClass('mi-slider');
+    this._progressBar = new ProgressBar(this._isRange, this._isVertical);
+
+    this._changeInputFromValue(this._from);
+    this._changeInputToValue(this._to);
+
+    this._fromThumbPosition = (1 - (this._max - this._from) / (this._max - this._min)) * 100;
+    this._toThumbPosition = ((this._max - this._to) / (this._max - this._min)) * 100;
+
+    this._toThumbLabel = new Label({
+      value: this._to,
+      type: 'toThumb',
+      position: this._toThumbPosition,
+      isVertical: this._isVertical
+    });
+    this._fromThumbLabel = new Label({
+      value: this._from,
+      type: 'fromThumb',
+      position: this._fromThumbPosition,
+      isVertical: this._isVertical
+    });
+
+    if (this._isRange) {
+      this._fromThumb = this._createFromThumb();
+      this._fromThumb.subscribe(this);
+
+      this._initInputFrom();
+    }
+
+    this._toThumb = this._createToThumb();
+    this._toThumb.subscribe(this);
+
+    this._scale = this._createScale();
+
+    this._progressBar.onClick(this._scale.clickHandler.bind(this._scale));
+
+    this._initInputTo();
+    this.render(that);
   }
 
   public set min(value: number) {
@@ -288,32 +318,12 @@ export default class View extends Observer implements IView {
 
   public updateFrom(value: number) {
     const newVal = this._checkNewFromValue(value);
-    this._minThumb.setPositionByVal(newVal);
+    this._fromThumb.setPositionByValue(newVal);
   }
 
   public updateTo(value: number) {
     const newVal = this._checkNewToValue(value);
-    this._maxThumb.setPositionByVal(newVal);
-  }
-
-  private render(root: JQuery): void {
-    if (this._isRange) {
-      this._wrapper.append(this._minThumb.render());
-    }
-
-    this._wrapper
-      .append(this._maxThumb.render())
-      .append(this._scale.render())
-      .append(this._progressBar.render());
-
-    if (this._labelsVisibility) {
-      if (this._isRange) {
-        this._wrapper.append(this._minThumbLabel.render());
-      }
-      this._wrapper.append(this._maxThumbLabel.render());
-    }
-
-    root.append(this._wrapper);
+    this._toThumb.setPositionByValue(newVal);
   }
 
   public update(action: { type: string, value: number }): void {
@@ -324,17 +334,17 @@ export default class View extends Observer implements IView {
       case ('SET_CURRENT_MIN'):
         this._setCurrentMin(action.value);
         break;
-      case ('SET_MAX_THUMB_POSITION'):
-        this._maxThumbPosition = action.value;
+      case ('SET_TO_THUMB_POSITION'):
+        this._toThumbPosition = action.value;
         if (this._isRange) {
-          this._minThumb.otherThumbPosition = action.value;
+          this._fromThumb.otherThumbPosition = action.value;
         }
-        this._scale.maxThumbPosition = action.value;
+        this._scale.toThumbPosition = action.value;
         break;
-      case ('SET_MIN_THUMB_POSITION'):
-        this._minThumbPosition = action.value;
-        this._maxThumb.otherThumbPosition = action.value;
-        this._scale.minThumbPosition = action.value;
+      case ('SET_FROM_THUMB_POSITION'):
+        this._fromThumbPosition = action.value;
+        this._toThumb.otherThumbPosition = action.value;
+        this._scale.fromThumbPosition = action.value;
         break;
       default:
         break;

@@ -72,17 +72,16 @@ type Props = {
         const data = that.data('miSlider');
 
         let { from, to } = obj;
+        from = from ?? data.presenter.state.fromValue;
+        to = to ?? data.presenter.state.toValue;
 
-        if (from && to && from >= to) {
-          from = obj.to;
-          to = obj.from;
-        }
-
-        if (typeof from === 'number') {
-          data.presenter.updateFrom(from);
-        }
-        if (typeof to === 'number') {
-          data.presenter.updateTo(to);
+        if (from < to) {
+          if (typeof from === 'number') {
+            data.presenter.updateFrom(from);
+          }
+          if (typeof to === 'number') {
+            data.presenter.updateTo(to);
+          }
         }
       });
     },

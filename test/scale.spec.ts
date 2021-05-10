@@ -36,40 +36,48 @@ describe('Scale:', () => {
     isVertical,
     isRange,
   }) => {
-    const maxLabel = new Label(to, 'maxThumb', 20);
-    const minLabel = new Label(from, 'minThumb', 20);
-    const minThumb = new Thumb({
-      type: 'minThumb',
+    const toLabel = new Label({
+      value: to,
+      type: 'toThumb',
+      position: 20,
+    });
+    const fromLabel = new Label({
+      value: from,
+      type: 'fromThumb',
+      position: 20,
+    });
+    const fromThumb = new Thumb({
+      type: 'fromThumb',
       startPosition: from,
       step,
       wrapper: $wrapper,
       progressBar,
       max,
       min,
-      label: minLabel,
+      label: fromLabel,
     });
-    const maxThumb = new Thumb({
-      type: 'maxThumb',
+    const toThumb = new Thumb({
+      type: 'toThumb',
       step,
       startPosition: to,
       wrapper: $wrapper,
       progressBar,
       max,
       min,
-      label: maxLabel,
+      label: toLabel,
     });
-    const scale = new Scale(
+    const scale = new Scale({
       min,
       max,
-      70,
-      maxThumb.setPositionHandler,
-      maxThumb.setIsActive,
-      from,
-      minThumb?.setPositionHandler,
+      toThumbPosition: 70,
+      setToThumb: toThumb.setPositionHandler,
+      setToThumbActive: toThumb.setIsActive,
+      fromThumbPosition: from,
+      setFromThumb: fromThumb?.setPositionHandler,
       isVertical,
-      minThumb?.setIsActive,
+      setFromThumbActive: fromThumb?.setIsActive,
       isRange,
-    );
+    });
 
     const $scale = scale.render();
     const spy = jest.spyOn(scale, 'clickHandler');

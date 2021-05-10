@@ -14,7 +14,7 @@ global.jQuery = $;
 global.$ = global.jQuery;
 
 type OptionsType = Array<{
-  thumbName: 'minThumb' | 'maxThumb',
+  thumbName: 'fromThumb' | 'toThumb',
   start: number,
   isVertical: boolean,
 }>;
@@ -26,12 +26,12 @@ describe('Label: ', () => {
 
   const thumbsOptions: OptionsType = [
     {
-      thumbName: 'minThumb',
+      thumbName: 'fromThumb',
       start: min,
       isVertical: false,
     },
     {
-      thumbName: 'maxThumb',
+      thumbName: 'toThumb',
       start: to,
       isVertical: true,
     },
@@ -80,8 +80,8 @@ describe('Label: ', () => {
       expect(spySetIsActive).toHaveBeenCalled();
     });
 
-    test('method setPositionByVal() must be called', () => {
-      const spySetPositionByVal = jest.spyOn(Thumb.prototype, 'setPositionByVal');
+    test('method setPositionByValue() must be called', () => {
+      const spySetPositionByVal = jest.spyOn(Thumb.prototype, 'setPositionByValue');
       spySetPositionByVal.mockImplementation(() => {});
 
       thumb = new Thumb({

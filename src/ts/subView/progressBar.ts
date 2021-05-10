@@ -1,8 +1,8 @@
 export interface IProgressBar {
   render(): JQuery,
   onClick(callback: Function): void,
-  setMinPosition(position: number): void,
-  setMaxPosition(position: number): void
+  setFromPosition(position: number): void,
+  setToPosition(position: number): void
 }
 
 export default class ProgressBar implements IProgressBar {
@@ -25,7 +25,7 @@ export default class ProgressBar implements IProgressBar {
       this._cssToSide = 'right';
     }
     if (!this._isRange) {
-      this.setMinPosition(0);
+      this.setFromPosition(0);
     }
   }
 
@@ -37,11 +37,11 @@ export default class ProgressBar implements IProgressBar {
     this._progressBar.on('mousedown', (e: JQuery.Event) => callback(e));
   }
 
-  public setMinPosition(position: number): void {
+  public setFromPosition(position: number): void {
     this._progressBar.css(this._cssFromSide, `${position}%`);
   }
 
-  public setMaxPosition(position: number): void {
+  public setToPosition(position: number): void {
     this._progressBar.css(this._cssToSide, `${position}%`);
   }
 }

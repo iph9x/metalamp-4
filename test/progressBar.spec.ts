@@ -26,7 +26,7 @@ describe('ProgressBar: ', () => {
     $(document.body).append($progressBar);
 
     test(`property ${cssFromSide} === ${toPos}%`, () => {
-      progressBar.setMinPosition(toPos);
+      progressBar.setFromPosition(toPos);
 
       const ProgressBarStyles = getComputedStyle($progressBar[0]).getPropertyValue(cssFromSide);
 
@@ -34,7 +34,7 @@ describe('ProgressBar: ', () => {
     });
 
     test(`property ${cssToSide} === ${fromPos}%`, () => {
-      progressBar.setMaxPosition(fromPos);
+      progressBar.setToPosition(fromPos);
 
       const ProgressBarStyles = getComputedStyle($progressBar[0]).getPropertyValue(cssToSide);
 
