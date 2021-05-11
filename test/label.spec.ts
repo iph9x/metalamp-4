@@ -34,11 +34,11 @@ describe('Label: ', () => {
   let label: Label;
 
   labels.forEach(({ name, isVertical }) => {
-    const label = new Label({
+    label = new Label({
       value: 50,
       type: name,
       position: 40,
-      isVertical
+      isVertical,
     });
     const $label = label.render();
 
@@ -82,7 +82,7 @@ describe('Label: ', () => {
         value: 50,
         type: name,
         position: 40,
-        isVertical
+        isVertical,
       });
 
       expect(spySetValue).toHaveBeenCalled();
@@ -95,7 +95,7 @@ describe('Label: ', () => {
         value: 50,
         type: name,
         position: 40,
-        isVertical
+        isVertical,
       });
 
       expect(spySetPosition).toHaveBeenCalled();

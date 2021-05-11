@@ -9,7 +9,7 @@ type LabelArgs = {
   type: string,
   position: number,
   isVertical?: boolean,
-}
+};
 
 export default class Label implements ILabel {
   private _label: JQuery = $('<span class="mi-slider__label"></span>');
@@ -28,13 +28,13 @@ export default class Label implements ILabel {
     value,
     type,
     position,
-    isVertical
+    isVertical,
   }: LabelArgs) {
     this._value = value;
     this._type = type;
     this._position = position;
     this._isVertical = isVertical;
-    
+
     if (this._type === 'fromThumb') {
       this._cssSide = this._isVertical ? 'top' : 'left';
     } else {

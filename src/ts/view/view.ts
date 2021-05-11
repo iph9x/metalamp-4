@@ -261,13 +261,13 @@ export default class View extends Observer implements IView {
       value: this._to,
       type: 'toThumb',
       position: this._toThumbPosition,
-      isVertical: this._isVertical
+      isVertical: this._isVertical,
     });
     this._fromThumbLabel = new Label({
       value: this._from,
       type: 'fromThumb',
       position: this._fromThumbPosition,
-      isVertical: this._isVertical
+      isVertical: this._isVertical,
     });
 
     if (this._isRange) {

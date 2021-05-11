@@ -16,7 +16,7 @@ type ScaleArgs = {
   setToThumbActive: (value: boolean) => void,
   isRange?: boolean,
   isVertical?: boolean,
-}
+};
 
 export default class Scale implements IScale {
   private _scale: JQuery = $('<div class="mi-slider__scale"></div>');
@@ -28,13 +28,13 @@ export default class Scale implements IScale {
   public fromThumbPosition?: number;
 
   public toThumbPosition: number;
-  
+
   private _setFromThumb?: (e: JQuery.Event) => void;
 
   private _setFromThumbActive?: (value: boolean) => void;
 
   private _setToThumb: (e: JQuery.Event) => void;
-  
+
   private _setToThumbActive: (value: boolean) => void;
 
   private _isVertical?: boolean;
@@ -87,7 +87,7 @@ export default class Scale implements IScale {
     const offsetFromThumb = Math.abs(offset - this.fromThumbPosition);
     const offsetToThumb = Math.abs(offset - (100 - this.toThumbPosition));
     const offsetFromThumbIsLess = offsetToThumb <= offsetFromThumb;
-    
+
     if (offsetFromThumbIsLess || this._isSingle) {
       this._setToThumbActive(true);
       this._setToThumb(e);
