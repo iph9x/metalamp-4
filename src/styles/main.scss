@@ -62,7 +62,7 @@ $slider-height: 10px;
             transform: translateX(-100%);
           }
         }
-        &__circle {
+        &__thumb {
           width: $thumb-height;
           height: $thumb-width;
         }
@@ -161,7 +161,7 @@ $slider-height: 10px;
       height: auto;
     }
   }
-  &__circle {
+  &__thumb {
     position: absolute;
     z-index: 2;
     width: $thumb-width;

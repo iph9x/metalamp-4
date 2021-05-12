@@ -31,10 +31,9 @@ describe('Label: ', () => {
     },
   ];
   const newValue = 55;
-  let label: Label;
 
   labels.forEach(({ name, isVertical }) => {
-    label = new Label({
+    const label = new Label({
       value: 50,
       type: name,
       position: 40,
@@ -73,6 +72,7 @@ describe('Label: ', () => {
       expect($label.constructor).toBe($('<div></div>').constructor);
     });
   });
+  let label: Label;
 
   labels.forEach(({ name, isVertical }) => {
     test('method setValue() must be called', () => {

@@ -25,7 +25,7 @@ type ThumbArgs = {
 };
 
 export default class Thumb extends Observer implements IThumb {
-  private _thumb: JQuery = $('<span class="mi-slider__circle"></span>');
+  private _thumb: JQuery = $('<span class="mi-slider__thumb"></span>');
 
   private _shift: number = 0;
 
@@ -91,7 +91,7 @@ export default class Thumb extends Observer implements IThumb {
       this.cssType = this._isVertical ? 'bottom' : 'right';
     }
 
-    this._thumb.addClass(`mi-slider__circle_${this.cssType}`);
+    this._thumb.addClass(`mi-slider__thumb_${this.cssType}`);
     this._isMaxThumb = this._type === 'toThumb';
 
     this._current = this._isMaxThumb ? max : min;
@@ -116,6 +116,9 @@ export default class Thumb extends Observer implements IThumb {
 
   private _calcValueFromPosition(position: number): number {
     const minMaxDiff = this._max - this._min;
+    if (position === 1 || position === 0) {
+      return (this._min + (position) * minMaxDiff);
+    }
     return (Math.round((this._min + (position) * minMaxDiff) / this._step) * this._step);
   }
 
@@ -183,8 +186,9 @@ export default class Thumb extends Observer implements IThumb {
   }
 
   private _setCurrent(value: number): void {
-    this._current = value;
-    this._setParentState('SET_CURRENT_MAX', 'SET_CURRENT_MIN', value);
+    const roundedValue = Number(value.toFixed(6));
+    this._current = roundedValue;
+    this._setParentState('SET_CURRENT_MAX', 'SET_CURRENT_MIN', roundedValue);
   }
 
   private _setParentState(
@@ -200,10 +204,6 @@ export default class Thumb extends Observer implements IThumb {
     this._setParentState('SET_TO_THUMB_POSITION', 'SET_FROM_THUMB_POSITION', value);
   }
 
-  public render(): JQuery {
-    return this._thumb;
-  }
-
   public clickHandler(e: JQuery.Event): void {
     e.preventDefault();
 
@@ -214,18 +214,24 @@ export default class Thumb extends Observer implements IThumb {
     this._onThumbMove();
   }
 
+  public render(): JQuery {
+    return this._thumb;
+  }
+
   public setPositionByValue(value: number): void {
-    if (value < this._min) {
+    const roundedValue = Number(value.toFixed(6));
+
+    if (roundedValue < this._min) {
       this._position = 0;
-    } else if (value > this._max) {
+    } else if (roundedValue > this._max) {
       this._position = 100;
     } else if (this._isMaxThumb) {
-      this._position = this._getValueToPercent(this._max - value);
+      this._position = this._getValueToPercent(this._max - roundedValue);
     } else {
-      this._position = 100 - this._getValueToPercent(this._max - value);
+      this._position = 100 - this._getValueToPercent(this._max - roundedValue);
     }
 
-    this._setCurrent(value);
+    this._setCurrent(roundedValue);
     this._setPosition(this._position);
     this._thumb.css(this.cssType, `${this._position}%`);
 
@@ -236,7 +242,7 @@ export default class Thumb extends Observer implements IThumb {
     }
 
     this._label?.setPosition(this._position);
-    this._label?.setValue(value);
+    this._label?.setValue(roundedValue);
   }
 
   public setIsActive(value: boolean): void {
@@ -263,15 +269,17 @@ export default class Thumb extends Observer implements IThumb {
       let value = this._calcValueFromPosition(1 - newPosition / 100);
       value = value > this._max ? this._max : value;
 
-      this._current = value;
-      this.fire({ type: 'SET_CURRENT_MAX', value });
+      const roundedValue = Number(value.toFixed(6));
+      this._current = roundedValue;
+      this.fire({ type: 'SET_CURRENT_MAX', value: roundedValue });
     } else {
       this._progressBar.setFromPosition(newPosition);
       let value = this._calcValueFromPosition(newPosition / 100);
       value = value < this._min ? this._min : value;
 
-      this._current = value;
-      this.fire({ type: 'SET_CURRENT_MIN', value });
+      const roundedValue = Number(value.toFixed(6));
+      this._current = roundedValue;
+      this.fire({ type: 'SET_CURRENT_MIN', value: roundedValue });
     }
 
     this._thumb.css(this.cssType, `${newPosition}%`);

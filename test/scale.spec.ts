@@ -41,21 +41,25 @@ describe('Scale:', () => {
       type: 'toThumb',
       position: 20,
     });
-    const fromLabel = new Label({
-      value: from,
-      type: 'fromThumb',
-      position: 20,
-    });
-    const fromThumb = new Thumb({
-      type: 'fromThumb',
-      startPosition: from,
-      step,
-      wrapper: $wrapper,
-      progressBar,
-      max,
-      min,
-      label: fromLabel,
-    });
+    let fromLabel: Label;
+    let fromThumb: Thumb;
+    if (!isRange) {
+      fromLabel = new Label({
+        value: from,
+        type: 'fromThumb',
+        position: 20,
+      });
+      fromThumb = new Thumb({
+        type: 'fromThumb',
+        startPosition: from,
+        step,
+        wrapper: $wrapper,
+        progressBar,
+        max,
+        min,
+        label: fromLabel,
+      });
+    }
     const toThumb = new Thumb({
       type: 'toThumb',
       step,
@@ -99,6 +103,8 @@ describe('Scale:', () => {
       $(document.body).append($scale);
       $scale.trigger('mousedown');
       expect(spy).toHaveBeenCalled();
+      $scale.trigger('mousemove');
+      $scale.trigger('mouseup');
     });
 
     test('method render() must return JQuery', () => {

@@ -91,12 +91,24 @@ export default class Scale implements IScale {
     if (offsetFromThumbIsLess || this._isSingle) {
       this._setToThumbActive(true);
       this._setToThumb(e);
-      this._setToThumbActive(false);
+      $(document).on('mousemove', (mousemoveEvent: JQuery.Event) => this._setToThumb(mousemoveEvent));
+      $(document).on('mouseup', () => this._onMouseUp('to'));
     } else {
       this._setFromThumbActive(true);
       this._setFromThumb(e);
-      this._setFromThumbActive(false);
+      $(document).on('mousemove', (mousemoveEvent: JQuery.Event) => this._setFromThumb(mousemoveEvent));
+      $(document).on('mouseup', () => this._onMouseUp('from'));
     }
+  }
+
+  private _onMouseUp(thumb: 'from' | 'to') {
+    if (thumb === 'from') {
+      this._setFromThumbActive(false);
+    } else {
+      this._setToThumbActive(false);
+    }
+    $(document).off('mousemove');
+    $('html').css('cursor', 'default');
   }
 
   private _renderNums() {
@@ -108,6 +120,7 @@ export default class Scale implements IScale {
   }
 
   public clickHandler(e: JQuery.Event): void {
+    e.preventDefault();
     let offset: number;
     const scaleClientRect = this._scale.get(0).getBoundingClientRect();
 
@@ -122,7 +135,7 @@ export default class Scale implements IScale {
     } else if (offset < 0) {
       offset = 0;
     }
-
+    $('html').css('cursor', 'pointer');
     this._setClosestThumbPos(offset, e);
   }
 
