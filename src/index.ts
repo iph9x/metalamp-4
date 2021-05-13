@@ -1,5 +1,5 @@
 import './styles/main.scss';
-import './styles/configPanel.scss';
+// import './styles/configPanel.scss';
 import './ts/miSlider';
 
 type Props = {

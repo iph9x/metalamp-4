@@ -26,7 +26,8 @@ module.exports = {
   context: PATHS.src,
   mode: 'development',
   entry: {
-    main: './index.ts'
+    miSlider: './index.ts',
+    panel: './styles/configPanel.scss'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -62,18 +63,12 @@ module.exports = {
       },
       {
         test: /\.(ts|tsx|js)$/,
-        // use: 'ts-loader',
         enforce: 'pre',
         use: {
           loader: 'awesome-typescript-loader',
         },
         exclude: /node_modules/,
       },
-      // {
-      //   test: /\.js$/,
-      //   use: ['babel-loader'],
-      //   exclude: /node_modules/,
-      // },
       {
         test: /\.(png|jpg|svg|gif)$/,
         use: {
@@ -105,9 +100,7 @@ module.exports = {
       filename: `${page}`
     })),
     new CleanWebpackPlugin(),
-    new MiniCssExtractPlugin({
-      filename: filename('css')
-    }),
+    new MiniCssExtractPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.ProvidePlugin({
       $: 'jquery',
@@ -115,9 +108,4 @@ module.exports = {
     }),
     new ESLintPlugin()
   ],
-  optimization: {
-    splitChunks: {
-      chunks: 'all'
-    }
-  }
 }
