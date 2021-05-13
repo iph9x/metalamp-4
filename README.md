@@ -1,7 +1,7 @@
 # miSlider
 
   miSlider allows to select single or double values from a range.
-  * [demo](https://github.com/iph9x/metalamp-4)
+  * [demo](https://iph9x.github.io/metalamp-4/index.html)
 
 ***
 
