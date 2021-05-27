@@ -12,7 +12,7 @@ type LabelArgs = {
 };
 
 export default class Label implements ILabel {
-  private _label: JQuery = $('<span class="mi-slider__label"></span>');
+  private _$label: JQuery = $('<span class="mi-slider__label"></span>');
 
   private _cssSide: 'top' | 'left' | 'bottom' | 'right';
 
@@ -40,23 +40,23 @@ export default class Label implements ILabel {
     } else {
       this._cssSide = this._isVertical ? 'bottom' : 'right';
     }
-    this._label.addClass(`mi-slider__label_${this._cssSide}`);
+    this._$label.addClass(`mi-slider__label_${this._cssSide}`);
 
     this.setValue(this._value);
     this.setPosition(this._position);
   }
 
   public render(): JQuery {
-    return this._label;
+    return this._$label;
   }
 
   public setValue(value: number): void {
     this._value = value;
-    this._label.html(`${value}`);
+    this._$label.html(`${value}`);
   }
 
   public setPosition(value: number): void {
     this._position = value;
-    this._label.css(this._cssSide, `${value}%`);
+    this._$label.css(this._cssSide, `${value}%`);
   }
 }

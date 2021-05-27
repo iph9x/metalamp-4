@@ -19,7 +19,7 @@ type ScaleArgs = {
 };
 
 export default class Scale implements IScale {
-  private _scale: JQuery = $('<div class="mi-slider__scale"></div>');
+  private _$scale: JQuery = $('<div class="mi-slider__scale"></div>');
 
   private _isSingle: boolean;
 
@@ -55,7 +55,7 @@ export default class Scale implements IScale {
     this._isVertical = isVertical;
 
     if (this._isVertical) {
-      this._scale.addClass('mi-slider__scale_vertical');
+      this._$scale.addClass('mi-slider__scale_vertical');
     }
     this.toThumbPosition = toThumbPosition;
     this.fromThumbPosition = fromThumbPosition;
@@ -80,7 +80,7 @@ export default class Scale implements IScale {
   }
 
   private _onScaleClick(): void {
-    this._scale.on('mousedown', (e: JQuery.Event) => this.clickHandler(e));
+    this._$scale.on('mousedown', (e: JQuery.Event) => this.clickHandler(e));
   }
 
   private _setClosestThumbPos(offset: number, e: JQuery.Event): void {
@@ -115,19 +115,19 @@ export default class Scale implements IScale {
     for (let i = 0; i < 5; i += 1) {
       const newEl = $('<span class="mi-slider__scale-num"></span>');
       newEl.attr('data-before', `${this._scaleNumbersArr[i]}`);
-      this._scale.append(newEl);
+      this._$scale.append(newEl);
     }
   }
 
   public clickHandler(e: JQuery.Event): void {
     e.preventDefault();
     let offset: number;
-    const scaleClientRect = this._scale.get(0).getBoundingClientRect();
+    const scaleClientRect = this._$scale.get(0).getBoundingClientRect();
 
     if (this._isVertical) {
-      offset = ((e.clientY - scaleClientRect.top) * 100) / this._scale.height();
+      offset = ((e.clientY - scaleClientRect.top) * 100) / this._$scale.height();
     } else {
-      offset = ((e.clientX - scaleClientRect.left) * 100) / this._scale.width();
+      offset = ((e.clientX - scaleClientRect.left) * 100) / this._$scale.width();
     }
 
     if (offset > 100) {
@@ -140,6 +140,6 @@ export default class Scale implements IScale {
   }
 
   public render(): JQuery {
-    return this._scale;
+    return this._$scale;
   }
 }

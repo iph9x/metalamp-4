@@ -30,7 +30,7 @@ export default class View extends Observer implements IView {
 
   private _toThumbPosition: number;
 
-  private _wrapper = $('<div class="mi-slider__wrapper"></div>');
+  private _$wrapper = $('<div class="mi-slider__wrapper"></div>');
 
   private _scale: Scale;
 
@@ -44,9 +44,9 @@ export default class View extends Observer implements IView {
 
   private _toThumbLabel: Label;
 
-  private _inputFrom: JQuery;
+  private _$inputFrom: JQuery;
 
-  private _inputTo: JQuery;
+  private _$inputTo: JQuery;
 
   private _isVertical?: boolean;
 
@@ -89,8 +89,8 @@ export default class View extends Observer implements IView {
 
   private _initInputFrom(): void {
     if (this._inputFromId) {
-      this._inputFrom.off();
-      this._inputFrom.on('blur', (e: Event) => {
+      this._$inputFrom.off();
+      this._$inputFrom.on('blur', (e: Event) => {
         const val = this._checkNewFromValue(Number($(e.target).val()));
         this._fromThumb.setPositionByValue(val);
       });
@@ -98,9 +98,9 @@ export default class View extends Observer implements IView {
   }
 
   private _initInputTo(): void {
-    if (this._inputTo) {
-      this._inputTo.off();
-      this._inputTo.on('blur', (e: Event) => {
+    if (this._$inputTo) {
+      this._$inputTo.off();
+      this._$inputTo.on('blur', (e: Event) => {
         const val = this._checkNewToValue(Number($(e.target).val()));
         this._toThumb.setPositionByValue(val);
       });
@@ -113,21 +113,21 @@ export default class View extends Observer implements IView {
     }
 
     if (this._isVertical) {
-      (this._wrapper).addClass('mi-slider__wrapper_vertical');
+      (this._$wrapper).addClass('mi-slider__wrapper_vertical');
     }
 
     if (this._inputFromId) {
-      this._inputFrom = $(`#${this._inputFromId}`);
+      this._$inputFrom = $(`#${this._inputFromId}`);
     }
 
     if (this._inputToId) {
-      this._inputTo = $(`#${this._inputToId}`);
+      this._$inputTo = $(`#${this._inputToId}`);
     }
 
-    if (!this._isRange && this._inputFrom) {
-      $(this._inputFrom).attr('disabled', 'disabled');
+    if (!this._isRange && this._$inputFrom) {
+      $(this._$inputFrom).attr('disabled', 'disabled');
     } else {
-      $(this._inputFrom).removeAttr('disabled');
+      $(this._$inputFrom).removeAttr('disabled');
     }
   }
 
@@ -167,13 +167,13 @@ export default class View extends Observer implements IView {
 
   private _changeInputFromValue(value: number): void {
     if (typeof this._inputFromId !== 'undefined') {
-      this._inputFrom.val(value);
+      this._$inputFrom.val(value);
     }
   }
 
   private _changeInputToValue(value: number): void {
     if (typeof this._inputToId !== 'undefined') {
-      this._inputTo.val(value);
+      this._$inputTo.val(value);
     }
   }
 
@@ -183,7 +183,7 @@ export default class View extends Observer implements IView {
       startPosition: this._from,
       label: this._fromThumbLabel,
       step: this._step,
-      wrapper: this._wrapper,
+      wrapper: this._$wrapper,
       progressBar: this._progressBar,
       max: this._max,
       min: this._min,
@@ -198,7 +198,7 @@ export default class View extends Observer implements IView {
       startPosition: this._to,
       label: this._toThumbLabel,
       step: this._step,
-      wrapper: this._wrapper,
+      wrapper: this._$wrapper,
       progressBar: this._progressBar,
       max: this._max,
       min: this._min,
@@ -225,22 +225,22 @@ export default class View extends Observer implements IView {
 
   private render(root: JQuery): void {
     if (this._isRange) {
-      this._wrapper.append(this._fromThumb.render());
+      this._$wrapper.append(this._fromThumb.render());
     }
 
-    this._wrapper
+    this._$wrapper
       .append(this._toThumb.render())
       .append(this._scale.render())
       .append(this._progressBar.render());
 
     if (this._labelsVisibility) {
       if (this._isRange) {
-        this._wrapper.append(this._fromThumbLabel.render());
+        this._$wrapper.append(this._fromThumbLabel.render());
       }
-      this._wrapper.append(this._toThumbLabel.render());
+      this._$wrapper.append(this._toThumbLabel.render());
     }
 
-    root.append(this._wrapper);
+    root.append(this._$wrapper);
   }
 
   public run(): void {

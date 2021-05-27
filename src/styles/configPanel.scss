@@ -55,7 +55,7 @@ $grey: rgb(214, 214, 214);
       border-color: $blue;
     }
     &:disabled {
-      color: lighten($grey, 20%);
+      color: $grey;
     }
   }
   &__checkbox {

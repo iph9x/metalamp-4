@@ -25,7 +25,7 @@ type ThumbArgs = {
 };
 
 export default class Thumb extends Observer implements IThumb {
-  private _thumb: JQuery = $('<span class="mi-slider__thumb"></span>');
+  private _$thumb: JQuery = $('<span class="mi-slider__thumb"></span>');
 
   private _shift: number = 0;
 
@@ -43,7 +43,7 @@ export default class Thumb extends Observer implements IThumb {
 
   private _step: number;
 
-  private _wrapper: JQuery;
+  private _$wrapper: JQuery;
 
   private _progressBar: ProgressBar;
 
@@ -77,7 +77,7 @@ export default class Thumb extends Observer implements IThumb {
     this._type = type;
     this._label = label;
     this._step = step;
-    this._wrapper = wrapper;
+    this._$wrapper = wrapper;
     this._progressBar = progressBar;
     this._max = max;
     this._min = min;
@@ -91,7 +91,7 @@ export default class Thumb extends Observer implements IThumb {
       this.cssType = this._isVertical ? 'bottom' : 'right';
     }
 
-    this._thumb.addClass(`mi-slider__thumb_${this.cssType}`);
+    this._$thumb.addClass(`mi-slider__thumb_${this.cssType}`);
     this._isMaxThumb = this._type === 'toThumb';
 
     this._current = this._isMaxThumb ? max : min;
@@ -107,7 +107,7 @@ export default class Thumb extends Observer implements IThumb {
   }
 
   private _onThumbClick() {
-    this._thumb.on('mousedown', (e: JQuery.Event) => this.clickHandler(e));
+    this._$thumb.on('mousedown', (e: JQuery.Event) => this.clickHandler(e));
   }
 
   private _onThumbMove() {
@@ -146,8 +146,8 @@ export default class Thumb extends Observer implements IThumb {
     type: 'top' | 'left',
     dimension: 'width' | 'height',
   ): number {
-    const thumbOffset = this._thumb.get(0).getBoundingClientRect()[type];
-    return mousePos - thumbOffset - (this._thumb[dimension]() / 2);
+    const thumbOffset = this._$thumb.get(0).getBoundingClientRect()[type];
+    return mousePos - thumbOffset - (this._$thumb[dimension]() / 2);
   }
 
   private _calcNewPosition(
@@ -155,8 +155,8 @@ export default class Thumb extends Observer implements IThumb {
     type: 'left' | 'top',
     dimension: 'height' | 'width',
   ): number {
-    const wrapperOffset = this._wrapper.get(0).getBoundingClientRect()[type];
-    return ((mousePos - this._shift - wrapperOffset) * 100) / this._wrapper[dimension]();
+    const wrapperOffset = this._$wrapper.get(0).getBoundingClientRect()[type];
+    return ((mousePos - this._shift - wrapperOffset) * 100) / this._$wrapper[dimension]();
   }
 
   private _checkBorders(position: number, border: number): number {
@@ -215,7 +215,7 @@ export default class Thumb extends Observer implements IThumb {
   }
 
   public render(): JQuery {
-    return this._thumb;
+    return this._$thumb;
   }
 
   public setPositionByValue(value: number): void {
@@ -233,7 +233,7 @@ export default class Thumb extends Observer implements IThumb {
 
     this._setCurrent(roundedValue);
     this._setPosition(this._position);
-    this._thumb.css(this.cssType, `${this._position}%`);
+    this._$thumb.css(this.cssType, `${this._position}%`);
 
     if (this._isMaxThumb) {
       this._progressBar.setToPosition(this._position);
@@ -282,7 +282,7 @@ export default class Thumb extends Observer implements IThumb {
       this.fire({ type: 'SET_CURRENT_MIN', value: roundedValue });
     }
 
-    this._thumb.css(this.cssType, `${newPosition}%`);
+    this._$thumb.css(this.cssType, `${newPosition}%`);
     this._label?.setPosition(newPosition);
     this._label?.setValue(this._current);
 
