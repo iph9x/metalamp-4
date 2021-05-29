@@ -237,6 +237,7 @@ export default class View extends Observer implements IView {
       if (this._isRange) {
         this._$wrapper.append(this._fromThumbLabel.render());
       }
+      
       this._$wrapper.append(this._toThumbLabel.render());
     }
 
@@ -339,6 +340,7 @@ export default class View extends Observer implements IView {
         if (this._isRange) {
           this._fromThumb.otherThumbPosition = action.value;
         }
+
         this._scale.toThumbPosition = action.value;
         break;
       case ('SET_FROM_THUMB_POSITION'):

@@ -1,4 +1,4 @@
-export interface IProgressBar {
+interface IProgressBar {
   render(): JQuery,
   onClick(callback: Function): void,
   setFromPosition(position: number): void,
@@ -24,6 +24,7 @@ export default class ProgressBar implements IProgressBar {
       this._cssFromSide = 'left';
       this._cssToSide = 'right';
     }
+
     if (!this._isRange) {
       this.setFromPosition(0);
     }

@@ -2,7 +2,7 @@ import Label from './label';
 import ProgressBar from './progressBar';
 import Observer from '../pattern/observer';
 
-export interface IThumb {
+interface IThumb {
   setPositionHandler(e: JQuery.Event): void,
   setPositionByValue(value: number): void,
   setIsActive(value: boolean): void,
@@ -119,6 +119,7 @@ export default class Thumb extends Observer implements IThumb {
     if (position === 1 || position === 0) {
       return (this._min + (position) * minMaxDiff);
     }
+
     return (Math.round((this._min + (position) * minMaxDiff) / this._step) * this._step);
   }
 
@@ -165,23 +166,30 @@ export default class Thumb extends Observer implements IThumb {
       if (position < 0) {
         return 0;
       }
+
       if (position > 100) {
         return 100;
       }
+
       return position;
     }
+
     if (position < 0) {
       return 0;
     }
+
     if (Number((position).toFixed(8)) >= Number((100 - border - stepInPercent).toFixed(8))) {
       if (100 - border - stepInPercent < 0) {
         return 0;
       }
+
       return 100 - border - stepInPercent;
     }
+
     if (position > 100) {
       return 100;
     }
+
     return position;
   }
 
@@ -208,7 +216,10 @@ export default class Thumb extends Observer implements IThumb {
     e.preventDefault();
 
     this.setIsActive(true);
-    this._shift = this._isVertical ? this._calcShift(e.clientY, 'top', 'height') : this._calcShift(e.clientX, 'left', 'width');
+    this._shift = this._isVertical
+      ? this._calcShift(e.clientY, 'top', 'height')
+      : this._calcShift(e.clientX, 'left', 'width');
+
     $('html').css('cursor', 'pointer');
 
     this._onThumbMove();

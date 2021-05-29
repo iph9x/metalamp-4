@@ -68,10 +68,12 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
     if (!isNumber(currentValue)) {
       return $(this).val(localState.step || 1);
     }
+
     localState.step = currentValue;
     if (localState.inputFromId) {
       localState.from = Number(inputFrom.val());
     }
+
     if (localState.inputToId) {
       localState.to = Number(inputTo.val());
     }
@@ -85,10 +87,12 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
     if ((currentValue >= localState.max) || !isNumber(currentValue)) {
       return $(this).val(localState.min);
     }
+
     localState.min = Number($(this).val());
     if (localState.inputFromId) {
       localState.from = Number(inputFrom.val());
     }
+
     if (localState.inputToId) {
       localState.to = Number(inputTo.val());
     }
@@ -101,11 +105,12 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
     if ((currentValue <= localState.min) || !isNumber(currentValue)) {
       return $(this).val(localState.max);
     }
-    localState.max = Number($(this).val());
 
+    localState.max = Number($(this).val());
     if (localState.inputFromId) {
       localState.from = Number(inputFrom.val());
     }
+
     if (localState.inputToId) {
       localState.to = Number(inputTo.val());
     }
@@ -124,9 +129,11 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
         }
       }
     }
+
     if (localState.inputFromId) {
       localState.from = from;
     }
+
     if (localState.inputToId) {
       localState.to = to;
     }
@@ -139,6 +146,7 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
     if (localState.inputFromId) {
       localState.from = Number(inputFrom.val());
     }
+
     if (localState.inputToId) {
       localState.to = Number(inputTo.val());
     }
@@ -151,6 +159,7 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
     if (localState.inputFromId) {
       localState.from = Number(inputFrom.val());
     }
+    
     if (localState.inputToId) {
       localState.to = Number(inputTo.val());
     }

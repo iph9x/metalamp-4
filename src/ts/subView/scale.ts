@@ -1,4 +1,4 @@
-export interface IScale {
+interface IScale {
   toThumbPosition: number,
   fromThumbPosition?: number,
   render(): JQuery,
@@ -57,6 +57,7 @@ export default class Scale implements IScale {
     if (this._isVertical) {
       this._$scale.addClass('mi-slider__scale_vertical');
     }
+
     this.toThumbPosition = toThumbPosition;
     this.fromThumbPosition = fromThumbPosition;
     this._setToThumb = setToThumb;

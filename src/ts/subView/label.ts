@@ -1,4 +1,4 @@
-export interface ILabel {
+interface ILabel {
   render(): JQuery,
   setValue(value: number): void,
   setPosition(value: number): void

@@ -79,6 +79,7 @@ type Props = {
           if (typeof from === 'number') {
             data.presenter.updateFrom(from);
           }
+
           if (typeof to === 'number') {
             data.presenter.updateTo(to);
           }
@@ -96,10 +97,12 @@ type Props = {
     if (typeof method === 'string' && methods[method]) {
       return methods[method].apply(that, args);
     }
+
     if (typeof method === 'object') {
       // eslint-disable-next-line
       return methods.init.apply(that, arguments);
     }
+    
     return $.error(`${method} method doesn't exist`);
   };
 }(jQuery));

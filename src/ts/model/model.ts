@@ -1,6 +1,6 @@
 import Observer from '../pattern/observer';
 
-export interface IModel {
+interface IModel {
   min: number,
   max: number,
   fromValue: number,
