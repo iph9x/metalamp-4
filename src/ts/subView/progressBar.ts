@@ -1,8 +1,8 @@
 interface IProgressBar {
   render(): JQuery,
-  onClick(callback: Function): void,
+  onProgressBarMousedown(callback: Function): void,
   setFromPosition(position: number): void,
-  setToPosition(position: number): void
+  setToPosition(position: number): void,
 }
 
 export default class ProgressBar implements IProgressBar {
@@ -34,7 +34,7 @@ export default class ProgressBar implements IProgressBar {
     return this._$progressBar;
   }
 
-  public onClick(callback: Function): void {
+  public onProgressBarMousedown(callback: Function): void {
     this._$progressBar.on('mousedown', (e: JQuery.Event) => callback(e));
   }
 

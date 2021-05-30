@@ -31,7 +31,7 @@ describe('Presenter: ', () => {
   const presenter = new Presenter(model, view);
 
   test('Presenter return right state', () => {
-    expect(presenter.state).toEqual({ fromValue: from, toValue: to });
+    expect(presenter.getState()).toEqual({ fromValue: from, toValue: to });
   });
 
   test('view.run() must be called', () => {
@@ -43,6 +43,6 @@ describe('Presenter: ', () => {
     presenter.updateFrom(newFrom);
     presenter.updateTo(newTo);
 
-    expect(presenter.state).toEqual({ fromValue: newFrom, toValue: newTo });
+    expect(presenter.getState()).toEqual({ fromValue: newFrom, toValue: newTo });
   });
 });

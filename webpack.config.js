@@ -9,36 +9,41 @@ const fs = require('fs');
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = !isDev;
 
-const filename = ext => isDev ? `[name].${ext}` : `[name].[contenthash].${ext}`;
+const filename = (ext) => {
+  if (isDev) {
+    return `[name].${ext}`;
+  }
+
+  return `[name].[contenthash].${ext}`;
+};
 
 const PATHS = {
   src: path.resolve(__dirname, 'src'),
-  dist: path.resolve(__dirname, 'dist')
-}
+  dist: path.resolve(__dirname, 'dist'),
+};
 
 const PAGES_DIR = `${PATHS.src}/`;
-const PAGES = fs.readdirSync(PAGES_DIR).filter( fileName => fileName.endsWith('.html') );
+const PAGES = fs.readdirSync(PAGES_DIR).filter((fileName) => fileName.endsWith('.html'));
 
-console.log("is dev: ", isDev);
-
+console.log('is dev: ', isDev);
 
 module.exports = {
   context: PATHS.src,
   mode: 'development',
   entry: {
     miSlider: './index.ts',
-    panel: './styles/configPanel.scss'
+    panel: './styles/configPanel.scss',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: filename('js')
+    filename: filename('js'),
   },
   resolve: {
     extensions: ['.js', '.ts'],
     alias: {
-      '@': PATHS.src
-    }
-  },  
+      '@': PATHS.src,
+    },
+  },
   devServer: {
     contentBase: PATHS.src,
     watchContentBase: isDev,
@@ -47,19 +52,19 @@ module.exports = {
     hot: isDev,
     hotOnly: isDev,
     port: 8080,
-  },    
+  },
   module: {
-    rules: [    
+    rules: [
       {
         test: /\.(sa|sc)ss$/,
         use: [
           {
             loader: isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
-            options: isProd ? { publicPath: '../dist'} : {}
+            options: isProd ? { publicPath: '../dist' } : {},
           },
-          { loader: "css-loader" },
-          { loader: "sass-loader" }
-        ]
+          { loader: 'css-loader' },
+          { loader: 'sass-loader' },
+        ],
       },
       {
         test: /\.(ts|tsx|js)$/,
@@ -76,7 +81,7 @@ module.exports = {
             publicPath: '.',
             name: '[name]-[contenthash].[ext]',
           },
-          loader: 'file-loader'
+          loader: 'file-loader',
         },
       },
       {
@@ -87,25 +92,24 @@ module.exports = {
               publicPath: '.',
               name: '[name].[ext]',
             },
-            loader: 'file-loader'
+            loader: 'file-loader',
           },
-        ]
-       
-      }
-    ]
+        ],
+      },
+    ],
   },
   plugins: [
-    ...PAGES.map(page => new HtmlWebpackPlugin({
+    ...PAGES.map((page) => new HtmlWebpackPlugin({
       template: `${PAGES_DIR}/${page}`,
-      filename: `${page}`
+      filename: `${page}`,
     })),
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.ProvidePlugin({
       $: 'jquery',
-      jQuery: 'jquery'
+      jQuery: 'jquery',
     }),
-    new ESLintPlugin()
+    new ESLintPlugin(),
   ],
-}
+};

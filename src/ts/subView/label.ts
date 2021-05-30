@@ -1,7 +1,7 @@
 interface ILabel {
   render(): JQuery,
   setValue(value: number): void,
-  setPosition(value: number): void
+  setPosition(value: number): void,
 }
 
 type LabelArgs = {

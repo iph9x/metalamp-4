@@ -55,8 +55,8 @@ describe('Label: ', () => {
     $(document.body).append($wrapper);
     $(document.body).append($thumb);
 
-    test('method setPositionHandler() must be called on document.on(\'mousemove\')', () => {
-      const spySetPosition = jest.spyOn(thumb, 'setPositionHandler');
+    test('method handleThumbMove() must be called on document.on(\'mousemove\')', () => {
+      const spySetPosition = jest.spyOn(thumb, 'handleThumbMove');
       $thumb.trigger('mousedown');
       $(document).trigger('mousemove');
       expect(spySetPosition).toHaveBeenCalled();

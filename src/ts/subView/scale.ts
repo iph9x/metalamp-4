@@ -2,7 +2,7 @@ interface IScale {
   toThumbPosition: number,
   fromThumbPosition?: number,
   render(): JQuery,
-  clickHandler(e: JQuery.Event): void,
+  handleScaleMousedown(e: JQuery.Event): void,
 }
 
 type ScaleArgs = {
@@ -80,8 +80,32 @@ export default class Scale implements IScale {
     this._onScaleClick();
   }
 
+  public handleScaleMousedown(e: JQuery.Event): void {
+    e.preventDefault();
+    let offset: number;
+    const scaleClientRect = this._$scale.get(0).getBoundingClientRect();
+
+    if (this._isVertical) {
+      offset = ((e.clientY - scaleClientRect.top) * 100) / this._$scale.height();
+    } else {
+      offset = ((e.clientX - scaleClientRect.left) * 100) / this._$scale.width();
+    }
+
+    if (offset > 100) {
+      offset = 100;
+    } else if (offset < 0) {
+      offset = 0;
+    }
+    $('html').css('cursor', 'pointer');
+    this._setClosestThumbPos(offset, e);
+  }
+
+  public render(): JQuery {
+    return this._$scale;
+  }
+
   private _onScaleClick(): void {
-    this._$scale.on('mousedown', (e: JQuery.Event) => this.clickHandler(e));
+    this._$scale.on('mousedown', (e: JQuery.Event) => this.handleScaleMousedown(e));
   }
 
   private _setClosestThumbPos(offset: number, e: JQuery.Event): void {
@@ -118,29 +142,5 @@ export default class Scale implements IScale {
       newEl.attr('data-before', `${this._scaleNumbersArr[i]}`);
       this._$scale.append(newEl);
     }
-  }
-
-  public clickHandler(e: JQuery.Event): void {
-    e.preventDefault();
-    let offset: number;
-    const scaleClientRect = this._$scale.get(0).getBoundingClientRect();
-
-    if (this._isVertical) {
-      offset = ((e.clientY - scaleClientRect.top) * 100) / this._$scale.height();
-    } else {
-      offset = ((e.clientX - scaleClientRect.left) * 100) / this._$scale.width();
-    }
-
-    if (offset > 100) {
-      offset = 100;
-    } else if (offset < 0) {
-      offset = 0;
-    }
-    $('html').css('cursor', 'pointer');
-    this._setClosestThumbPos(offset, e);
-  }
-
-  public render(): JQuery {
-    return this._$scale;
   }
 }

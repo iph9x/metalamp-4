@@ -60,6 +60,7 @@ describe('Scale:', () => {
         label: fromLabel,
       });
     }
+
     const toThumb = new Thumb({
       type: 'toThumb',
       step,
@@ -74,17 +75,17 @@ describe('Scale:', () => {
       min,
       max,
       toThumbPosition: 70,
-      setToThumb: toThumb.setPositionHandler,
+      setToThumb: toThumb.handleThumbMove,
       setToThumbActive: toThumb.setIsActive,
       fromThumbPosition: from,
-      setFromThumb: fromThumb?.setPositionHandler,
+      setFromThumb: fromThumb?.handleThumbMove,
       isVertical,
       setFromThumbActive: fromThumb?.setIsActive,
       isRange,
     });
 
     const $scale = scale.render();
-    const spy = jest.spyOn(scale, 'clickHandler');
+    const spy = jest.spyOn(scale, 'handleScaleMousedown');
 
     test('the Scale called Label\'s construcotr', () => {
       expect(LabelMock).toHaveBeenCalled();
@@ -98,7 +99,7 @@ describe('Scale:', () => {
       expect(ProgressBarMock).toHaveBeenCalled();
     });
 
-    test('method clickHandler() must be called', () => {
+    test('method handleScaleMousedown() must be called', () => {
       $(document.body).append($wrapper);
       $(document.body).append($scale);
       $scale.trigger('mousedown');

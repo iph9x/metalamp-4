@@ -57,8 +57,8 @@ describe('View: ', () => {
         inputFromId,
         inputToId,
       });
-      view.min = min;
-      view.max = max;
+      view.setMin(min);
+      view.setMax(max);
 
       view.run();
       expect(ThumbMock).toHaveBeenCalled();
@@ -72,24 +72,24 @@ describe('View: ', () => {
 
     test('View called the ProgressBar constructor once', () => {
       view = new View({ slider: $root });
-      view.min = min;
-      view.max = max;
+      view.setMin(min);
+      view.setMax(max);
       view.run();
       expect(ProgressBarMock).toHaveBeenCalledTimes(1);
     });
 
     test('View called the Label constructor two times', () => {
       view = new View({ slider: $root });
-      view.min = min;
-      view.max = max;
+      view.setMin(min);
+      view.setMax(max);
       view.run();
       expect(LabelMock).toHaveBeenCalledTimes(2);
     });
 
     test('method render() must be called on run()', () => {
       view = new View({ slider: $root });
-      view.min = min;
-      view.max = max;
+      view.setMin(min);
+      view.setMax(max);
       const spyViewRender = jest.spyOn(view, 'run');
       spyViewRender.mockImplementation(() => {});
 
@@ -99,18 +99,18 @@ describe('View: ', () => {
 
     test('typeof "from" is number', () => {
       view = new View({ slider: $root });
-      view.min = min;
-      view.max = max;
-      view.from = from;
-      expect(view.from).toBe(from);
+      view.setMin(min);
+      view.setMax(max);
+      view.setFrom(from);
+      expect(view.getFrom()).toBe(from);
     });
 
     test('typeof "to" is number', () => {
       view = new View({ slider: $root });
-      view.min = min;
-      view.max = max;
-      view.to = to;
-      expect(view.to).toBe(to);
+      view.setMin(min);
+      view.setMax(max);
+      view.setTo(to);
+      expect(view.getTo()).toBe(to);
     });
   });
 });

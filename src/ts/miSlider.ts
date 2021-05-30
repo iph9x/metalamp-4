@@ -9,8 +9,8 @@ type Props = {
   step?: number,
   from?: number,
   to?: number,
-  labels?: boolean,
-  vertical?: boolean,
+  hasLabels?: boolean,
+  isVertical?: boolean,
   inputFromId?: string,
   inputToId?: string,
 };
@@ -25,8 +25,8 @@ type Props = {
       step,
       from,
       to,
-      labels,
-      vertical,
+      hasLabels,
+      isVertical,
       inputFromId,
       inputToId,
     }: Props) {
@@ -44,8 +44,8 @@ type Props = {
           this.view = new View({
             slider: this,
             isRange: range,
-            labelsVisibility: labels,
-            isVertical: vertical,
+            hasLabels,
+            isVertical,
             inputFromId,
             inputToId,
           });
@@ -58,6 +58,7 @@ type Props = {
         }
       });
     },
+
     destroy() {
       return this.each(function destroySlider() {
         const that = $(this);
@@ -66,6 +67,7 @@ type Props = {
         that.removeData('miSlider');
       });
     },
+
     update(obj: { from?: number, to?: number }) {
       return this.each(function updateSlider() {
         const that = $(this);
@@ -89,7 +91,7 @@ type Props = {
   };
   // eslint-disable-next-line
   $.fn.miSlider = function jqSlider(
-    method: 'init' | 'destroy' | 'update' |Props,
+    method: 'init' | 'destroy' | 'update' | Props,
     ...args: []
   ): object {
     const that = $(this);
@@ -102,7 +104,7 @@ type Props = {
       // eslint-disable-next-line
       return methods.init.apply(that, arguments);
     }
-    
+
     return $.error(`${method} method doesn't exist`);
   };
 }(jQuery));

@@ -1,13 +1,13 @@
+import Observer from '../pattern/observer';
 import Label from './label';
 import ProgressBar from './progressBar';
-import Observer from '../pattern/observer';
 
 interface IThumb {
-  setPositionHandler(e: JQuery.Event): void,
+  handleThumbMove(e: JQuery.Event): void,
   setPositionByValue(value: number): void,
   setIsActive(value: boolean): void,
   render(): JQuery,
-  otherThumbPosition?: number
+  otherThumbPosition?: number,
 }
 
 type ThumbArgs = {
@@ -98,20 +98,123 @@ export default class Thumb extends Observer implements IThumb {
 
     this.setPositionByValue(startPosition);
 
-    this._onThumbClick();
-    this._onThumbMouseUp();
+    this._onThumbMousedown();
+    this._onThumbMouseup();
 
-    this.setPositionHandler = this.setPositionHandler.bind(this);
+    this.handleThumbMove = this.handleThumbMove.bind(this);
     this._calcNewPosition = this._calcNewPosition.bind(this);
     this.setIsActive = this.setIsActive.bind(this);
   }
 
-  private _onThumbClick() {
-    this._$thumb.on('mousedown', (e: JQuery.Event) => this.clickHandler(e));
+  public render(): JQuery {
+    return this._$thumb;
+  }
+
+  public setPositionByValue(value: number): void {
+    const roundedValue = Number(value.toFixed(6));
+
+    if (roundedValue < this._min) {
+      this._position = 0;
+    } else if (roundedValue > this._max) {
+      this._position = 100;
+    } else if (this._isMaxThumb) {
+      this._position = this._getValueToPercent(this._max - roundedValue);
+    } else {
+      this._position = 100 - this._getValueToPercent(this._max - roundedValue);
+    }
+
+    this._setCurrent(roundedValue);
+    this._setPosition(this._position);
+    this._$thumb.css(this.cssType, `${this._position}%`);
+
+    if (this._isMaxThumb) {
+      this._progressBar.setToPosition(this._position);
+    } else {
+      this._progressBar.setFromPosition(this._position);
+    }
+
+    this._label?.setPosition(this._position);
+    this._label?.setValue(roundedValue);
+  }
+
+  public setIsActive(value: boolean): void {
+    this._isActive = value;
+  }
+
+  public handleThumbMove(e: JQuery.Event): void {
+    if (!this._isActive) return;
+
+    const calcedX: number = this._calcNewPosition(e.clientX, 'left', 'width');
+    const calcedY: number = this._calcNewPosition(e.clientY, 'top', 'height');
+    let newPosition: number;
+
+    if (this._isMaxThumb) {
+      newPosition = this._isVertical ? 100 - calcedY : 100 - calcedX;
+    } else {
+      newPosition = this._isVertical ? calcedY : calcedX;
+    }
+
+    newPosition = this._checkBorders(newPosition, this.otherThumbPosition);
+
+    if (this._isMaxThumb) {
+      this._progressBar.setToPosition(newPosition);
+      let value = this._calcValueFromPosition(1 - newPosition / 100);
+      value = value > this._max ? this._max : value;
+
+      const roundedValue = Number(value.toFixed(6));
+      this._current = roundedValue;
+      this.fire({ type: 'SET_CURRENT_MAX', value: roundedValue });
+    } else {
+      this._progressBar.setFromPosition(newPosition);
+      let value = this._calcValueFromPosition(newPosition / 100);
+      value = value < this._min ? this._min : value;
+
+      const roundedValue = Number(value.toFixed(6));
+      this._current = roundedValue;
+      this.fire({ type: 'SET_CURRENT_MIN', value: roundedValue });
+    }
+
+    this._$thumb.css(this.cssType, `${newPosition}%`);
+    this._label?.setPosition(newPosition);
+    this._label?.setValue(this._current);
+
+    this._setPosition(newPosition);
+  }
+
+  private _onThumbMousedown() {
+    this._$thumb.on('mousedown', (e: JQuery.Event) => this._handleThumbMousedown(e));
   }
 
   private _onThumbMove() {
-    $(document).on('mousemove', (e: JQuery.Event) => this.setPositionHandler(e));
+    $(document).on('mousemove', (e: JQuery.Event) => this.handleThumbMove(e));
+  }
+
+  private _onThumbMouseup(): void {
+    $(document).on('mouseup', () => this._handleThumbMouseup());
+  }
+
+  private _handleThumbMousedown(e: JQuery.Event): void {
+    e.preventDefault();
+
+    this.setIsActive(true);
+    this._shift = this._isVertical
+      ? this._calcShift(e.clientY, 'top', 'height')
+      : this._calcShift(e.clientX, 'left', 'width');
+
+    $('html').css('cursor', 'pointer');
+
+    this._onThumbMove();
+  }
+
+  private _handleThumbMouseup(): void {
+    if (this._isActive) {
+      this.setIsActive(false);
+
+      $('html').css('cursor', 'default');
+      $(document).off('mousemove');
+
+      this._shift = 0;
+    }
   }
 
   private _calcValueFromPosition(position: number): number {
@@ -121,21 +224,6 @@ export default class Thumb extends Observer implements IThumb {
     }
 
     return (Math.round((this._min + (position) * minMaxDiff) / this._step) * this._step);
-  }
-
-  private _onThumbMouseUp(): void {
-    $(document).on('mouseup', () => this._mouseupHandler());
-  }
-
-  private _mouseupHandler(): void {
-    if (this._isActive) {
-      this.setIsActive(false);
-
-      $('html').css('cursor', 'default');
-      $(document).off('mousemove');
-
-      this._shift = 0;
-    }
   }
 
   private _getValueToPercent(value: number): number {
@@ -210,93 +298,5 @@ export default class Thumb extends Observer implements IThumb {
   private _setPosition(value: number) {
     this._position = value;
     this._setParentState('SET_TO_THUMB_POSITION', 'SET_FROM_THUMB_POSITION', value);
-  }
-
-  public clickHandler(e: JQuery.Event): void {
-    e.preventDefault();
-
-    this.setIsActive(true);
-    this._shift = this._isVertical
-      ? this._calcShift(e.clientY, 'top', 'height')
-      : this._calcShift(e.clientX, 'left', 'width');
-
-    $('html').css('cursor', 'pointer');
-
-    this._onThumbMove();
-  }
-
-  public render(): JQuery {
-    return this._$thumb;
-  }
-
-  public setPositionByValue(value: number): void {
-    const roundedValue = Number(value.toFixed(6));
-
-    if (roundedValue < this._min) {
-      this._position = 0;
-    } else if (roundedValue > this._max) {
-      this._position = 100;
-    } else if (this._isMaxThumb) {
-      this._position = this._getValueToPercent(this._max - roundedValue);
-    } else {
-      this._position = 100 - this._getValueToPercent(this._max - roundedValue);
-    }
-
-    this._setCurrent(roundedValue);
-    this._setPosition(this._position);
-    this._$thumb.css(this.cssType, `${this._position}%`);
-
-    if (this._isMaxThumb) {
-      this._progressBar.setToPosition(this._position);
-    } else {
-      this._progressBar.setFromPosition(this._position);
-    }
-
-    this._label?.setPosition(this._position);
-    this._label?.setValue(roundedValue);
-  }
-
-  public setIsActive(value: boolean): void {
-    this._isActive = value;
-  }
-
-  public setPositionHandler(e: JQuery.Event): void {
-    if (!this._isActive) return;
-
-    const calcedX: number = this._calcNewPosition(e.clientX, 'left', 'width');
-    const calcedY: number = this._calcNewPosition(e.clientY, 'top', 'height');
-    let newPosition: number;
-
-    if (this._isMaxThumb) {
-      newPosition = this._isVertical ? 100 - calcedY : 100 - calcedX;
-    } else {
-      newPosition = this._isVertical ? calcedY : calcedX;
-    }
-
-    newPosition = this._checkBorders(newPosition, this.otherThumbPosition);
-
-    if (this._isMaxThumb) {
-      this._progressBar.setToPosition(newPosition);
-      let value = this._calcValueFromPosition(1 - newPosition / 100);
-      value = value > this._max ? this._max : value;
-
-      const roundedValue = Number(value.toFixed(6));
-      this._current = roundedValue;
-      this.fire({ type: 'SET_CURRENT_MAX', value: roundedValue });
-    } else {
-      this._progressBar.setFromPosition(newPosition);
-      let value = this._calcValueFromPosition(newPosition / 100);
-      value = value < this._min ? this._min : value;
-
-      const roundedValue = Number(value.toFixed(6));
-      this._current = roundedValue;
-      this.fire({ type: 'SET_CURRENT_MIN', value: roundedValue });
-    }
-
-    this._$thumb.css(this.cssType, `${newPosition}%`);
-    this._label?.setPosition(newPosition);
-    this._label?.setValue(this._current);
-
-    this._setPosition(newPosition);
   }
 }

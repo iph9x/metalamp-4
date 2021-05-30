@@ -5,11 +5,13 @@ import Scale from '../subView/scale';
 import Observer from '../pattern/observer';
 
 interface IView {
-  step: number,
-  min: number,
-  max: number,
-  from: number,
-  to: number,
+  setStep(value: number): void,
+  setMin(value: number): void,
+  setMax(value: number): void,
+  getFrom(): number,
+  getTo(): number,
+  setFrom(value: number): void,
+  setTo(value: number): void,
   updateFrom(value: number): void,
   updateTo(value: number): void,
   update(action: { type: string, value: number }): void,
@@ -19,7 +21,7 @@ interface IView {
 type ViewArgs = {
   slider: JQuery,
   isRange?: boolean,
-  labelsVisibility?: boolean,
+  hasLabels?: boolean,
   isVertical?: boolean,
   inputFromId?: string,
   inputToId?: string,
@@ -54,7 +56,7 @@ export default class View extends Observer implements IView {
 
   private _min: number;
 
-  private _slider: JQuery;
+  private _$slider: JQuery;
 
   private _isRange?: boolean;
 
@@ -64,7 +66,7 @@ export default class View extends Observer implements IView {
 
   private _to?: number;
 
-  private _labelsVisibility?: boolean;
+  private _hasLabels?: boolean;
 
   private _inputFromId?: string;
 
@@ -73,18 +75,117 @@ export default class View extends Observer implements IView {
   constructor({
     slider,
     isRange,
-    labelsVisibility,
+    hasLabels,
     isVertical,
     inputFromId,
     inputToId,
   }: ViewArgs) {
     super();
-    this._slider = $(slider);
+    this._$slider = $(slider);
     this._isVertical = isVertical ?? false;
     this._isRange = isRange ?? true;
     this._inputFromId = inputFromId;
     this._inputToId = inputToId;
-    this._labelsVisibility = labelsVisibility ?? true;
+    this._hasLabels = hasLabels ?? true;
+  }
+
+  public run(): void {
+    this._runConditionsBlock();
+
+    const $slider = this._$slider;
+    $slider.addClass('mi-slider');
+
+    this._progressBar = new ProgressBar(this._isRange, this._isVertical);
+
+    this._changeInputFromValue(this._from);
+    this._changeInputToValue(this._to);
+
+    this._fromThumbPosition = (1 - (this._max - this._from) / (this._max - this._min)) * 100;
+    this._toThumbPosition = ((this._max - this._to) / (this._max - this._min)) * 100;
+
+    this._toThumbLabel = this._createToLabel();
+    this._fromThumbLabel = this._createFromLabel();
+
+    if (this._isRange) {
+      this._fromThumb = this._createFromThumb();
+      this._fromThumb.subscribe(this);
+
+      this._initInputFrom();
+    }
+
+    this._toThumb = this._createToThumb();
+    this._toThumb.subscribe(this);
+
+    this._scale = this._createScale();
+
+    this._progressBar.onProgressBarMousedown(this._scale.handleScaleMousedown.bind(this._scale));
+
+    this._initInputTo();
+    this.render($slider);
+  }
+
+  public setMin(value: number) {
+    this._min = value;
+  }
+
+  public setMax(value: number) {
+    this._max = value;
+  }
+
+  public getTo(): number {
+    return this._to;
+  }
+
+  public getFrom(): number {
+    return this._from;
+  }
+
+  public setTo(value: number) {
+    this._to = value;
+  }
+
+  public setFrom(value: number) {
+    this._from = value;
+  }
+
+  public setStep(value: number) {
+    this._step = value;
+  }
+
+  public updateFrom(value: number) {
+    const newVal = this._checkNewFromValue(value);
+    this._fromThumb.setPositionByValue(newVal);
+  }
+
+  public updateTo(value: number) {
+    const newVal = this._checkNewToValue(value);
+    this._toThumb.setPositionByValue(newVal);
+  }
+
+  public update(action: { type: string, value: number }): void {
+    switch (action.type) {
+      case ('SET_CURRENT_MAX'):
+        this._setCurrentMax(action.value);
+        break;
+      case ('SET_CURRENT_MIN'):
+        this._setCurrentMin(action.value);
+        break;
+      case ('SET_TO_THUMB_POSITION'):
+        this._toThumbPosition = action.value;
+        if (this._isRange) {
+          this._fromThumb.otherThumbPosition = action.value;
+        }
+
+        this._scale.toThumbPosition = action.value;
+        break;
+      case ('SET_FROM_THUMB_POSITION'):
+        this._fromThumbPosition = action.value;
+        this._toThumb.otherThumbPosition = action.value;
+        this._scale.fromThumbPosition = action.value;
+        break;
+      default:
+        break;
+    }
   }
 
   private _initInputFrom(): void {
@@ -177,6 +278,24 @@ export default class View extends Observer implements IView {
     }
   }
 
+  private _createToLabel(): Label {
+    return new Label({
+      value: this._to,
+      type: 'toThumb',
+      position: this._toThumbPosition,
+      isVertical: this._isVertical,
+    });
+  }
+
+  private _createFromLabel(): Label {
+    return new Label({
+      value: this._from,
+      type: 'fromThumb',
+      position: this._fromThumbPosition,
+      isVertical: this._isVertical,
+    });
+  }
+
   private _createFromThumb(): Thumb {
     return new Thumb({
       type: 'fromThumb',
@@ -213,10 +332,10 @@ export default class View extends Observer implements IView {
       min: this._min,
       max: this._max,
       toThumbPosition: this._toThumbPosition,
-      setToThumb: this._toThumb.setPositionHandler,
+      setToThumb: this._toThumb.handleThumbMove,
       setToThumbActive: this._toThumb.setIsActive,
       fromThumbPosition: this._fromThumbPosition,
-      setFromThumb: this._fromThumb?.setPositionHandler,
+      setFromThumb: this._fromThumb?.handleThumbMove,
       isVertical: this._isVertical,
       setFromThumbActive: this._fromThumb?.setIsActive,
       isRange: this._isRange,
@@ -233,123 +352,14 @@ export default class View extends Observer implements IView {
       .append(this._scale.render())
       .append(this._progressBar.render());
 
-    if (this._labelsVisibility) {
+    if (this._hasLabels) {
       if (this._isRange) {
         this._$wrapper.append(this._fromThumbLabel.render());
       }
-      
+
       this._$wrapper.append(this._toThumbLabel.render());
     }
 
     root.append(this._$wrapper);
-  }
-
-  public run(): void {
-    const that = this._slider;
-
-    this._runConditionsBlock();
-
-    that.addClass('mi-slider');
-    this._progressBar = new ProgressBar(this._isRange, this._isVertical);
-
-    this._changeInputFromValue(this._from);
-    this._changeInputToValue(this._to);
-
-    this._fromThumbPosition = (1 - (this._max - this._from) / (this._max - this._min)) * 100;
-    this._toThumbPosition = ((this._max - this._to) / (this._max - this._min)) * 100;
-
-    this._toThumbLabel = new Label({
-      value: this._to,
-      type: 'toThumb',
-      position: this._toThumbPosition,
-      isVertical: this._isVertical,
-    });
-    this._fromThumbLabel = new Label({
-      value: this._from,
-      type: 'fromThumb',
-      position: this._fromThumbPosition,
-      isVertical: this._isVertical,
-    });
-
-    if (this._isRange) {
-      this._fromThumb = this._createFromThumb();
-      this._fromThumb.subscribe(this);
-
-      this._initInputFrom();
-    }
-
-    this._toThumb = this._createToThumb();
-    this._toThumb.subscribe(this);
-
-    this._scale = this._createScale();
-
-    this._progressBar.onClick(this._scale.clickHandler.bind(this._scale));
-
-    this._initInputTo();
-    this.render(that);
-  }
-
-  public set min(value: number) {
-    this._min = value;
-  }
-
-  public set max(value: number) {
-    this._max = value;
-  }
-
-  public get to(): number {
-    return this._to;
-  }
-
-  public get from(): number {
-    return this._from;
-  }
-
-  public set to(value: number) {
-    this._to = value;
-  }
-
-  public set from(value: number) {
-    this._from = value;
-  }
-
-  public set step(value: number) {
-    this._step = value;
-  }
-
-  public updateFrom(value: number) {
-    const newVal = this._checkNewFromValue(value);
-    this._fromThumb.setPositionByValue(newVal);
-  }
-
-  public updateTo(value: number) {
-    const newVal = this._checkNewToValue(value);
-    this._toThumb.setPositionByValue(newVal);
-  }
-
-  public update(action: { type: string, value: number }): void {
-    switch (action.type) {
-      case ('SET_CURRENT_MAX'):
-        this._setCurrentMax(action.value);
-        break;
-      case ('SET_CURRENT_MIN'):
-        this._setCurrentMin(action.value);
-        break;
-      case ('SET_TO_THUMB_POSITION'):
-        this._toThumbPosition = action.value;
-        if (this._isRange) {
-          this._fromThumb.otherThumbPosition = action.value;
-        }
-
-        this._scale.toThumbPosition = action.value;
-        break;
-      case ('SET_FROM_THUMB_POSITION'):
-        this._fromThumbPosition = action.value;
-        this._toThumb.otherThumbPosition = action.value;
-        this._scale.fromThumbPosition = action.value;
-        break;
-      default:
-        break;
-    }
   }
 }

@@ -1,13 +1,15 @@
 import Observer from '../pattern/observer';
 
 interface IModel {
-  min: number,
-  max: number,
-  fromValue: number,
-  toValue: number,
-  step: number,
-  updateFromValue(value: number): void;
-  updateToValue(value: number): void;
+  getMin(): number,
+  getMax(): number,
+  setFromValue(value: number): void,
+  setToValue(value: number): void,
+  getFromValue(): number,
+  getToValue(): number,
+  getStep(): number,
+  updateFromValue(value: number): void,
+  updateToValue(value: number): void,
 }
 
 export default class Model extends Observer implements IModel {
@@ -76,31 +78,31 @@ export default class Model extends Observer implements IModel {
     this.fire({ type: 'UPDATE_MODEL_TO', value });
   }
 
-  public set fromValue(value: number) {
+  public setFromValue(value: number) {
     this._fromValue = value;
   }
 
-  public set toValue(value: number) {
+  public setToValue(value: number) {
     this._toValue = value;
   }
 
-  public get fromValue(): number {
+  public getFromValue(): number {
     return this._fromValue;
   }
 
-  public get toValue(): number {
+  public getToValue(): number {
     return this._toValue;
   }
 
-  public get min(): number {
+  public getMin(): number {
     return this._min;
   }
 
-  public get max(): number {
+  public getMax(): number {
     return this._max;
   }
 
-  public get step(): number {
+  public getStep(): number {
     return this._step;
   }
 }

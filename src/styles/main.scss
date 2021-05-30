@@ -7,7 +7,6 @@ $label-bg-color: lighten($slider-bg-color, 20%);
 $num-dash-color: #afafaf;
 $num-color: #6a6a6a;
 
-
 $slider-border-radius: 3px;
 
 $thumb-width: 6px;
@@ -114,10 +113,10 @@ $slider-height: 10px;
     background: $label-bg-color;
     border-radius: 2px;
     &_left {
-      transform: translate(-100%, -130%)
+      transform: translate(-100%, -130%);
     }
     &_right {
-      transform: translate(100%, -130%)
+      transform: translate(100%, -130%);
     }
     &_top {
       transform: translate(20px, -100%);

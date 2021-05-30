@@ -96,7 +96,7 @@ $grey: rgb(214, 214, 214);
     &:checked + .slider-panel__checkbox-btn::before {
       transform: translateX(14px);
     }
-    &:checked + .slider-panel__checkbox-btn  {
+    &:checked + .slider-panel__checkbox-btn {
       background: $blue;
       border-color: $blue;
     }

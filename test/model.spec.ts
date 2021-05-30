@@ -8,22 +8,22 @@ describe('Model:', () => {
     model = new Model(state);
 
     test('"from" must be a number', () => {
-      expect(typeof model.fromValue).toBeDefined();
-      expect(typeof model.fromValue).toBe('number');
+      expect(typeof model.getFromValue()).toBeDefined();
+      expect(typeof model.getFromValue()).toBe('number');
     });
 
     test('"to" must be a number', () => {
-      expect(typeof model.toValue).toBeDefined();
-      expect(typeof model.toValue).toBe('number');
+      expect(typeof model.getToValue()).toBeDefined();
+      expect(typeof model.getToValue()).toBe('number');
     });
 
-    test(`"from" must be less than "to": ${model.fromValue} < ${model.toValue}`, () => {
-      expect(model.fromValue).toBeLessThan(model.toValue);
+    test('"from" must be less than "to"', () => {
+      expect(model.getFromValue()).toBeLessThan(model.getToValue());
     });
 
     test('step is defined', () => {
-      expect(model.step).toBeDefined();
-      expect(typeof model.step).toBe('number');
+      expect(model.getStep()).toBeDefined();
+      expect(typeof model.getStep()).toBe('number');
     });
   });
 
@@ -33,6 +33,6 @@ describe('Model:', () => {
   });
 
   test('"from" must be less than "to" if min === max', () => {
-    expect(model.fromValue).toBeLessThan(model.toValue);
+    expect(model.getFromValue()).toBeLessThan(model.getToValue());
   });
 });

@@ -72,6 +72,7 @@ describe('Label: ', () => {
       expect($label.constructor).toBe($('<div></div>').constructor);
     });
   });
+
   let label: Label;
 
   labels.forEach(({ name, isVertical }) => {
@@ -99,6 +100,10 @@ describe('Label: ', () => {
       });
 
       expect(spySetPosition).toHaveBeenCalled();
+    });
+
+    test('method render() returns jQuery', () => {
+      expect(label.render().constructor).toBe($('<div></div>').constructor);
     });
   });
 });
