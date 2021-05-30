@@ -96,7 +96,7 @@ export default class Scale implements IScale {
     } else if (offset < 0) {
       offset = 0;
     }
-    $('html').css('cursor', 'pointer');
+
     this._setClosestThumbPos(offset, e);
   }
 
@@ -132,8 +132,8 @@ export default class Scale implements IScale {
     } else {
       this._setToThumbActive(false);
     }
+
     $(document).off('mousemove');
-    $('html').css('cursor', 'default');
   }
 
   private _renderNums() {
