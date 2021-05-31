@@ -1,10 +1,12 @@
 module.exports =  {
+  "plugins": ["fsd"],
   env: {
     es6: true
   },
   extends:  [
     // 'plugin:@typescript-eslint/recommended',  // Uses the recommended rules from @typescript-eslint/eslint-plugin,
-    'airbnb-typescript/base'
+    "airbnb-typescript/base",
+    "plugin:fsd/all"
   ],
   parserOptions:  {
     project: './tsconfig.json',
@@ -22,6 +24,12 @@ module.exports =  {
       jsx: 'never',
       ts: 'never'
     }],
+    "fsd/hof-name-prefix": "error",
+    "fsd/no-heavy-constructor": "error",
+    "fsd/jq-cache-dom-elements": "error",
+    "fsd/jq-use-js-prefix-in-selector": "error",
+    "fsd/no-function-declaration-in-event-listener": "error",
+    "fsd/split-conditionals": "error",
   },
   settings:  {
     'import/resolver': {

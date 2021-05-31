@@ -46,9 +46,9 @@ const sliderState3: Props = {
   inputToId: 'second-input-3',
 };
 
-$('.slider').miSlider(sliderState1);
-$('.slider-2').miSlider(sliderState2);
-$('.slider-3').miSlider(sliderState3);
+$('.js-slider').miSlider(sliderState1);
+$('.js-slider-2').miSlider(sliderState2);
+$('.js-slider-3').miSlider(sliderState3);
 
 const isNumber = (value: number) => value === Number(value);
 

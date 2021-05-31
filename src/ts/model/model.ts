@@ -57,13 +57,15 @@ export default class Model extends Observer implements IModel {
       this._step = step;
     }
 
-    if (typeof to !== 'undefined' && to > this._min && to <= this._max) {
+    const isToValueInRange = (to > this._min) && (to <= this._max);
+    if (typeof to !== 'undefined' && isToValueInRange) {
       this._toValue = to;
     } else {
       this._toValue = this._max;
     }
 
-    if (typeof from !== 'undefined' && from >= this._min && from < this._toValue) {
+    const isFromValueInRange = from >= this._min && from < this._toValue;
+    if (typeof from !== 'undefined' && isFromValueInRange) {
       this._fromValue = from;
     } else {
       this._fromValue = this._min;
