@@ -31,12 +31,12 @@ $("selector").miSlider({ ...options });
 | --- | --- | --- | --- |
 | `max` | `-` | `number` | Set slider max value |
 | `min` | `-` | `number` | Set slider min value |
-| `range` | `true` | `boolean` | Set `true` - for two thumbs, `false` - for one thumb |
+| `isRange` | `true` | `boolean` | Set `true` - for two thumbs, `false` - for one thumb |
 | `step` | `1` | `number` | Set slider's step |
 | `from` | `-` | `number` | Default min thumb position |
 | `to` | `-` | `number` | Default min thumb position |
-| `labels` | `true` | `boolean` | Set labels visibility above the thumbs |
-| `vertical` | `false` | `boolean` | Set slider orientation |
+| `hasLabels` | `true` | `boolean` | Set labels visibility above the thumbs |
+| `isVertical` | `false` | `boolean` | Set slider orientation |
 | `inputFromId` | `-` | `string` | Set id of which input the fromValue is synchronized with |
 | `inputToId` | `-` | `string` | Set id of which input the toValue is synchronized with |
 

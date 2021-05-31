@@ -4,7 +4,7 @@ import './ts/miSlider';
 type Props = {
   max: number,
   min: number,
-  range?: boolean,
+  isRange?: boolean,
   step?: number,
   from?: number,
   to?: number,
@@ -19,7 +19,7 @@ const sliderState1: Props = {
   max: 1200,
   from: 500,
   to: 1000,
-  range: true,
+  isRange: true,
   hasLabels: true,
   isVertical: true,
   inputFromId: 'first-input-1',
@@ -41,7 +41,7 @@ const sliderState3: Props = {
   max: 55,
   step: 1,
   hasLabels: false,
-  range: false,
+  isRange: false,
   inputFromId: 'first-input-3',
   inputToId: 'second-input-3',
 };
@@ -123,7 +123,7 @@ function setSliderPanelHandlers(panelName: string, sliderName: string, state: Pr
   const handleInputRangeChange = (e: Event) => {
     const target = $(e.currentTarget);
     const isRange = target.prop('checked');
-    localState.range = isRange;
+    localState.isRange = isRange;
 
     const from = Number(inputFrom.val());
     let to = Number(inputTo.val());

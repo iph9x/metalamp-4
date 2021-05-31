@@ -5,7 +5,7 @@ import Presenter from './presenter/presenter';
 type Props = {
   max: number,
   min: number,
-  range?: boolean,
+  isRange?: boolean,
   step?: number,
   from?: number,
   to?: number,
@@ -21,7 +21,7 @@ type Props = {
     init({
       max,
       min,
-      range,
+      isRange,
       step,
       from,
       to,
@@ -43,7 +43,7 @@ type Props = {
 
           this.view = new View({
             slider: this,
-            isRange: range,
+            isRange,
             hasLabels,
             isVertical,
             inputFromId,
