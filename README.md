@@ -52,6 +52,12 @@ $("selector").miSlider({ ...options });
   npm test
 ```
 
+## Run eslint
+
+```
+  npm run eslint
+```
+
 ## Application architecture
 
 The application architecture is built using the MVP pattern.

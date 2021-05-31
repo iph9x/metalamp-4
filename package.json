@@ -8,7 +8,8 @@
     "watch": "cross-env NODE_ENV=development webpack --mode development --watch",
     "start": "cross-env NODE_ENV=development webpack serve --mode development",
     "start2": "cross-env NODE_ENV=development webpack serve --hot --mode development",
-    "test": "npx jest"
+    "test": "npx jest --coverage",
+    "eslint": "npx eslint ./src --ext .js,.jsx,.ts,.tsx"
   },
   "repository": {
     "type": "git",
