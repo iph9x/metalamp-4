@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import Label from '../src/ts/subView/label';
+import Label from '../src/slider/subView/label';
 
 declare const window: any;
 declare const global: any;

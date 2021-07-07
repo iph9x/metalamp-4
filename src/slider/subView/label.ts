@@ -40,7 +40,7 @@ export default class Label implements ILabel {
     } else {
       this._cssSide = this._isVertical ? 'bottom' : 'right';
     }
-    this._$label.addClass(`mi-slider__label_${this._cssSide}`);
+    this._$label.addClass(`mi-slider__label_position_${this._cssSide}`);
 
     this.setValue(this._value);
     this.setPosition(this._position);

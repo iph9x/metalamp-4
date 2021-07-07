@@ -23,8 +23,8 @@ type ViewArgs = {
   isRange?: boolean,
   hasLabels?: boolean,
   isVertical?: boolean,
-  inputFromId?: string,
-  inputToId?: string,
+  inputFromClass?: string,
+  inputToClass?: string,
 };
 
 export default class View extends Observer implements IView {
@@ -68,24 +68,24 @@ export default class View extends Observer implements IView {
 
   private _hasLabels?: boolean;
 
-  private _inputFromId?: string;
+  private _inputFromClass?: string;
 
-  private _inputToId?: string;
+  private _inputToClass?: string;
 
   constructor({
     slider,
     isRange,
     hasLabels,
     isVertical,
-    inputFromId,
-    inputToId,
+    inputFromClass,
+    inputToClass,
   }: ViewArgs) {
     super();
     this._$slider = $(slider);
     this._isVertical = isVertical ?? false;
     this._isRange = isRange ?? true;
-    this._inputFromId = inputFromId;
-    this._inputToId = inputToId;
+    this._inputFromClass = inputFromClass;
+    this._inputToClass = inputToClass;
     this._hasLabels = hasLabels ?? true;
   }
 
@@ -189,7 +189,7 @@ export default class View extends Observer implements IView {
   }
 
   private _initInputFrom(): void {
-    if (this._inputFromId) {
+    if (this._inputFromClass) {
       this._$inputFrom.off();
       this._$inputFrom.on('blur', (e: Event) => {
         const val = this._checkNewFromValue(Number($(e.target).val()));
@@ -217,12 +217,12 @@ export default class View extends Observer implements IView {
       (this._$wrapper).addClass('mi-slider__wrapper_vertical');
     }
 
-    if (this._inputFromId) {
-      this._$inputFrom = $(`#${this._inputFromId}`);
+    if (this._inputFromClass) {
+      this._$inputFrom = $(`.${this._inputFromClass}`);
     }
 
-    if (this._inputToId) {
-      this._$inputTo = $(`#${this._inputToId}`);
+    if (this._inputToClass) {
+      this._$inputTo = $(`.${this._inputToClass}`);
     }
 
     if (!this._isRange && this._$inputFrom) {
@@ -267,13 +267,13 @@ export default class View extends Observer implements IView {
   }
 
   private _changeInputFromValue(value: number): void {
-    if (typeof this._inputFromId !== 'undefined') {
+    if (typeof this._inputFromClass !== 'undefined') {
       this._$inputFrom.val(value);
     }
   }
 
   private _changeInputToValue(value: number): void {
-    if (typeof this._inputToId !== 'undefined') {
+    if (typeof this._inputToClass !== 'undefined') {
       this._$inputTo.val(value);
     }
   }

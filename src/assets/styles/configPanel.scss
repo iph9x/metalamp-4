@@ -35,8 +35,6 @@ $grey: rgb(214, 214, 214);
     align-items: center;
     column-gap: 10px;
     width: 100%;
-  }
-  span {
     text-align: right;
   }
   &__input {
@@ -61,6 +59,18 @@ $grey: rgb(214, 214, 214);
   &__checkbox {
     position: absolute;
     z-index: 1;
+    &:checked {
+      top: 0;
+      left: 0;
+      opacity: 0;
+    }
+    &:checked + .slider-panel__checkbox-btn::before {
+      transform: translateX(14px);
+    }
+    &:checked + .slider-panel__checkbox-btn {
+      background: $blue;
+      border-color: $blue;
+    }
     &-btn {
       position: relative;  
       width: 34px;
@@ -87,18 +97,7 @@ $grey: rgb(214, 214, 214);
     }
     &-wrapper {
       position: relative;
-    }
-    &:checked {
-      top: 0;
-      left: 0;
-      opacity: 0;
-    }
-    &:checked + .slider-panel__checkbox-btn::before {
-      transform: translateX(14px);
-    }
-    &:checked + .slider-panel__checkbox-btn {
-      background: $blue;
-      border-color: $blue;
+      text-align: left;
     }
   }
 }

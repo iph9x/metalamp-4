@@ -11,8 +11,8 @@ type Props = {
   to?: number,
   hasLabels?: boolean,
   isVertical?: boolean,
-  inputFromId?: string,
-  inputToId?: string,
+  inputFromClass?: string,
+  inputToClass?: string,
 };
 
 // eslint-disable-next-line
@@ -27,8 +27,8 @@ type Props = {
       to,
       hasLabels,
       isVertical,
-      inputFromId,
-      inputToId,
+      inputFromClass,
+      inputToClass,
     }: Props) {
       // eslint-disable-next-line
       return this.each(function initSlider() {
@@ -46,8 +46,8 @@ type Props = {
             isRange,
             hasLabels,
             isVertical,
-            inputFromId,
-            inputToId,
+            inputFromClass,
+            inputToClass,
           });
 
           this.presenter = new Presenter(this.model, this.view);

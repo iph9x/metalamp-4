@@ -2,11 +2,11 @@
  * @jest-environment jsdom
  */
 
-import View from '../src/ts/view/view';
-import Thumb from '../src/ts/subView/thumb';
-import Scale from '../src/ts/subView/scale';
-import ProgressBar from '../src/ts/subView/progressBar';
-import Label from '../src/ts/subView/label';
+import View from '../src/slider/view/view';
+import Thumb from '../src/slider/subView/thumb';
+import Scale from '../src/slider/subView/scale';
+import ProgressBar from '../src/slider/subView/progressBar';
+import Label from '../src/slider/subView/label';
 import states from './states';
 
 declare const window: any;
@@ -16,10 +16,10 @@ window.$ = require('jquery');
 global.jQuery = $;
 global.$ = global.jQuery;
 
-jest.mock('../src/ts/subView/thumb');
-jest.mock('../src/ts/subView/label');
-jest.mock('../src/ts/subView/progressBar');
-jest.mock('../src/ts/subView/scale');
+jest.mock('../src/slider/subView/thumb');
+jest.mock('../src/slider/subView/label');
+jest.mock('../src/slider/subView/progressBar');
+jest.mock('../src/slider/subView/scale');
 
 const ThumbMock = Thumb as jest.MockedClass<typeof Thumb>;
 const ProgressBarMock = ProgressBar as jest.MockedClass<typeof ProgressBar>;
@@ -46,16 +46,16 @@ describe('View: ', () => {
     max,
     from,
     to,
-    inputFromId,
-    inputToId,
+    inputFromClass,
+    inputToClass,
   }) => {
     test('View called the Thumb constructor at least once', () => {
       view = new View({
         slider: $root,
         isVertical,
         isRange,
-        inputFromId,
-        inputToId,
+        inputFromClass,
+        inputToClass,
       });
       view.setMin(min);
       view.setMax(max);

@@ -1,4 +1,4 @@
-$darkshade: rgba(31, 32, 65);
+$darkshade: rgb(31, 32, 65);
 $darkshade50: rgba(31, 32, 65, 0.50);
 $darkshade25: rgba(31, 32, 65, 0.25);
 $green: hsl(145, 50%, 62%);
@@ -45,6 +45,11 @@ $slider-height: 10px;
       .mi-slider {
         &__scale {
           flex-direction: column;
+          &::before {
+            width: 30px;
+            height: 100%;
+            transform: translateX(-100%);
+          }
           &-num {
             width: 7px;
             height: 1px;
@@ -54,11 +59,6 @@ $slider-height: 10px;
               left: -5px;
               transform: translateX(-100%);
             }
-          }
-          &::before {
-            width: 30px;
-            height: 100%;
-            transform: translateX(-100%);
           }
         }
         &__thumb {
@@ -112,18 +112,19 @@ $slider-height: 10px;
     font-size: 14px;
     background: $label-bg-color;
     border-radius: 2px;
-    &_left {
-      transform: translate(-100%, -130%);
-    }
-    &_right {
-      transform: translate(100%, -130%);
-    }
-    &_top {
-      transform: translate(20px, -100%);
-    
-    }
-    &_bottom {
-      transform: translate(20px, 100%);
+    &_position {
+      &_left {
+        transform: translate(-100%, -130%);
+      }
+      &_right {
+        transform: translate(100%, -130%);
+      }
+      &_top {
+        transform: translate(20px, -100%);
+      }
+      &_bottom {
+        transform: translate(20px, 100%);
+      }
     }
   }
   &__input {
@@ -173,17 +174,19 @@ $slider-height: 10px;
     &:focus {
       background: lighten($slider-bg-color, 20%);
     }
-    &_left {
-      transform: translate(-50%, -4px);
-    }
-    &_right {
-      transform: translate(50%, -4px);
-    }
-    &_top {
-      transform: translate(-4px, -50%);
-    }
-    &_bottom {
-      transform: translate(-4px, 50%);
+    &_position {
+      &_left {
+        transform: translate(-50%, -4px);
+      }
+      &_right {
+        transform: translate(50%, -4px);
+      }
+      &_top {
+        transform: translate(-4px, -50%);
+      }
+      &_bottom {
+        transform: translate(-4px, 50%);
+      }
     }
   }
 }

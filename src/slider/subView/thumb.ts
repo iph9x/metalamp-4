@@ -91,7 +91,7 @@ export default class Thumb extends Observer implements IThumb {
       this.cssType = this._isVertical ? 'bottom' : 'right';
     }
 
-    this._$thumb.addClass(`mi-slider__thumb_${this.cssType}`);
+    this._$thumb.addClass(`mi-slider__thumb_position_${this.cssType}`);
     this._isMaxThumb = this._type === 'toThumb';
 
     this._current = this._isMaxThumb ? max : min;

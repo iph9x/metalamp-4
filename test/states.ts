@@ -6,8 +6,8 @@ type States = Array<{
   isVertical?: boolean,
   step?: number,
   isRange?: boolean,
-  inputFromId?: string,
-  inputToId?: string,
+  inputFromClass?: string,
+  inputToClass?: string,
 }>;
 
 const states: States = [
@@ -24,8 +24,8 @@ const states: States = [
     max: 500,
     from: 100,
     to: 350,
-    inputFromId: 'inputFrom',
-    inputToId: 'inputTo',
+    inputFromClass: 'inputFrom',
+    inputToClass: 'inputTo',
   },
   {
     min: 50,
