@@ -1,4 +1,5 @@
 import '../slider/miSlider';
+import isNumber from '../assets/ts/utils';
 
 type Props = {
   max: number,
@@ -18,7 +19,6 @@ interface ISliderPanel {
 }
 
 export default class SliderPanel implements ISliderPanel {
-
   private localState: Props;
 
   private $panel: JQuery;
@@ -54,15 +54,11 @@ export default class SliderPanel implements ISliderPanel {
     this.onInputsChange();
   }
 
-  private isNumber(value: number): boolean {
-    return value === Number(value);
-  }
-
   private handleInputStepChange(e: Event): number | {} {
     const $target = $(e.currentTarget);
     const currentValue = Number($target.val());
 
-    if (!this.isNumber(currentValue)) {
+    if (!isNumber(currentValue)) {
       return $target.val(this.localState.step || 1);
     }
 
@@ -78,13 +74,13 @@ export default class SliderPanel implements ISliderPanel {
     this.$slider.miSlider('destroy');
 
     return this.$slider.miSlider(this.localState);
-  };
+  }
 
   private handleInputMinChange(e: Event): number | {} {
     const $target = $(e.currentTarget);
     const currentValue = Number($target.val());
 
-    if ((currentValue >= this.localState.max) || !this.isNumber(currentValue)) {
+    if ((currentValue >= this.localState.max) || !isNumber(currentValue)) {
       return $target.val(this.localState.min);
     }
 
@@ -100,13 +96,13 @@ export default class SliderPanel implements ISliderPanel {
     this.$slider.miSlider('destroy');
 
     return this.$slider.miSlider(this.localState);
-  };
+  }
 
   private handleInputMaxChange(e: Event): number | {} {
     const $target = $(e.currentTarget);
     const currentValue = Number($target.val());
 
-    if ((currentValue <= this.localState.min) || !this.isNumber(currentValue)) {
+    if ((currentValue <= this.localState.min) || !isNumber(currentValue)) {
       return $target.val(this.localState.max);
     }
 
@@ -123,7 +119,7 @@ export default class SliderPanel implements ISliderPanel {
     this.$slider.miSlider('destroy');
 
     return this.$slider.miSlider(this.localState);
-  };
+  }
 
   private handleInputRangeChange(e: Event): void {
     const $target = $(e.currentTarget);
@@ -150,7 +146,7 @@ export default class SliderPanel implements ISliderPanel {
 
     this.$slider.miSlider('destroy');
     this.$slider.miSlider(this.localState);
-  };
+  }
 
   private handleLabelsVisibilityChange(e: Event): void {
     const $target = $(e.currentTarget);
@@ -166,7 +162,7 @@ export default class SliderPanel implements ISliderPanel {
 
     this.$slider.miSlider('destroy');
     this.$slider.miSlider(this.localState);
-  };
+  }
 
   private handleCheckboxVerticalChange(e: Event): void {
     const $target = $(e.currentTarget);
@@ -182,7 +178,7 @@ export default class SliderPanel implements ISliderPanel {
 
     this.$slider.miSlider('destroy');
     this.$slider.miSlider(this.localState);
-  };
+  }
 
   private initInputs(): void {
     this.$checkboxRange = this.$panel.find('.js-slider-panel__checkbox_option_range');
@@ -191,18 +187,18 @@ export default class SliderPanel implements ISliderPanel {
     this.$inputStep = this.$panel.find('.js-slider-panel__input_option_step');
     this.$inputMin = this.$panel.find('.js-slider-panel__input_option_min');
     this.$inputMax = this.$panel.find('.js-slider-panel__input_option_max');
-  
+
     this.$inputStep.val(this.localState.step ? this.localState.step : 1);
     this.$inputMin.val(this.localState.min);
     this.$inputMax.val(this.localState.max);
   }
 
   private onInputsChange(): void {
-    this.$inputStep.on('change', (e: Event) => this.handleInputStepChange(e));
-    this.$inputMin.on('change', (e: Event) => this.handleInputMinChange(e));
-    this.$inputMax.on('change', (e: Event) => this.handleInputMaxChange(e));
-    this.$checkboxRange.on('change', (e: Event) => this.handleInputRangeChange(e));
-    this.$checkboxLabels.on('change', (e: Event) => this.handleLabelsVisibilityChange(e));
-    this.$checkboxVertical.on('change', (e: Event) => this.handleCheckboxVerticalChange(e));
+    this.$inputStep.on('change', this.handleInputStepChange.bind(this));
+    this.$inputMin.on('change', this.handleInputMinChange.bind(this));
+    this.$inputMax.on('change', this.handleInputMaxChange.bind(this));
+    this.$checkboxRange.on('change', this.handleInputRangeChange.bind(this));
+    this.$checkboxLabels.on('change', this.handleLabelsVisibilityChange.bind(this));
+    this.$checkboxVertical.on('change', this.handleCheckboxVerticalChange.bind(this));
   }
 }

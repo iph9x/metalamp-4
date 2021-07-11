@@ -37,7 +37,7 @@ const sliderStates: Array<Props> = [
     inputFromClass: 'js-slider-panel__input_selector_from-2',
     inputToClass: 'js-slider-panel__input_selector_to-2',
   },
-  {  
+  {
     min: 33,
     max: 55,
     step: 1,
@@ -45,7 +45,7 @@ const sliderStates: Array<Props> = [
     isRange: false,
     inputFromClass: 'js-slider-panel__input_selector_from-3',
     inputToClass: 'js-slider-panel__input_selector_to-3',
-  }
+  },
 ];
 
 const $slider1 = $('.js-slider_id_1');
