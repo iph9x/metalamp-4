@@ -32,7 +32,7 @@ module.exports = {
   mode: 'development',
   entry: {
     miSlider: './index.ts',
-    panel: './styles/configPanel.scss',
+    panel: './assets/styles/configPanel.scss',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
