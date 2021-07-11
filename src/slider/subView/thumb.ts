@@ -210,6 +210,12 @@ export default class Thumb extends Observer implements IThumb {
   private _handleThumbMousedown(e: JQuery.Event): void {
     e.preventDefault();
 
+    $(document)
+      .css('-moz-user-select', 'none')
+      .css('-khtml-user-select', 'none')
+      .css('-webkit-user-select', 'none')
+      .css('user-select', 'none');
+
     this.setIsActive(true);
     this._shift = this._isVertical
       ? this._calcShift(e.clientY, 'top', 'height')
@@ -224,6 +230,11 @@ export default class Thumb extends Observer implements IThumb {
     if (this._isActive) {
       this.setIsActive(false);
 
+      $(document)
+        .css('-moz-user-select', 'auto')
+        .css('-khtml-user-select', 'auto')
+        .css('-webkit-user-select', 'auto')
+        .css('user-select', 'auto');
       $('html').css('cursor', 'default');
       $(document).off('mousemove');
 
