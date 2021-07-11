@@ -109,12 +109,14 @@ export default class View extends Observer implements IView {
     if (this._isRange) {
       this._fromThumb = this._createFromThumb();
       this._fromThumb.subscribe(this);
+      this._fromThumbLabel.subscribe(this._fromThumb);
 
       this._initInputFrom();
     }
 
     this._toThumb = this._createToThumb();
     this._toThumb.subscribe(this);
+    this._toThumbLabel.subscribe(this._toThumb);
 
     this._scale = this._createScale();
 
@@ -163,48 +165,54 @@ export default class View extends Observer implements IView {
   }
 
   public update(action: { type: string, value: number }): void {
-    switch (action.type) {
+    const { type, value } = action;
+
+    switch (type) {
       case ('SET_CURRENT_MAX'):
-        this._setCurrentMax(action.value);
+        this._setCurrentMax(value);
         break;
       case ('SET_CURRENT_MIN'):
-        this._setCurrentMin(action.value);
+        this._setCurrentMin(value);
         break;
       case ('SET_TO_THUMB_POSITION'):
-        this._toThumbPosition = action.value;
+        this._toThumbPosition = value;
         if (this._isRange) {
-          this._fromThumb.otherThumbPosition = action.value;
+          this._fromThumb.otherThumbPosition = value;
         }
 
-        this._scale.toThumbPosition = action.value;
+        this._scale.toThumbPosition = value;
         break;
       case ('SET_FROM_THUMB_POSITION'):
-        this._fromThumbPosition = action.value;
-        this._toThumb.otherThumbPosition = action.value;
-        this._scale.fromThumbPosition = action.value;
+        this._fromThumbPosition = value;
+        this._toThumb.otherThumbPosition = value;
+        this._scale.fromThumbPosition = value;
         break;
       default:
         break;
     }
   }
 
+  private handleInputFromBlur(e: Event) {
+    const val = this._checkNewFromValue(Number($(e.target).val()));
+    this._fromThumb.setPositionByValue(val);
+  }
+
   private _initInputFrom(): void {
     if (this._inputFromClass) {
       this._$inputFrom.off();
-      this._$inputFrom.on('blur', (e: Event) => {
-        const val = this._checkNewFromValue(Number($(e.target).val()));
-        this._fromThumb.setPositionByValue(val);
-      });
+      this._$inputFrom.on('blur', this.handleInputFromBlur.bind(this));
     }
+  }
+
+  private handleInputToBlur(e: Event) {
+    const val = this._checkNewToValue(Number($(e.target).val()));
+    this._toThumb.setPositionByValue(val);
   }
 
   private _initInputTo(): void {
     if (this._$inputTo) {
       this._$inputTo.off();
-      this._$inputTo.on('blur', (e: Event) => {
-        const val = this._checkNewToValue(Number($(e.target).val()));
-        this._toThumb.setPositionByValue(val);
-      });
+      this._$inputTo.on('blur', this.handleInputToBlur.bind(this));
     }
   }
 

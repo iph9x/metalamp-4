@@ -1,3 +1,5 @@
+import Observer from '../pattern/observer';
+
 interface ILabel {
   render(): JQuery,
   setValue(value: number): void,
@@ -11,7 +13,7 @@ type LabelArgs = {
   isVertical?: boolean,
 };
 
-export default class Label implements ILabel {
+export default class Label extends Observer implements ILabel {
   private _$label: JQuery = $('<span class="mi-slider__label"></span>');
 
   private _cssSide: 'top' | 'left' | 'bottom' | 'right';
@@ -30,6 +32,8 @@ export default class Label implements ILabel {
     position,
     isVertical,
   }: LabelArgs) {
+    super();
+
     this._value = value;
     this._type = type;
     this._position = position;
@@ -44,6 +48,9 @@ export default class Label implements ILabel {
 
     this.setValue(this._value);
     this.setPosition(this._position);
+
+    this._onLabelMousedown();
+    this._onLabelMouseup();
   }
 
   public render(): JQuery {
@@ -58,5 +65,21 @@ export default class Label implements ILabel {
   public setPosition(value: number): void {
     this._position = value;
     this._$label.css(this._cssSide, `${value}%`);
+  }
+
+  private _handleLabelMousedown(value: JQuery.Event) {
+    this.fire({ type: 'ACTIVATE_THUMB', value });
+  }
+
+  private _handleLabelMouseup() {
+    this.fire({ type: 'DISABLE_THUMB' });
+  }
+
+  private _onLabelMousedown() {
+    this._$label.on('mousedown', this._handleLabelMousedown.bind(this));
+  }
+
+  private _onLabelMouseup(): void {
+    $(document).on('mouseup', this._handleLabelMouseup.bind(this));
   }
 }

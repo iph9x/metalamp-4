@@ -19,7 +19,11 @@ export default class Observer implements IObserver {
     this._observers.filter((obs) => obs !== observer);
   }
 
-  public fire(action: { type: string, value?: number | boolean, isOutUpdate?: boolean }): void {
+  public fire(action: {
+    type: string,
+    value?: number | boolean | JQuery.Event,
+    isOutUpdate?: boolean
+  }): void {
     this._observers.forEach((observer: { update: Function }) => observer.update(action));
   }
 }

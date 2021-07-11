@@ -105,7 +105,7 @@ export default class Scale implements IScale {
   }
 
   private _onScaleClick(): void {
-    this._$scale.on('mousedown', (e: JQuery.Event) => this.handleScaleMousedown(e));
+    this._$scale.on('mousedown', this.handleScaleMousedown.bind(this));
   }
 
   private _setClosestThumbPos(offset: number, e: JQuery.Event): void {
@@ -116,13 +116,13 @@ export default class Scale implements IScale {
     if (offsetFromThumbIsLess || this._isSingle) {
       this._setToThumbActive(true);
       this._setToThumb(e);
-      $(document).on('mousemove', (mousemoveEvent: JQuery.Event) => this._setToThumb(mousemoveEvent));
-      $(document).on('mouseup', () => this._onMouseUp('to'));
+      $(document).on('mousemove', this._setToThumb.bind(this));
+      $(document).on('mouseup', this._onMouseUp.bind(this, 'to'));
     } else {
       this._setFromThumbActive(true);
       this._setFromThumb(e);
-      $(document).on('mousemove', (mousemoveEvent: JQuery.Event) => this._setFromThumb(mousemoveEvent));
-      $(document).on('mouseup', () => this._onMouseUp('from'));
+      $(document).on('mousemove', this._setFromThumb.bind(this));
+      $(document).on('mouseup', this._onMouseUp.bind(this, 'from'));
     }
   }
 

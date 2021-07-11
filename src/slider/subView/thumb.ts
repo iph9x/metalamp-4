@@ -102,7 +102,6 @@ export default class Thumb extends Observer implements IThumb {
     this._onThumbMouseup();
 
     this.handleThumbMove = this.handleThumbMove.bind(this);
-    this._calcNewPosition = this._calcNewPosition.bind(this);
     this.setIsActive = this.setIsActive.bind(this);
   }
 
@@ -181,16 +180,31 @@ export default class Thumb extends Observer implements IThumb {
     this._setPosition(newPosition);
   }
 
+  public update(action: { type: string, value: JQuery.Event }): void {
+    const { type, value } = action;
+
+    switch (type) {
+      case ('ACTIVATE_THUMB'):
+        this._handleThumbMousedown(value);
+        break;
+      case ('DISABLE_THUMB'):
+        this._handleThumbMouseup();
+        break;
+      default:
+        break;
+    }
+  }
+
   private _onThumbMousedown() {
-    this._$thumb.on('mousedown', (e: JQuery.Event) => this._handleThumbMousedown(e));
+    this._$thumb.on('mousedown', this._handleThumbMousedown.bind(this));
   }
 
   private _onThumbMove() {
-    $(document).on('mousemove', (e: JQuery.Event) => this.handleThumbMove(e));
+    $(document).on('mousemove', this.handleThumbMove.bind(this));
   }
 
   private _onThumbMouseup(): void {
-    $(document).on('mouseup', () => this._handleThumbMouseup());
+    $(document).on('mouseup', this._handleThumbMouseup.bind(this));
   }
 
   private _handleThumbMousedown(e: JQuery.Event): void {

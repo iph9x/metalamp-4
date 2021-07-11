@@ -35,7 +35,7 @@ export default class ProgressBar implements IProgressBar {
   }
 
   public onProgressBarMousedown(callback: Function): void {
-    this._$progressBar.on('mousedown', (e: JQuery.Event) => callback(e));
+    this._$progressBar.on('mousedown', callback.bind(this));
   }
 
   public setFromPosition(position: number): void {
