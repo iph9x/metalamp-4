@@ -45,6 +45,8 @@ describe('Label: ', () => {
 
     test('method setValue() must set position in the element', () => {
       label.setValue(newValue);
+      $label.trigger('mousedown');
+      $(document).trigger('mouseup');
       expect(Number.parseFloat($label.html())).toBe(newValue);
     });
 
