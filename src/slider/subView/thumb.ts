@@ -143,33 +143,39 @@ export default class Thumb extends Observer implements IThumb {
   public handleThumbMove(e: JQuery.Event): void {
     if (!this._isActive) return;
 
-    const calcedX: number = this._calcNewPosition(e.clientX, 'left', 'width');
-    const calcedY: number = this._calcNewPosition(e.clientY, 'top', 'height');
+    const calcedOffset: number = this._isVertical
+      ? this._calcNewPosition(e.clientY, 'top', 'height')
+      : this._calcNewPosition(e.clientX, 'left', 'width');
     let newPosition: number;
 
     if (this._isMaxThumb) {
-      newPosition = this._isVertical ? 100 - calcedY : 100 - calcedX;
+      newPosition = 100 - calcedOffset;
     } else {
-      newPosition = this._isVertical ? calcedY : calcedX;
+      newPosition = calcedOffset
     }
 
     newPosition = this._checkBorders(newPosition, this.otherThumbPosition);
 
+
     if (this._isMaxThumb) {
-      this._progressBar.setToPosition(newPosition);
       let value = this._calcValueFromPosition(1 - newPosition / 100);
+
       value = value > this._max ? this._max : value;
 
       const roundedValue = Number(value.toFixed(6));
+
       this._current = roundedValue;
+      this._progressBar.setToPosition(newPosition);
       this.fire({ type: 'SET_CURRENT_MAX', value: roundedValue });
     } else {
-      this._progressBar.setFromPosition(newPosition);
       let value = this._calcValueFromPosition(newPosition / 100);
+
       value = value < this._min ? this._min : value;
 
       const roundedValue = Number(value.toFixed(6));
+
       this._current = roundedValue;
+      this._progressBar.setFromPosition(newPosition);
       this.fire({ type: 'SET_CURRENT_MIN', value: roundedValue });
     }
 
@@ -244,11 +250,8 @@ export default class Thumb extends Observer implements IThumb {
 
   private _calcValueFromPosition(position: number): number {
     const minMaxDiff = this._max - this._min;
-    if (position === 1 || position === 0) {
-      return (this._min + (position) * minMaxDiff);
-    }
 
-    return (Math.round((this._min + (position) * minMaxDiff) / this._step) * this._step);
+    return this._min + position * minMaxDiff;
   }
 
   private _getValueToPercent(value: number): number {
@@ -270,7 +273,11 @@ export default class Thumb extends Observer implements IThumb {
     dimension: 'height' | 'width',
   ): number {
     const wrapperOffset = this._$wrapper.get(0).getBoundingClientRect()[type];
-    return ((mousePos - this._shift - wrapperOffset) * 100) / this._$wrapper[dimension]();
+    const wrapperSize = this._$wrapper[dimension]();
+    const thumbOffset = (mousePos - this._shift - wrapperOffset) * 100 / wrapperSize;
+    const stepInPercent = this._getValueToPercent(this._step);
+
+    return Math.round(thumbOffset / stepInPercent) * stepInPercent;
   }
 
   private _checkBorders(position: number, border: number): number {
