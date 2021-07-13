@@ -6,6 +6,7 @@ interface IScale {
 }
 
 type ScaleArgs = {
+  step: number,
   min: number,
   max: number,
   fromThumbPosition: number,
@@ -25,6 +26,12 @@ export default class Scale implements IScale {
 
   private _scaleNumbersArr: Array<number> = [];
 
+  private min: number;
+
+  private max: number;
+
+  private step: number;
+
   public fromThumbPosition?: number;
 
   public toThumbPosition: number;
@@ -40,6 +47,7 @@ export default class Scale implements IScale {
   private _isVertical?: boolean;
 
   constructor({
+    step,
     min,
     max,
     toThumbPosition,
@@ -51,29 +59,21 @@ export default class Scale implements IScale {
     setFromThumbActive,
     isRange,
   }: ScaleArgs) {
-    const scaleStep = (max - min) / 4;
     this._isVertical = isVertical;
 
     if (this._isVertical) {
       this._$scale.addClass('mi-slider__scale_vertical');
     }
 
+    this.min = min;
+    this.max = max;
+    this.step = step;
     this.toThumbPosition = toThumbPosition;
     this.fromThumbPosition = fromThumbPosition;
     this._setToThumb = setToThumb;
     this._setToThumbActive = setToThumbActive;
     this._setFromThumb = setFromThumb;
     this._setFromThumbActive = setFromThumbActive;
-
-    for (let i = 0; i < 5; i += 1) {
-      if (i === 0) {
-        this._scaleNumbersArr[i] = min;
-      } else if (i === 4) {
-        this._scaleNumbersArr[i] = max;
-      } else {
-        this._scaleNumbersArr[i] = Number((this._scaleNumbersArr[i - 1] + scaleStep).toFixed(1));
-      }
-    }
 
     this._isSingle = !isRange;
     this._renderNums();
@@ -137,9 +137,38 @@ export default class Scale implements IScale {
   }
 
   private _renderNums() {
-    for (let i = 0; i < 5; i += 1) {
-      const newEl = $('<span class="mi-slider__scale-num"></span>');
-      newEl.attr('data-before', `${this._scaleNumbersArr[i]}`);
+    let maxNumsCount = Math.ceil((this.max - this.min) / this.step) + 1;
+
+    if (maxNumsCount < 2) {
+      maxNumsCount = 2;
+    } else if (maxNumsCount > 100) {
+      maxNumsCount = 101;
+    }
+
+    const scaleStep = (this.max - this.min) / (maxNumsCount - 1); 
+
+    for (let i = 0; i < maxNumsCount; i += 1) {
+      if (i === 0) {
+        this._scaleNumbersArr[i] = this.min;
+      } else if (i === maxNumsCount - 1) {
+        this._scaleNumbersArr[i] = this.max;
+      } else {
+        this._scaleNumbersArr[i] = Number((this._scaleNumbersArr[i - 1] + scaleStep).toFixed(1));
+      }
+
+      const newEl = $('<span class="mi-slider__scale-graduation"></span>');
+      const visibleLabelNumber = Math.round((maxNumsCount - 1) / 10);
+
+      if (maxNumsCount > 10 && (i % visibleLabelNumber === 0) && i !== maxNumsCount - 2) {
+        newEl.attr('data-before', `${this._scaleNumbersArr[i]}`);
+        newEl.addClass('mi-slider__scale-graduation_numbered')
+      } else if (maxNumsCount <= 10) {
+        newEl.attr('data-before', `${this._scaleNumbersArr[i]}`);
+      }
+      if (i === maxNumsCount - 1) {
+        newEl.attr('data-before', `${this._scaleNumbersArr[i]}`);
+      }
+
       this._$scale.append(newEl);
     }
   }

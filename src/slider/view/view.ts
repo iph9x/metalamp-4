@@ -337,6 +337,7 @@ export default class View extends Observer implements IView {
 
   private _createScale(): Scale {
     return new Scale({
+      step: this._step,
       min: this._min,
       max: this._max,
       toThumbPosition: this._toThumbPosition,

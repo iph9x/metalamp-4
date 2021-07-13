@@ -45,19 +45,23 @@ $slider-height: 10px;
       .mi-slider {
         &__scale {
           flex-direction: column;
+          align-items: flex-end;
           &::before {
             width: 30px;
             height: 100%;
             transform: translateX(-100%);
           }
-          &-num {
+          &-graduation {
             width: 7px;
             height: 1px;
-            transform: translateX(-14px);
+            transform: translateX(-16px);
             &::before {
               top: -6px;
               left: -5px;
               transform: translateX(-100%);
+            }
+            &_numbered {
+              width: 11px;
             }
           }
         }
@@ -87,7 +91,7 @@ $slider-height: 10px;
       bottom: 0;
       height: 40px;
     }
-    &-num {
+    &-graduation {
       position: relative;
       width: 1px;
       height: 7px;
@@ -96,12 +100,15 @@ $slider-height: 10px;
       &::before {
         content: attr(data-before);
         position: absolute;
-        top: 10px;
+        top: 12px;
         left: 50%;
         transform: translateX(-50%);
         font-size: 12px;
         font-weight: 300;
         color: $num-color;
+      }
+      &_numbered {
+        height: 11px;
       }
     }
   }

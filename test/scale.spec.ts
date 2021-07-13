@@ -72,6 +72,7 @@ describe('Scale:', () => {
       label: toLabel,
     });
     const scale = new Scale({
+      step,
       min,
       max,
       toThumbPosition: 70,
