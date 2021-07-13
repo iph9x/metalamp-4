@@ -146,16 +146,9 @@ export default class Thumb extends Observer implements IThumb {
     const calcedOffset: number = this._isVertical
       ? this._calcNewPosition(e.clientY, 'top', 'height')
       : this._calcNewPosition(e.clientX, 'left', 'width');
-    let newPosition: number;
-
-    if (this._isMaxThumb) {
-      newPosition = 100 - calcedOffset;
-    } else {
-      newPosition = calcedOffset
-    }
+    let newPosition = this._isMaxThumb ? 100 - calcedOffset : calcedOffset;
 
     newPosition = this._checkBorders(newPosition, this.otherThumbPosition);
-
 
     if (this._isMaxThumb) {
       let value = this._calcValueFromPosition(1 - newPosition / 100);
@@ -274,7 +267,7 @@ export default class Thumb extends Observer implements IThumb {
   ): number {
     const wrapperOffset = this._$wrapper.get(0).getBoundingClientRect()[type];
     const wrapperSize = this._$wrapper[dimension]();
-    const thumbOffset = (mousePos - this._shift - wrapperOffset) * 100 / wrapperSize;
+    const thumbOffset = ((mousePos - this._shift - wrapperOffset) * 100) / wrapperSize;
     const stepInPercent = this._getValueToPercent(this._step);
 
     return Math.round(thumbOffset / stepInPercent) * stepInPercent;
