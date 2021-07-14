@@ -19,7 +19,25 @@ interface ISliderPanel {
 }
 
 export default class SliderPanel implements ISliderPanel {
-  private localState: Props;
+  private step: number;
+
+  private inputFromClass: string;
+
+  private from: number;
+
+  private inputToClass: string;
+
+  private to: number;
+
+  private max: number;
+
+  private min: number;
+
+  private isRange: boolean;
+
+  private hasLabels: boolean;
+
+  private isVertical: boolean;
 
   private $panel: JQuery;
 
@@ -42,7 +60,7 @@ export default class SliderPanel implements ISliderPanel {
   private $inputMax: JQuery;
 
   constructor(panelClassName: string, $slider: JQuery, state: Props) {
-    this.localState = { ...state };
+    Object.assign(this, state);
     this.$panel = $(panelClassName);
     this.$slider = $slider;
     this.$inputFrom = this.$panel.find('.js-slider-panel__input_option_current-from');
@@ -54,130 +72,145 @@ export default class SliderPanel implements ISliderPanel {
     this.onInputsChange();
   }
 
+  private getState(): Props {
+    return ({
+      max: this.max,
+      min: this.min,
+      step: this.step,
+      from: this.from,
+      to: this.to,
+      inputFromClass: this.inputFromClass,
+      inputToClass: this.inputToClass,
+      isRange: this.isRange,
+      hasLabels: this.hasLabels,
+      isVertical: this.isVertical,
+    });
+  }
+
   private handleInputStepChange(e: Event): number | {} {
     const $target = $(e.currentTarget);
     const currentValue = Number($target.val());
 
-    if (!isNumber(currentValue)) {
-      return $target.val(this.localState.step || 1);
+    if (!isNumber(currentValue) || currentValue <= 0) {
+      return $target.val(this.step || 1);
     }
 
-    this.localState.step = currentValue;
-    if (this.localState.inputFromClass) {
-      this.localState.from = Number(this.$inputFrom.val());
+    this.step = currentValue;
+    if (this.inputFromClass) {
+      this.from = Number(this.$inputFrom.val());
     }
 
-    if (this.localState.inputToClass) {
-      this.localState.to = Number(this.$inputTo.val());
+    if (this.inputToClass) {
+      this.to = Number(this.$inputTo.val());
     }
 
     this.$slider.miSlider('destroy');
 
-    return this.$slider.miSlider(this.localState);
+    return this.$slider.miSlider(this.getState());
   }
 
   private handleInputMinChange(e: Event): number | {} {
     const $target = $(e.currentTarget);
     const currentValue = Number($target.val());
 
-    if ((currentValue >= this.localState.max) || !isNumber(currentValue)) {
-      return $target.val(this.localState.min);
+    if ((currentValue >= this.max) || !isNumber(currentValue)) {
+      return $target.val(this.min);
     }
 
-    this.localState.min = Number($target.val());
-    if (this.localState.inputFromClass) {
-      this.localState.from = Number(this.$inputFrom.val());
+    this.min = Number($target.val());
+    if (this.inputFromClass) {
+      this.from = Number(this.$inputFrom.val());
     }
 
-    if (this.localState.inputToClass) {
-      this.localState.to = Number(this.$inputTo.val());
+    if (this.inputToClass) {
+      this.to = Number(this.$inputTo.val());
     }
 
     this.$slider.miSlider('destroy');
 
-    return this.$slider.miSlider(this.localState);
+    return this.$slider.miSlider(this.getState());
   }
 
   private handleInputMaxChange(e: Event): number | {} {
     const $target = $(e.currentTarget);
     const currentValue = Number($target.val());
 
-    if ((currentValue <= this.localState.min) || !isNumber(currentValue)) {
-      return $target.val(this.localState.max);
+    if ((currentValue <= this.min) || !isNumber(currentValue)) {
+      return $target.val(this.max);
     }
 
-    this.localState.max = Number($target.val());
+    this.max = Number($target.val());
 
-    if (this.localState.inputFromClass) {
-      this.localState.from = Number(this.$inputFrom.val());
+    if (this.inputFromClass) {
+      this.from = Number(this.$inputFrom.val());
     }
 
-    if (this.localState.inputToClass) {
-      this.localState.to = Number(this.$inputTo.val());
+    if (this.inputToClass) {
+      this.to = Number(this.$inputTo.val());
     }
 
     this.$slider.miSlider('destroy');
 
-    return this.$slider.miSlider(this.localState);
+    return this.$slider.miSlider(this.getState());
   }
 
   private handleInputRangeChange(e: Event): void {
     const $target = $(e.currentTarget);
     const isRange = $target.prop('checked');
-    this.localState.isRange = isRange;
+    this.isRange = isRange;
 
     const from = Number(this.$inputFrom.val());
     let to = Number(this.$inputTo.val());
-    if (this.localState.inputFromClass && this.localState.inputToClass) {
+    if (this.inputFromClass && this.inputToClass) {
       if (isRange) {
         if (from >= to) {
-          to = this.localState.max;
+          to = this.max;
         }
       }
     }
 
-    if (this.localState.inputFromClass) {
-      this.localState.from = from;
+    if (this.inputFromClass) {
+      this.from = from;
     }
 
-    if (this.localState.inputToClass) {
-      this.localState.to = to;
+    if (this.inputToClass) {
+      this.to = to;
     }
 
     this.$slider.miSlider('destroy');
-    this.$slider.miSlider(this.localState);
+    this.$slider.miSlider(this.getState());
   }
 
   private handleLabelsVisibilityChange(e: Event): void {
     const $target = $(e.currentTarget);
-    this.localState.hasLabels = $target.prop('checked');
+    this.hasLabels = $target.prop('checked');
 
-    if (this.localState.inputFromClass) {
-      this.localState.from = Number(this.$inputFrom.val());
+    if (this.inputFromClass) {
+      this.from = Number(this.$inputFrom.val());
     }
 
-    if (this.localState.inputToClass) {
-      this.localState.to = Number(this.$inputTo.val());
+    if (this.inputToClass) {
+      this.to = Number(this.$inputTo.val());
     }
 
     this.$slider.miSlider('destroy');
-    this.$slider.miSlider(this.localState);
+    this.$slider.miSlider(this.getState());
   }
 
   private handleCheckboxVerticalChange(e: Event): void {
     const $target = $(e.currentTarget);
-    this.localState.isVertical = $target.prop('checked');
+    this.isVertical = $target.prop('checked');
 
-    if (this.localState.inputFromClass) {
-      this.localState.from = Number(this.$inputFrom.val());
+    if (this.inputFromClass) {
+      this.from = Number(this.$inputFrom.val());
     }
 
-    if (this.localState.inputToClass) {
-      this.localState.to = Number(this.$inputTo.val());
+    if (this.inputToClass) {
+      this.to = Number(this.$inputTo.val());
     }
 
     this.$slider.miSlider('destroy');
-    this.$slider.miSlider(this.localState);
+    this.$slider.miSlider(this.getState());
   }
 
   private initInputs(): void {
@@ -188,9 +221,9 @@ export default class SliderPanel implements ISliderPanel {
     this.$inputMin = this.$panel.find('.js-slider-panel__input_option_min');
     this.$inputMax = this.$panel.find('.js-slider-panel__input_option_max');
 
-    this.$inputStep.val(this.localState.step ? this.localState.step : 1);
-    this.$inputMin.val(this.localState.min);
-    this.$inputMax.val(this.localState.max);
+    this.$inputStep.val(this.step ? this.step : 1);
+    this.$inputMin.val(this.min);
+    this.$inputMax.val(this.max);
   }
 
   private onInputsChange(): void {
