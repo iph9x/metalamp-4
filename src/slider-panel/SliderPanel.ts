@@ -90,19 +90,14 @@ export default class SliderPanel implements ISliderPanel {
   private handleInputStepChange(e: Event): number | {} {
     const $target = $(e.currentTarget);
     const currentValue = Number($target.val());
+    const stepIsInvalid = currentValue <= 0 || currentValue > this.max - this.min;
 
-    if (!isNumber(currentValue) || currentValue <= 0) {
+    if (stepIsInvalid || !isNumber(currentValue)) {
       return $target.val(this.step || 1);
     }
 
     this.step = currentValue;
-    if (this.inputFromClass) {
-      this.from = Number(this.$inputFrom.val());
-    }
-
-    if (this.inputToClass) {
-      this.to = Number(this.$inputTo.val());
-    }
+    this.setFromAndToValues();
 
     this.$slider.miSlider('destroy');
 
@@ -112,19 +107,14 @@ export default class SliderPanel implements ISliderPanel {
   private handleInputMinChange(e: Event): number | {} {
     const $target = $(e.currentTarget);
     const currentValue = Number($target.val());
+    const minValueIsInvalid = currentValue >= this.max || this.max - currentValue < this.step;
 
-    if ((currentValue >= this.max) || !isNumber(currentValue)) {
+    if (minValueIsInvalid || !isNumber(currentValue)) {
       return $target.val(this.min);
     }
 
     this.min = Number($target.val());
-    if (this.inputFromClass) {
-      this.from = Number(this.$inputFrom.val());
-    }
-
-    if (this.inputToClass) {
-      this.to = Number(this.$inputTo.val());
-    }
+    this.setFromAndToValues();
 
     this.$slider.miSlider('destroy');
 
@@ -134,20 +124,14 @@ export default class SliderPanel implements ISliderPanel {
   private handleInputMaxChange(e: Event): number | {} {
     const $target = $(e.currentTarget);
     const currentValue = Number($target.val());
+    const maxValueIsInvalid = currentValue <= this.min || currentValue - this.min < this.step;
 
-    if ((currentValue <= this.min) || !isNumber(currentValue)) {
+    if (maxValueIsInvalid || !isNumber(currentValue)) {
       return $target.val(this.max);
     }
 
     this.max = Number($target.val());
-
-    if (this.inputFromClass) {
-      this.from = Number(this.$inputFrom.val());
-    }
-
-    if (this.inputToClass) {
-      this.to = Number(this.$inputTo.val());
-    }
+    this.setFromAndToValues();
 
     this.$slider.miSlider('destroy');
 
@@ -161,6 +145,7 @@ export default class SliderPanel implements ISliderPanel {
 
     const from = Number(this.$inputFrom.val());
     let to = Number(this.$inputTo.val());
+
     if (this.inputFromClass && this.inputToClass) {
       if (isRange) {
         if (from >= to) {
@@ -185,13 +170,7 @@ export default class SliderPanel implements ISliderPanel {
     const $target = $(e.currentTarget);
     this.hasLabels = $target.prop('checked');
 
-    if (this.inputFromClass) {
-      this.from = Number(this.$inputFrom.val());
-    }
-
-    if (this.inputToClass) {
-      this.to = Number(this.$inputTo.val());
-    }
+    this.setFromAndToValues();
 
     this.$slider.miSlider('destroy');
     this.$slider.miSlider(this.getState());
@@ -201,6 +180,13 @@ export default class SliderPanel implements ISliderPanel {
     const $target = $(e.currentTarget);
     this.isVertical = $target.prop('checked');
 
+    this.setFromAndToValues();
+
+    this.$slider.miSlider('destroy');
+    this.$slider.miSlider(this.getState());
+  }
+
+  private setFromAndToValues(): void {
     if (this.inputFromClass) {
       this.from = Number(this.$inputFrom.val());
     }
@@ -208,9 +194,6 @@ export default class SliderPanel implements ISliderPanel {
     if (this.inputToClass) {
       this.to = Number(this.$inputTo.val());
     }
-
-    this.$slider.miSlider('destroy');
-    this.$slider.miSlider(this.getState());
   }
 
   private initInputs(): void {
