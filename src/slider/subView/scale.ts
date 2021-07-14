@@ -105,7 +105,8 @@ export default class Scale implements IScale {
   }
 
   private _onScaleClick(): void {
-    this._$scale.on('mousedown', this.handleScaleMousedown.bind(this));
+    const handleScaleMousedown = (e: JQuery.Event) => this.handleScaleMousedown(e);
+    this._$scale.on('mousedown', handleScaleMousedown);
   }
 
   private _setClosestThumbPos(offset: number, e: JQuery.Event): void {
