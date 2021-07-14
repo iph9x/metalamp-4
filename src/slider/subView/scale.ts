@@ -159,7 +159,7 @@ export default class Scale implements IScale {
       const newEl = $('<span class="mi-slider__scale-graduation"></span>');
       const visibleLabelNumber = Math.round((maxNumsCount - 1) / 10);
       const captionNumberIsEven = i % visibleLabelNumber === 0;
-      const captionIsNotPenultimate = i !== maxNumsCount - 2;
+      const captionIsNotPenultimate = i !== maxNumsCount - 2 || maxNumsCount === 11;
       const numsCountIsMoreThan10 = maxNumsCount > 10;
       const captionsConditionsIsTrue = numsCountIsMoreThan10
         && captionNumberIsEven
@@ -170,10 +170,12 @@ export default class Scale implements IScale {
         newEl.addClass('mi-slider__scale-graduation_numbered');
       } else if (maxNumsCount <= 10) {
         newEl.attr('data-before', `${this._scaleNumbersArr[i]}`);
+        newEl.addClass('mi-slider__scale-graduation_numbered');
       }
 
       if (i === maxNumsCount - 1) {
         newEl.attr('data-before', `${this._scaleNumbersArr[i]}`);
+        newEl.addClass('mi-slider__scale-graduation_numbered');
       }
 
       this._$scale.append(newEl);
