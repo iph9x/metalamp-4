@@ -6,43 +6,43 @@ interface IProgressBar {
 }
 
 export default class ProgressBar implements IProgressBar {
-  private _$progressBar: JQuery = $('<div class="mi-slider__progress-bar"></div>');
+  private $progressBar: JQuery = $('<div class="mi-slider__progress-bar"></div>');
 
-  private _cssFromSide: 'top' | 'left';
+  private cssFromSide: 'top' | 'left';
 
-  private _cssToSide: 'bottom' |'right';
+  private cssToSide: 'bottom' |'right';
 
   constructor(
-    private _isRange: boolean,
-    private _isVertical?: boolean,
+    private isRange: boolean,
+    private isVertical?: boolean,
   ) {
-    if (this._isVertical) {
-      this._$progressBar.addClass('mi-slider__progress-bar_vertical');
-      this._cssFromSide = 'top';
-      this._cssToSide = 'bottom';
+    if (this.isVertical) {
+      this.$progressBar.addClass('mi-slider__progress-bar_vertical');
+      this.cssFromSide = 'top';
+      this.cssToSide = 'bottom';
     } else {
-      this._cssFromSide = 'left';
-      this._cssToSide = 'right';
+      this.cssFromSide = 'left';
+      this.cssToSide = 'right';
     }
 
-    if (!this._isRange) {
+    if (!this.isRange) {
       this.setFromPosition(0);
     }
   }
 
   public render(): JQuery {
-    return this._$progressBar;
+    return this.$progressBar;
   }
 
   public onProgressBarMousedown(callback: Function): void {
-    this._$progressBar.on('mousedown', callback.bind(this));
+    this.$progressBar.on('mousedown', callback.bind(this));
   }
 
   public setFromPosition(position: number): void {
-    this._$progressBar.css(this._cssFromSide, `${position}%`);
+    this.$progressBar.css(this.cssFromSide, `${position}%`);
   }
 
   public setToPosition(position: number): void {
-    this._$progressBar.css(this._cssToSide, `${position}%`);
+    this.$progressBar.css(this.cssToSide, `${position}%`);
   }
 }

@@ -20,11 +20,11 @@ type ScaleArgs = {
 };
 
 export default class Scale implements IScale {
-  private _$scale: JQuery = $('<div class="mi-slider__scale"></div>');
+  private $scale: JQuery = $('<div class="mi-slider__scale"></div>');
 
-  private _isSingle: boolean;
+  private isSingle: boolean;
 
-  private _scaleNumbersArr: Array<number> = [];
+  private scaleNumbersArr: Array<number> = [];
 
   private min: number;
 
@@ -36,15 +36,15 @@ export default class Scale implements IScale {
 
   public toThumbPosition: number;
 
-  private _setFromThumb?: (e: JQuery.Event) => void;
+  private setFromThumb?: (e: JQuery.Event) => void;
 
-  private _setFromThumbActive?: (value: boolean) => void;
+  private setFromThumbActive?: (value: boolean) => void;
 
-  private _setToThumb: (e: JQuery.Event) => void;
+  private setToThumb: (e: JQuery.Event) => void;
 
-  private _setToThumbActive: (value: boolean) => void;
+  private setToThumbActive: (value: boolean) => void;
 
-  private _isVertical?: boolean;
+  private isVertical?: boolean;
 
   constructor({
     step,
@@ -59,10 +59,10 @@ export default class Scale implements IScale {
     setFromThumbActive,
     isRange,
   }: ScaleArgs) {
-    this._isVertical = isVertical;
+    this.isVertical = isVertical;
 
-    if (this._isVertical) {
-      this._$scale.addClass('mi-slider__scale_vertical');
+    if (this.isVertical) {
+      this.$scale.addClass('mi-slider__scale_vertical');
     }
 
     this.min = min;
@@ -70,25 +70,25 @@ export default class Scale implements IScale {
     this.step = step;
     this.toThumbPosition = toThumbPosition;
     this.fromThumbPosition = fromThumbPosition;
-    this._setToThumb = setToThumb;
-    this._setToThumbActive = setToThumbActive;
-    this._setFromThumb = setFromThumb;
-    this._setFromThumbActive = setFromThumbActive;
+    this.setToThumb = setToThumb;
+    this.setToThumbActive = setToThumbActive;
+    this.setFromThumb = setFromThumb;
+    this.setFromThumbActive = setFromThumbActive;
 
-    this._isSingle = !isRange;
-    this._renderNums();
-    this._onScaleClick();
+    this.isSingle = !isRange;
+    this.renderNums();
+    this.onScaleClick();
   }
 
   public handleScaleMousedown(e: JQuery.Event): void {
     e.preventDefault();
     let offset: number;
-    const scaleClientRect = this._$scale.get(0).getBoundingClientRect();
+    const scaleClientRect = this.$scale.get(0).getBoundingClientRect();
 
-    if (this._isVertical) {
-      offset = ((e.clientY - scaleClientRect.top) * 100) / this._$scale.height();
+    if (this.isVertical) {
+      offset = ((e.clientY - scaleClientRect.top) * 100) / this.$scale.height();
     } else {
-      offset = ((e.clientX - scaleClientRect.left) * 100) / this._$scale.width();
+      offset = ((e.clientX - scaleClientRect.left) * 100) / this.$scale.width();
     }
 
     if (offset > 100) {
@@ -97,47 +97,47 @@ export default class Scale implements IScale {
       offset = 0;
     }
 
-    this._setClosestThumbPos(offset, e);
+    this.setClosestThumbPos(offset, e);
   }
 
   public render(): JQuery {
-    return this._$scale;
+    return this.$scale;
   }
 
-  private _onScaleClick(): void {
+  private onScaleClick(): void {
     const handleScaleMousedown = (e: JQuery.Event) => this.handleScaleMousedown(e);
-    this._$scale.on('mousedown', handleScaleMousedown);
+    this.$scale.on('mousedown', handleScaleMousedown);
   }
 
-  private _setClosestThumbPos(offset: number, e: JQuery.Event): void {
+  private setClosestThumbPos(offset: number, e: JQuery.Event): void {
     const offsetFromThumb = Math.abs(offset - this.fromThumbPosition);
     const offsetToThumb = Math.abs(offset - (100 - this.toThumbPosition));
     const offsetFromThumbIsLess = offsetToThumb <= offsetFromThumb;
 
-    if (offsetFromThumbIsLess || this._isSingle) {
-      this._setToThumbActive(true);
-      this._setToThumb(e);
-      $(document).on('mousemove', this._setToThumb.bind(this));
-      $(document).on('mouseup', this._onMouseUp.bind(this, 'to'));
+    if (offsetFromThumbIsLess || this.isSingle) {
+      this.setToThumbActive(true);
+      this.setToThumb(e);
+      $(document).on('mousemove', this.setToThumb.bind(this));
+      $(document).on('mouseup', this.onMouseUp.bind(this, 'to'));
     } else {
-      this._setFromThumbActive(true);
-      this._setFromThumb(e);
-      $(document).on('mousemove', this._setFromThumb.bind(this));
-      $(document).on('mouseup', this._onMouseUp.bind(this, 'from'));
+      this.setFromThumbActive(true);
+      this.setFromThumb(e);
+      $(document).on('mousemove', this.setFromThumb.bind(this));
+      $(document).on('mouseup', this.onMouseUp.bind(this, 'from'));
     }
   }
 
-  private _onMouseUp(thumb: 'from' | 'to') {
+  private onMouseUp(thumb: 'from' | 'to') {
     if (thumb === 'from') {
-      this._setFromThumbActive(false);
+      this.setFromThumbActive(false);
     } else {
-      this._setToThumbActive(false);
+      this.setToThumbActive(false);
     }
 
     $(document).off('mousemove');
   }
 
-  private _renderNums() {
+  private renderNums() {
     let maxMarksCount = Math.ceil((this.max - this.min) / this.step) + 1;
 
     if (maxMarksCount < 2) {
@@ -150,11 +150,11 @@ export default class Scale implements IScale {
 
     for (let i = 0; i < maxMarksCount; i += 1) {
       if (i === 0) {
-        this._scaleNumbersArr[i] = this.min;
+        this.scaleNumbersArr[i] = this.min;
       } else if (i === maxMarksCount - 1) {
-        this._scaleNumbersArr[i] = this.max;
+        this.scaleNumbersArr[i] = this.max;
       } else {
-        this._scaleNumbersArr[i] = Number((this._scaleNumbersArr[i - 1] + scaleStep).toFixed(1));
+        this.scaleNumbersArr[i] = Number((this.scaleNumbersArr[i - 1] + scaleStep).toFixed(1));
       }
 
       const $mark = $('<span class="mi-slider__scale-graduation"></span>');
@@ -170,11 +170,11 @@ export default class Scale implements IScale {
         && captionIsNotPenultimate;
 
       if (captionsConditionsIsValid || markIsLastOrMarksCountLessThan10) {
-        $mark.attr('data-before', `${this._scaleNumbersArr[i]}`);
+        $mark.attr('data-before', `${this.scaleNumbersArr[i]}`);
         $mark.addClass('mi-slider__scale-graduation_numbered');
       }
 
-      this._$scale.append($mark);
+      this.$scale.append($mark);
     }
   }
 }

@@ -13,15 +13,15 @@ interface IModel {
 }
 
 export default class Model extends Observer implements IModel {
-  private _fromValue: number;
+  private fromValue: number;
 
-  private _toValue: number;
+  private toValue: number;
 
-  private _min: number;
+  private min: number;
 
-  private _max: number;
+  private max: number;
 
-  private _step: number;
+  private step: number;
 
   constructor({
     min,
@@ -39,36 +39,36 @@ export default class Model extends Observer implements IModel {
     super();
 
     if (min < max) {
-      this._min = min;
-      this._max = max;
+      this.min = min;
+      this.max = max;
     } else if (min === max) {
-      this._min = max - 1;
-      this._max = max;
+      this.min = max - 1;
+      this.max = max;
     } else {
-      this._min = max;
-      this._max = min;
+      this.min = max;
+      this.max = min;
     }
 
     if (typeof step === 'undefined') {
-      this._step = 1;
-    } else if (typeof step === 'number' && step > this._max - this._min) {
-      this._step = this._max - this._min;
+      this.step = 1;
+    } else if (typeof step === 'number' && step > this.max - this.min) {
+      this.step = this.max - this.min;
     } else {
-      this._step = step;
+      this.step = step;
     }
 
-    const isToValueInRange = (to > this._min) && (to <= this._max);
+    const isToValueInRange = (to > this.min) && (to <= this.max);
     if (typeof to !== 'undefined' && isToValueInRange) {
-      this._toValue = to;
+      this.toValue = to;
     } else {
-      this._toValue = this._max;
+      this.toValue = this.max;
     }
 
-    const isFromValueInRange = from >= this._min && from < this._toValue;
+    const isFromValueInRange = from >= this.min && from < this.toValue;
     if (typeof from !== 'undefined' && isFromValueInRange) {
-      this._fromValue = from;
+      this.fromValue = from;
     } else {
-      this._fromValue = this._min;
+      this.fromValue = this.min;
     }
   }
 
@@ -81,30 +81,30 @@ export default class Model extends Observer implements IModel {
   }
 
   public setFromValue(value: number) {
-    this._fromValue = value;
+    this.fromValue = value;
   }
 
   public setToValue(value: number) {
-    this._toValue = value;
+    this.toValue = value;
   }
 
   public getFromValue(): number {
-    return this._fromValue;
+    return this.fromValue;
   }
 
   public getToValue(): number {
-    return this._toValue;
+    return this.toValue;
   }
 
   public getMin(): number {
-    return this._min;
+    return this.min;
   }
 
   public getMax(): number {
-    return this._max;
+    return this.max;
   }
 
   public getStep(): number {
-    return this._step;
+    return this.step;
   }
 }

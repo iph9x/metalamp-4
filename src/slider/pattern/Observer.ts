@@ -5,18 +5,18 @@ interface IObserver {
 }
 
 export default class Observer implements IObserver {
-  private _observers: Array<object>;
+  private observers: Array<object>;
 
   constructor() {
-    this._observers = [];
+    this.observers = [];
   }
 
   public subscribe(observer: object): void {
-    this._observers.push(observer);
+    this.observers.push(observer);
   }
 
   public unsubscribe(observer: object): void {
-    this._observers.filter((obs) => obs !== observer);
+    this.observers.filter((obs) => obs !== observer);
   }
 
   public fire(action: {
@@ -24,6 +24,6 @@ export default class Observer implements IObserver {
     value?: number | boolean | JQuery.Event,
     isOutUpdate?: boolean
   }): void {
-    this._observers.forEach((observer: { update: Function }) => observer.update(action));
+    this.observers.forEach((observer: { update: Function }) => observer.update(action));
   }
 }

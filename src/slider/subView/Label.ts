@@ -14,17 +14,17 @@ type LabelArgs = {
 };
 
 export default class Label extends Observer implements ILabel {
-  private _$label: JQuery = $('<span class="mi-slider__label"></span>');
+  private $label: JQuery = $('<span class="mi-slider__label"></span>');
 
-  private _cssSide: 'top' | 'left' | 'bottom' | 'right';
+  private cssSide: 'top' | 'left' | 'bottom' | 'right';
 
-  private _value: number;
+  private value: number;
 
-  private _type: string;
+  private type: string;
 
-  private _position: number;
+  private position: number;
 
-  private _isVertical?: boolean;
+  private isVertical?: boolean;
 
   constructor({
     value,
@@ -34,52 +34,52 @@ export default class Label extends Observer implements ILabel {
   }: LabelArgs) {
     super();
 
-    this._value = value;
-    this._type = type;
-    this._position = position;
-    this._isVertical = isVertical;
+    this.value = value;
+    this.type = type;
+    this.position = position;
+    this.isVertical = isVertical;
 
-    if (this._type === 'fromThumb') {
-      this._cssSide = this._isVertical ? 'top' : 'left';
+    if (this.type === 'fromThumb') {
+      this.cssSide = this.isVertical ? 'top' : 'left';
     } else {
-      this._cssSide = this._isVertical ? 'bottom' : 'right';
+      this.cssSide = this.isVertical ? 'bottom' : 'right';
     }
-    this._$label.addClass(`mi-slider__label_position_${this._cssSide}`);
+    this.$label.addClass(`mi-slider__label_position_${this.cssSide}`);
 
-    this.setValue(this._value);
-    this.setPosition(this._position);
+    this.setValue(this.value);
+    this.setPosition(this.position);
 
-    this._onLabelMousedown();
-    this._onLabelMouseup();
+    this.onLabelMousedown();
+    this.onLabelMouseup();
   }
 
   public render(): JQuery {
-    return this._$label;
+    return this.$label;
   }
 
   public setValue(value: number): void {
-    this._value = value;
-    this._$label.html(`${value}`);
+    this.value = value;
+    this.$label.html(`${value}`);
   }
 
   public setPosition(value: number): void {
-    this._position = value;
-    this._$label.css(this._cssSide, `${value}%`);
+    this.position = value;
+    this.$label.css(this.cssSide, `${value}%`);
   }
 
-  private _handleLabelMousedown(value: JQuery.Event) {
+  private handleLabelMousedown(value: JQuery.Event) {
     this.fire({ type: 'ACTIVATE_THUMB', value });
   }
 
-  private _handleLabelMouseup() {
+  private handleLabelMouseup() {
     this.fire({ type: 'DISABLE_THUMB' });
   }
 
-  private _onLabelMousedown() {
-    this._$label.on('mousedown', this._handleLabelMousedown.bind(this));
+  private onLabelMousedown() {
+    this.$label.on('mousedown', this.handleLabelMousedown.bind(this));
   }
 
-  private _onLabelMouseup(): void {
-    $(document).on('mouseup', this._handleLabelMouseup.bind(this));
+  private onLabelMouseup(): void {
+    $(document).on('mouseup', this.handleLabelMouseup.bind(this));
   }
 }
