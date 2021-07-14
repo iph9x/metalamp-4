@@ -138,48 +138,43 @@ export default class Scale implements IScale {
   }
 
   private _renderNums() {
-    let maxNumsCount = Math.ceil((this.max - this.min) / this.step) + 1;
+    let maxMarksCount = Math.ceil((this.max - this.min) / this.step) + 1;
 
-    if (maxNumsCount < 2) {
-      maxNumsCount = 2;
-    } else if (maxNumsCount > 100) {
-      maxNumsCount = 101;
+    if (maxMarksCount < 2) {
+      maxMarksCount = 2;
+    } else if (maxMarksCount > 100) {
+      maxMarksCount = 101;
     }
 
-    const scaleStep = (this.max - this.min) / (maxNumsCount - 1);
+    const scaleStep = (this.max - this.min) / (maxMarksCount - 1);
 
-    for (let i = 0; i < maxNumsCount; i += 1) {
+    for (let i = 0; i < maxMarksCount; i += 1) {
       if (i === 0) {
         this._scaleNumbersArr[i] = this.min;
-      } else if (i === maxNumsCount - 1) {
+      } else if (i === maxMarksCount - 1) {
         this._scaleNumbersArr[i] = this.max;
       } else {
         this._scaleNumbersArr[i] = Number((this._scaleNumbersArr[i - 1] + scaleStep).toFixed(1));
       }
 
-      const newEl = $('<span class="mi-slider__scale-graduation"></span>');
-      const visibleLabelNumber = Math.round((maxNumsCount - 1) / 10);
-      const captionNumberIsEven = i % visibleLabelNumber === 0;
-      const captionIsNotPenultimate = i !== maxNumsCount - 2 || maxNumsCount === 11;
-      const numsCountIsMoreThan10 = maxNumsCount > 10;
-      const captionsConditionsIsTrue = numsCountIsMoreThan10
+      const $mark = $('<span class="mi-slider__scale-graduation"></span>');
+      const visibleCaption = Math.round((maxMarksCount - 1) / 10);
+
+      const marksCountIsMoreThanTen = maxMarksCount > 10;
+      const captionNumberIsEven = i % visibleCaption === 0;
+      const markIsLastOrMarksCountLessThan10 = i === maxMarksCount - 1 || maxMarksCount <= 10;
+      const captionIsNotPenultimate = i !== maxMarksCount - 2 || maxMarksCount < 16;
+
+      const captionsConditionsIsValid = marksCountIsMoreThanTen
         && captionNumberIsEven
         && captionIsNotPenultimate;
 
-      if (captionsConditionsIsTrue) {
-        newEl.attr('data-before', `${this._scaleNumbersArr[i]}`);
-        newEl.addClass('mi-slider__scale-graduation_numbered');
-      } else if (maxNumsCount <= 10) {
-        newEl.attr('data-before', `${this._scaleNumbersArr[i]}`);
-        newEl.addClass('mi-slider__scale-graduation_numbered');
+      if (captionsConditionsIsValid || markIsLastOrMarksCountLessThan10) {
+        $mark.attr('data-before', `${this._scaleNumbersArr[i]}`);
+        $mark.addClass('mi-slider__scale-graduation_numbered');
       }
 
-      if (i === maxNumsCount - 1) {
-        newEl.attr('data-before', `${this._scaleNumbersArr[i]}`);
-        newEl.addClass('mi-slider__scale-graduation_numbered');
-      }
-
-      this._$scale.append(newEl);
+      this._$scale.append($mark);
     }
   }
 }
