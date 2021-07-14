@@ -81,6 +81,7 @@ export default class View extends Observer implements IView {
     inputToClass,
   }: ViewArgs) {
     super();
+
     this.$slider = $(slider);
     this.isVertical = isVertical ?? false;
     this.isRange = isRange ?? true;
@@ -92,8 +93,7 @@ export default class View extends Observer implements IView {
   public run(): void {
     this.runConditionsBlock();
 
-    const $slider = this.$slider;
-    $slider.addClass('mi-slider');
+    this.$slider.addClass('mi-slider');
 
     this.progressBar = new ProgressBar(this.isRange, this.isVertical);
 
@@ -123,7 +123,7 @@ export default class View extends Observer implements IView {
     this.progressBar.onProgressBarMousedown(this.scale.handleScaleMousedown.bind(this.scale));
 
     this.initInputTo();
-    this.render($slider);
+    this.render(this.$slider);
   }
 
   public setMin(value: number) {
@@ -310,12 +310,12 @@ export default class View extends Observer implements IView {
       startPosition: this.from,
       label: this.fromThumbLabel,
       step: this.step,
-      wrapper: this.$wrapper,
+      $wrapper: this.$wrapper,
       progressBar: this.progressBar,
       max: this.max,
       min: this.min,
       otherThumbPosition: this.toThumbPosition,
-      vertical: this.isVertical,
+      isVertical: this.isVertical,
     });
   }
 
@@ -325,12 +325,12 @@ export default class View extends Observer implements IView {
       startPosition: this.to,
       label: this.toThumbLabel,
       step: this.step,
-      wrapper: this.$wrapper,
+      $wrapper: this.$wrapper,
       progressBar: this.progressBar,
       max: this.max,
       min: this.min,
       otherThumbPosition: this.fromThumbPosition,
-      vertical: this.isVertical,
+      isVertical: this.isVertical,
       isRange: this.isRange,
     });
   }

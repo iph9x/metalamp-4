@@ -22,7 +22,7 @@ type ScaleArgs = {
 export default class Scale implements IScale {
   private $scale: JQuery = $('<div class="mi-slider__scale"></div>');
 
-  private isSingle: boolean;
+  private isRange: boolean;
 
   private scaleNumbersArr: Array<number> = [];
 
@@ -46,36 +46,13 @@ export default class Scale implements IScale {
 
   private isVertical?: boolean;
 
-  constructor({
-    step,
-    min,
-    max,
-    toThumbPosition,
-    setToThumb,
-    setToThumbActive,
-    fromThumbPosition,
-    setFromThumb,
-    isVertical,
-    setFromThumbActive,
-    isRange,
-  }: ScaleArgs) {
-    this.isVertical = isVertical;
+  constructor(scaleArgs: ScaleArgs) {
+    Object.assign(this, scaleArgs);
 
     if (this.isVertical) {
       this.$scale.addClass('mi-slider__scale_vertical');
     }
 
-    this.min = min;
-    this.max = max;
-    this.step = step;
-    this.toThumbPosition = toThumbPosition;
-    this.fromThumbPosition = fromThumbPosition;
-    this.setToThumb = setToThumb;
-    this.setToThumbActive = setToThumbActive;
-    this.setFromThumb = setFromThumb;
-    this.setFromThumbActive = setFromThumbActive;
-
-    this.isSingle = !isRange;
     this.renderNums();
     this.onScaleClick();
   }
@@ -114,7 +91,7 @@ export default class Scale implements IScale {
     const offsetToThumb = Math.abs(offset - (100 - this.toThumbPosition));
     const offsetFromThumbIsLess = offsetToThumb <= offsetFromThumb;
 
-    if (offsetFromThumbIsLess || this.isSingle) {
+    if (offsetFromThumbIsLess || !this.isRange) {
       this.setToThumbActive(true);
       this.setToThumb(e);
       $(document).on('mousemove', this.setToThumb.bind(this));

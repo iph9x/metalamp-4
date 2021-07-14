@@ -38,38 +38,10 @@ export default class Model extends Observer implements IModel {
   }) {
     super();
 
-    if (min < max) {
-      this.min = min;
-      this.max = max;
-    } else if (min === max) {
-      this.min = max - 1;
-      this.max = max;
-    } else {
-      this.min = max;
-      this.max = min;
-    }
-
-    if (typeof step === 'undefined') {
-      this.step = 1;
-    } else if (typeof step === 'number' && step > this.max - this.min) {
-      this.step = this.max - this.min;
-    } else {
-      this.step = step;
-    }
-
-    const isToValueInRange = (to > this.min) && (to <= this.max);
-    if (typeof to !== 'undefined' && isToValueInRange) {
-      this.toValue = to;
-    } else {
-      this.toValue = this.max;
-    }
-
-    const isFromValueInRange = from >= this.min && from < this.toValue;
-    if (typeof from !== 'undefined' && isFromValueInRange) {
-      this.fromValue = from;
-    } else {
-      this.fromValue = this.min;
-    }
+    this.validateMinMax(min, max);
+    this.validateStep(step);
+    this.validateToValue(to);
+    this.validateFromValue(from);
   }
 
   public updateFromValue(value: number): void {
@@ -106,5 +78,46 @@ export default class Model extends Observer implements IModel {
 
   public getStep(): number {
     return this.step;
+  }
+
+  private validateMinMax(min: number, max: number) {
+    if (min < max) {
+      this.min = min;
+      this.max = max;
+    } else if (min === max) {
+      this.min = max - 1;
+      this.max = max;
+    } else {
+      this.min = max;
+      this.max = min;
+    }
+  }
+
+  private validateStep(step: number) {
+    if (typeof step === 'undefined') {
+      this.step = 1;
+    } else if (typeof step === 'number' && step > this.max - this.min) {
+      this.step = this.max - this.min;
+    } else {
+      this.step = step;
+    }
+  }
+
+  private validateToValue(to: number) {
+    const isToValueInRange = (to > this.min) && (to <= this.max);
+    if (typeof to !== 'undefined' && isToValueInRange) {
+      this.toValue = to;
+    } else {
+      this.toValue = this.max;
+    }
+  }
+
+  private validateFromValue(from: number) {
+    const isFromValueInRange = from >= this.min && from < this.toValue;
+    if (typeof from !== 'undefined' && isFromValueInRange) {
+      this.fromValue = from;
+    } else {
+      this.fromValue = this.min;
+    }
   }
 }

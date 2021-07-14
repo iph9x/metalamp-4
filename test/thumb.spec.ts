@@ -42,12 +42,12 @@ describe('Label: ', () => {
     let thumb = new Thumb({
       type: thumbName,
       startPosition: start,
-      wrapper: $wrapper,
+      $wrapper: $wrapper,
       progressBar,
       max,
       min,
       otherThumbPosition: 60,
-      vertical: isVertical,
+      isVertical: isVertical,
       isRange: true,
     });
     const $thumb = thumb.render();
@@ -87,12 +87,12 @@ describe('Label: ', () => {
       thumb = new Thumb({
         type: thumbName,
         startPosition: start,
-        wrapper: $wrapper,
+        $wrapper: $wrapper,
         progressBar,
         max,
         min,
         otherThumbPosition: 60,
-        vertical: isVertical,
+        isVertical: isVertical,
         isRange: true,
       });
 

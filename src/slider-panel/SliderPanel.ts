@@ -63,8 +63,8 @@ export default class SliderPanel implements ISliderPanel {
     Object.assign(this, state);
     this.$panel = $(panelClassName);
     this.$slider = $slider;
-    this.$inputFrom = this.$panel.find('.js-slider-panel__input_option_current-from');
-    this.$inputTo = this.$panel.find('.js-slider-panel__input_option_current-to');
+
+    this.findInputs();
   }
 
   public run(): void {
@@ -216,5 +216,10 @@ export default class SliderPanel implements ISliderPanel {
     this.$checkboxRange.on('change', this.handleInputRangeChange.bind(this));
     this.$checkboxLabels.on('change', this.handleLabelsVisibilityChange.bind(this));
     this.$checkboxVertical.on('change', this.handleCheckboxVerticalChange.bind(this));
+  }
+
+  private findInputs(): void {
+    this.$inputFrom = this.$panel.find('.js-slider-panel__input_option_current-from');
+    this.$inputTo = this.$panel.find('.js-slider-panel__input_option_current-to');
   }
 }

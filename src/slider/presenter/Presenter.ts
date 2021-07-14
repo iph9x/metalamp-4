@@ -13,12 +13,7 @@ interface IPresenter {
 
 export default class Presenter implements IPresenter {
   constructor(public model: Model, public view: View) {
-    this.view.setMax(this.model.getMax());
-    this.view.setMin(this.model.getMin());
-    this.view.setFrom(this.model.getFromValue());
-    this.view.setTo(this.model.getToValue());
-    this.view.setStep(this.model.getStep());
-
+    this.setViewValues();
     this.view.subscribe(this);
     this.model.subscribe(this);
   }
@@ -59,5 +54,13 @@ export default class Presenter implements IPresenter {
       default:
         break;
     }
+  }
+
+  private setViewValues(): void {
+    this.view.setMax(this.model.getMax());
+    this.view.setMin(this.model.getMin());
+    this.view.setFrom(this.model.getFromValue());
+    this.view.setTo(this.model.getToValue());
+    this.view.setStep(this.model.getStep());
   }
 }

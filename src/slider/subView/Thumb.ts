@@ -15,12 +15,12 @@ type ThumbArgs = {
   startPosition?: number;
   label?: Label;
   step?: number;
-  wrapper: JQuery;
+  $wrapper: JQuery;
   progressBar: ProgressBar;
   max: number;
   min: number;
   otherThumbPosition?: number;
-  vertical?: boolean;
+  isVertical?: boolean;
   isRange?: boolean;
 };
 
@@ -51,6 +51,8 @@ export default class Thumb extends Observer implements IThumb {
 
   private min: number;
 
+  private startPosition: number;
+
   private isVertical?: boolean;
 
   private isRange?: boolean;
@@ -59,50 +61,12 @@ export default class Thumb extends Observer implements IThumb {
 
   public otherThumbPosition?: number;
 
-  constructor({
-    type,
-    startPosition,
-    label,
-    step = 1,
-    wrapper,
-    progressBar,
-    max,
-    min,
-    otherThumbPosition,
-    vertical,
-    isRange,
-  }: ThumbArgs) {
+  constructor(thumbArgs: ThumbArgs) {
     super();
 
-    this.type = type;
-    this.label = label;
-    this.step = step;
-    this.$wrapper = wrapper;
-    this.progressBar = progressBar;
-    this.max = max;
-    this.min = min;
-    this.otherThumbPosition = otherThumbPosition;
-    this.isVertical = vertical;
-    this.isRange = isRange;
+    Object.assign(this, thumbArgs);
 
-    if (this.type === 'fromThumb') {
-      this.cssType = this.isVertical ? 'top' : 'left';
-    } else {
-      this.cssType = this.isVertical ? 'bottom' : 'right';
-    }
-
-    this.$thumb.addClass(`mi-slider__thumb_position_${this.cssType}`);
-    this.isMaxThumb = this.type === 'toThumb';
-
-    this.current = this.isMaxThumb ? max : min;
-
-    this.setPositionByValue(startPosition);
-
-    this.onThumbMousedown();
-    this.onThumbMouseup();
-
-    this.handleThumbMove = this.handleThumbMove.bind(this);
-    this.setIsActive = this.setIsActive.bind(this);
+    this.initThumb();
   }
 
   public render(): JQuery {
@@ -320,8 +284,33 @@ export default class Thumb extends Observer implements IThumb {
     this.fire({ type: this.isMaxThumb ? typeOfMaxThumb : typeOfMinThumb, value });
   }
 
-  private setPosition(value: number) {
+  private setPosition(value: number): void {
     this.position = value;
     this.setParentState('SET_TO_THUMB_POSITION', 'SET_FROM_THUMB_POSITION', value);
+  }
+
+  private setStyle(): void {
+    if (this.type === 'fromThumb') {
+      this.cssType = this.isVertical ? 'top' : 'left';
+    } else {
+      this.cssType = this.isVertical ? 'bottom' : 'right';
+    }
+
+    this.$thumb.addClass(`mi-slider__thumb_position_${this.cssType}`);
+  }
+
+  private initThumb(): void {
+    this.setStyle();
+
+    this.isMaxThumb = this.type === 'toThumb';
+    this.current = this.isMaxThumb ? this.max : this.min;
+
+    this.setPositionByValue(this.startPosition);
+
+    this.onThumbMousedown();
+    this.onThumbMouseup();
+
+    this.handleThumbMove = this.handleThumbMove.bind(this);
+    this.setIsActive = this.setIsActive.bind(this);
   }
 }

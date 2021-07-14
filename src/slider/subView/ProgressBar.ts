@@ -16,14 +16,7 @@ export default class ProgressBar implements IProgressBar {
     private isRange: boolean,
     private isVertical?: boolean,
   ) {
-    if (this.isVertical) {
-      this.$progressBar.addClass('mi-slider__progress-bar_vertical');
-      this.cssFromSide = 'top';
-      this.cssToSide = 'bottom';
-    } else {
-      this.cssFromSide = 'left';
-      this.cssToSide = 'right';
-    }
+    this.setStyle();
 
     if (!this.isRange) {
       this.setFromPosition(0);
@@ -44,5 +37,16 @@ export default class ProgressBar implements IProgressBar {
 
   public setToPosition(position: number): void {
     this.$progressBar.css(this.cssToSide, `${position}%`);
+  }
+
+  private setStyle(): void {
+    if (this.isVertical) {
+      this.$progressBar.addClass('mi-slider__progress-bar_vertical');
+      this.cssFromSide = 'top';
+      this.cssToSide = 'bottom';
+    } else {
+      this.cssFromSide = 'left';
+      this.cssToSide = 'right';
+    }
   }
 }

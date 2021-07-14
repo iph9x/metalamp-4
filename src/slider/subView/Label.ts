@@ -34,23 +34,14 @@ export default class Label extends Observer implements ILabel {
   }: LabelArgs) {
     super();
 
-    this.value = value;
-    this.type = type;
-    this.position = position;
-    this.isVertical = isVertical;
+    Object.assign(this, {
+      value,
+      type,
+      position,
+      isVertical,
+    });
 
-    if (this.type === 'fromThumb') {
-      this.cssSide = this.isVertical ? 'top' : 'left';
-    } else {
-      this.cssSide = this.isVertical ? 'bottom' : 'right';
-    }
-    this.$label.addClass(`mi-slider__label_position_${this.cssSide}`);
-
-    this.setValue(this.value);
-    this.setPosition(this.position);
-
-    this.onLabelMousedown();
-    this.onLabelMouseup();
+    this.initLabel();
   }
 
   public render(): JQuery {
@@ -67,19 +58,41 @@ export default class Label extends Observer implements ILabel {
     this.$label.css(this.cssSide, `${value}%`);
   }
 
-  private handleLabelMousedown(value: JQuery.Event) {
+  private handleLabelMousedown(value: JQuery.Event): void {
     this.fire({ type: 'ACTIVATE_THUMB', value });
   }
 
-  private handleLabelMouseup() {
+  private handleLabelMouseup(): void {
     this.fire({ type: 'DISABLE_THUMB' });
   }
 
-  private onLabelMousedown() {
+  private onLabelMousedown(): void {
     this.$label.on('mousedown', this.handleLabelMousedown.bind(this));
   }
 
   private onLabelMouseup(): void {
     $(document).on('mouseup', this.handleLabelMouseup.bind(this));
+  }
+
+  private setStyle(): void {
+    if (this.type === 'fromThumb') {
+      this.cssSide = this.isVertical ? 'top' : 'left';
+    } else {
+      this.cssSide = this.isVertical ? 'bottom' : 'right';
+    }
+
+    this.$label.addClass(`mi-slider__label_position_${this.cssSide}`);
+  }
+
+  private initEventListeners(): void {
+    this.onLabelMousedown();
+    this.onLabelMouseup();
+  }
+
+  private initLabel(): void {
+    this.setStyle();
+    this.setValue(this.value);
+    this.setPosition(this.position);
+    this.initEventListeners();
   }
 }
