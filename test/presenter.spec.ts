@@ -2,9 +2,9 @@
  * @jest-environment jsdom
  */
 
-import View from '../src/slider/view/view';
-import Model from '../src/slider/model/model';
-import Presenter from '../src/slider/presenter/presenter';
+import View from '../src/slider/view/View';
+import Model from '../src/slider/model/Model';
+import Presenter from '../src/slider/presenter/Presenter';
 
 declare const window: any;
 declare const global: any;

@@ -2,10 +2,10 @@
  * @jest-environment jsdom
  */
 
-import Scale from '../src/slider/subView/scale';
-import Thumb from '../src/slider/subView/thumb';
-import ProgressBar from '../src/slider/subView/progressBar';
-import Label from '../src/slider/subView/label';
+import Scale from '../src/slider/subView/Scale';
+import Thumb from '../src/slider/subView/Thumb';
+import ProgressBar from '../src/slider/subView/ProgressBar';
+import Label from '../src/slider/subView/Label';
 import states from './states';
 
 declare const window: any;
@@ -15,9 +15,9 @@ window.$ = require('jquery');
 global.jQuery = $;
 global.$ = global.jQuery;
 
-jest.mock('../src/slider/subView/label');
-jest.mock('../src/slider/subView/thumb');
-jest.mock('../src/slider/subView/progressBar');
+jest.mock('../src/slider/subView/Label');
+jest.mock('../src/slider/subView/Thumb');
+jest.mock('../src/slider/subView/ProgressBar');
 
 describe('Scale:', () => {
   const progressBar = new ProgressBar(true);

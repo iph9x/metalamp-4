@@ -1,4 +1,4 @@
-import Model from '../src/slider/model/model';
+import Model from '../src/slider/model/Model';
 import states from './states';
 
 describe('Model:', () => {

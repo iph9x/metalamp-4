@@ -2,11 +2,11 @@
  * @jest-environment jsdom
  */
 
-import View from '../src/slider/view/view';
-import Thumb from '../src/slider/subView/thumb';
-import Scale from '../src/slider/subView/scale';
-import ProgressBar from '../src/slider/subView/progressBar';
-import Label from '../src/slider/subView/label';
+import View from '../src/slider/view/View';
+import Thumb from '../src/slider/subView/Thumb';
+import Scale from '../src/slider/subView/Scale';
+import ProgressBar from '../src/slider/subView/ProgressBar';
+import Label from '../src/slider/subView/Label';
 import states from './states';
 
 declare const window: any;
@@ -16,10 +16,10 @@ window.$ = require('jquery');
 global.jQuery = $;
 global.$ = global.jQuery;
 
-jest.mock('../src/slider/subView/thumb');
-jest.mock('../src/slider/subView/label');
-jest.mock('../src/slider/subView/progressBar');
-jest.mock('../src/slider/subView/scale');
+jest.mock('../src/slider/subView/Thumb');
+jest.mock('../src/slider/subView/Label');
+jest.mock('../src/slider/subView/ProgressBar');
+jest.mock('../src/slider/subView/Scale');
 
 const ThumbMock = Thumb as jest.MockedClass<typeof Thumb>;
 const ProgressBarMock = ProgressBar as jest.MockedClass<typeof ProgressBar>;

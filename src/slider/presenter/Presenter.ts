@@ -1,5 +1,5 @@
-import Model from '../model/model';
-import View from '../view/view';
+import Model from '../model/Model';
+import View from '../view/View';
 
 interface IPresenter {
   model: Model,

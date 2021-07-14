@@ -1,8 +1,8 @@
-import Label from '../subView/label';
-import Thumb from '../subView/thumb';
-import ProgressBar from '../subView/progressBar';
-import Scale from '../subView/scale';
-import Observer from '../pattern/observer';
+import Label from '../subView/Label';
+import Thumb from '../subView/Thumb';
+import ProgressBar from '../subView/ProgressBar';
+import Scale from '../subView/Scale';
+import Observer from '../pattern/Observer';
 
 interface IView {
   setStep(value: number): void,

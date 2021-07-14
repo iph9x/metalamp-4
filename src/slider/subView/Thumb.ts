@@ -1,6 +1,6 @@
-import Observer from '../pattern/observer';
-import Label from './label';
-import ProgressBar from './progressBar';
+import Observer from '../pattern/Observer';
+import Label from './Label';
+import ProgressBar from './ProgressBar';
 
 interface IThumb {
   handleThumbMove(e: JQuery.Event): void,

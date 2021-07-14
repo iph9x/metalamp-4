@@ -2,8 +2,8 @@
  * @jest-environment jsdom
  */
 
-import Thumb from '../src/slider/subView/thumb';
-import ProgressBar from '../src/slider/subView/progressBar';
+import Thumb from '../src/slider/subView/Thumb';
+import ProgressBar from '../src/slider/subView/ProgressBar';
 import states from './states';
 
 declare const window: any;

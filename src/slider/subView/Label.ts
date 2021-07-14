@@ -1,4 +1,4 @@
-import Observer from '../pattern/observer';
+import Observer from '../pattern/Observer';
 
 interface ILabel {
   render(): JQuery,

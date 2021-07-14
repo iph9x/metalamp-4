@@ -1,6 +1,6 @@
-import View from './view/view';
-import Model from './model/model';
-import Presenter from './presenter/presenter';
+import View from './view/View';
+import Model from './model/Model';
+import Presenter from './presenter/Presenter';
 
 type Props = {
   max: number,
