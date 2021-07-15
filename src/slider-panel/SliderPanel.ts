@@ -29,9 +29,9 @@ export default class SliderPanel implements ISliderPanel {
 
   private to: number;
 
-  private max: number;
+  private max: number = 100;
 
-  private min: number;
+  private min: number = 0;
 
   private isRange: boolean;
 
@@ -59,7 +59,7 @@ export default class SliderPanel implements ISliderPanel {
 
   private $inputMax: JQuery;
 
-  constructor(panelClassName: string, $slider: JQuery, state: Props) {
+  constructor(panelClassName: string, $slider: JQuery, state?: Props) {
     Object.assign(this, state);
     this.$panel = $(panelClassName);
     this.$slider = $slider;

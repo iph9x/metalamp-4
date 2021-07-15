@@ -3,8 +3,8 @@ import Model from './model/Model';
 import Presenter from './presenter/Presenter';
 
 type Props = {
-  max: number,
-  min: number,
+  max?: number,
+  min?: number,
   isRange?: boolean,
   step?: number,
   from?: number,
@@ -29,7 +29,7 @@ type Props = {
       isVertical,
       inputFromClass,
       inputToClass,
-    }: Props) {
+    }: Props = {}) {
       // eslint-disable-next-line
       return this.each(function initSlider() {
         if (!this.data) {
@@ -91,7 +91,7 @@ type Props = {
   };
   // eslint-disable-next-line
   $.fn.miSlider = function jqSlider(
-    method: 'init' | 'destroy' | 'update' | Props,
+    method?: 'init' | 'destroy' | 'update' | Props,
     ...args: []
   ): object {
     const that = $(this);
@@ -100,7 +100,7 @@ type Props = {
       return methods[method].apply(that, args);
     }
 
-    if (typeof method === 'object') {
+    if (typeof method === 'object' || !method) {
       // eslint-disable-next-line
       return methods.init.apply(that, arguments);
     }

@@ -30,8 +30,8 @@ export default class Model extends Observer implements IModel {
     to,
     step,
   }: {
-    min: number,
-    max: number,
+    min?: number,
+    max?: number,
     from?: number,
     to?: number,
     step?: number,
@@ -80,7 +80,7 @@ export default class Model extends Observer implements IModel {
     return this.step;
   }
 
-  private validateMinMax(min: number, max: number) {
+  private validateMinMax(min: number = 0, max: number = 100) {
     if (min < max) {
       this.min = min;
       this.max = max;
@@ -93,10 +93,8 @@ export default class Model extends Observer implements IModel {
     }
   }
 
-  private validateStep(step: number) {
-    if (typeof step === 'undefined') {
-      this.step = 1;
-    } else if (typeof step === 'number' && step > this.max - this.min) {
+  private validateStep(step: number = 1) {
+    if (typeof step === 'number' && step > this.max - this.min) {
       this.step = this.max - this.min;
     } else {
       this.step = step;
