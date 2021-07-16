@@ -33,27 +33,28 @@ type Props = {
       // eslint-disable-next-line
       return this.each(function initSlider() {
         if (!this.data) {
+          const that = $(this);
+
           this.model = new Model({
-            max,
-            min,
-            from,
-            to,
-            step,
+            max: that.data('max') ?? max,
+            min: that.data('min') ?? min,
+            from: that.data('from') ?? from,
+            to: that.data('to') ?? to,
+            step: that.data('step') ?? step,
           });
 
           this.view = new View({
             slider: this,
-            isRange,
-            hasLabels,
-            isVertical,
-            inputFromClass,
-            inputToClass,
+            isRange: that.data('isRange') ?? isRange,
+            hasLabels: that.data('hasLabels') ?? hasLabels,
+            isVertical: that.data('isVertical') ?? isVertical,
+            inputFromClass: that.data('inputFromClass') ?? inputFromClass,
+            inputToClass: that.data('inputToClass') ?? inputToClass,
           });
 
           this.presenter = new Presenter(this.model, this.view);
 
-          $(this).data('miSlider', this);
-
+          that.data('miSlider', this);
           this.presenter.run();
         }
       });
@@ -68,30 +69,86 @@ type Props = {
       });
     },
 
-    update(obj: { from?: number, to?: number }) {
+    updateValues(obj: {
+      from: number,
+      to: number,
+    }) {
+      return this.each(function updateSlider() {
+        const that = $(this);
+        const data = that.data('miSlider');
+        const { from, to } = obj;
+
+        if (typeof from !== 'undefined' || typeof to !== 'undefined') {
+          const fromValue = from ?? data.presenter.state.fromValue;
+          const toValue = to ?? data.presenter.state.toValue;
+
+          if (fromValue < toValue) {
+            if (typeof fromValue === 'number' && typeof from !== 'undefined') {
+              data.presenter.updateFrom(fromValue);
+            }
+
+            if (typeof toValue === 'number') {
+              data.presenter.updateTo(toValue);
+            }
+          }
+        }
+      });
+    },
+
+    update({
+      max,
+      min,
+      isRange,
+      step,
+      from,
+      to,
+      hasLabels,
+      isVertical,
+    }: Props) {
       return this.each(function updateSlider() {
         const that = $(this);
         const data = that.data('miSlider');
 
-        let { from, to } = obj;
-        from = from ?? data.presenter.state.fromValue;
-        to = to ?? data.presenter.state.toValue;
+        const optionsWereUpdated = typeof max !== 'undefined'
+          || typeof min !== 'undefined'
+          || typeof isRange !== 'undefined'
+          || typeof step !== 'undefined'
+          || typeof hasLabels !== 'undefined'
+          || typeof isVertical !== 'undefined';
 
-        if (from < to) {
-          if (typeof from === 'number') {
-            data.presenter.updateFrom(from);
-          }
+        if (optionsWereUpdated) {
+          const newModelOptions = {
+            max: max ?? data.model.getMax(),
+            min: min ?? data.model.getMin(),
+            step: step ?? data.model.getStep(),
+            to: to ?? data.model.getToValue(),
+            from: from ?? data.model.getFromValue(),
+          };
+          const newViewOptions = {
+            slider: this,
+            isVertical: isVertical ?? data.view.getIsVertical(),
+            isRange: isRange ?? data.view.getIsRange(),
+            hasLabels: hasLabels ?? data.view.getHasLabels(),
+            inputFromClass: data.view.getInputFromClass(),
+            inputToClass: data.view.getInputToClass(),
+          };
 
-          if (typeof to === 'number') {
-            data.presenter.updateTo(to);
-          }
+          that.empty();
+          that.removeData('miSlider');
+
+          this.model = new Model({ ...newModelOptions });
+          this.view = new View({ ...newViewOptions });
+          this.presenter = new Presenter(this.model, this.view);
+
+          that.data('miSlider', this);
+          this.presenter.run();
         }
       });
     },
   };
   // eslint-disable-next-line
   $.fn.miSlider = function jqSlider(
-    method?: 'init' | 'destroy' | 'update' | Props,
+    method?: 'init' | 'destroy' | 'update' | 'updateValues' | Props,
     ...args: []
   ): object {
     const that = $(this);

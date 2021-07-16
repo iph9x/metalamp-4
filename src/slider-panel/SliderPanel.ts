@@ -99,9 +99,7 @@ export default class SliderPanel implements ISliderPanel {
     this.step = currentValue;
     this.setFromAndToValues();
 
-    this.$slider.miSlider('destroy');
-
-    return this.$slider.miSlider(this.getState());
+    return this.$slider.miSlider('update', this.getState());
   }
 
   private handleInputMinChange(e: Event): number | {} {
@@ -116,9 +114,7 @@ export default class SliderPanel implements ISliderPanel {
     this.min = Number($target.val());
     this.setFromAndToValues();
 
-    this.$slider.miSlider('destroy');
-
-    return this.$slider.miSlider(this.getState());
+    return this.$slider.miSlider('update', this.getState());
   }
 
   private handleInputMaxChange(e: Event): number | {} {
@@ -133,9 +129,7 @@ export default class SliderPanel implements ISliderPanel {
     this.max = Number($target.val());
     this.setFromAndToValues();
 
-    this.$slider.miSlider('destroy');
-
-    return this.$slider.miSlider(this.getState());
+    return this.$slider.miSlider('update', this.getState());
   }
 
   private handleInputRangeChange(e: Event): void {
@@ -162,8 +156,7 @@ export default class SliderPanel implements ISliderPanel {
       this.to = to;
     }
 
-    this.$slider.miSlider('destroy');
-    this.$slider.miSlider(this.getState());
+    this.$slider.miSlider('update', this.getState());
   }
 
   private handleLabelsVisibilityChange(e: Event): void {
@@ -172,8 +165,7 @@ export default class SliderPanel implements ISliderPanel {
 
     this.setFromAndToValues();
 
-    this.$slider.miSlider('destroy');
-    this.$slider.miSlider(this.getState());
+    this.$slider.miSlider('update', this.getState());
   }
 
   private handleCheckboxVerticalChange(e: Event): void {
@@ -182,8 +174,7 @@ export default class SliderPanel implements ISliderPanel {
 
     this.setFromAndToValues();
 
-    this.$slider.miSlider('destroy');
-    this.$slider.miSlider(this.getState());
+    this.$slider.miSlider('update', this.getState());
   }
 
   private setFromAndToValues(): void {

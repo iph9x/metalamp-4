@@ -48,6 +48,7 @@ describe('View: ', () => {
     to,
     inputFromClass,
     inputToClass,
+    hasLabels,
   }) => {
     test('View called the Thumb constructor at least once', () => {
       view = new View({
@@ -111,6 +112,36 @@ describe('View: ', () => {
       view.setMax(max);
       view.setTo(to);
       expect(view.getTo()).toBe(to);
+    });
+
+    test('get methods return valid values', () => {
+      view = new View({
+        slider: $root,
+        isRange,
+        hasLabels,
+        isVertical,
+        inputFromClass,
+        inputToClass,
+      });
+      if (typeof isRange !== 'undefined') {
+        expect(view.getIsRange()).toBe(isRange);
+      }
+
+      if (typeof isVertical !== 'undefined') {
+        expect(view.getIsVertical()).toBe(isVertical);
+      }
+
+      if (typeof hasLabels !== 'undefined') {
+        expect(view.getHasLabels()).toBe(hasLabels);
+      }
+
+      if (typeof inputFromClass !== 'undefined') {
+        expect(view.getInputFromClass()).toBe(inputFromClass);
+      }
+
+      if (typeof inputToClass !== 'undefined') {
+        expect(view.getInputToClass()).toBe(inputToClass);
+      }
     });
   });
 });

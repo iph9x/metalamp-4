@@ -10,6 +10,11 @@ interface IView {
   setMax(value: number): void,
   getFrom(): number,
   getTo(): number,
+  getIsVertical(): boolean,
+  getIsRange(): boolean,
+  getHasLabels(): boolean,
+  getInputFromClass(): string,
+  getInputToClass(): string,
   setFrom(value: number): void,
   setTo(value: number): void,
   updateFrom(value: number): void,
@@ -152,6 +157,26 @@ export default class View extends Observer implements IView {
 
   public setStep(value: number) {
     this.step = value;
+  }
+
+  public getIsVertical(): boolean {
+    return this.isVertical;
+  }
+
+  public getIsRange(): boolean {
+    return this.isRange;
+  }
+
+  public getHasLabels(): boolean {
+    return this.hasLabels;
+  }
+
+  public getInputFromClass(): string {
+    return this.inputFromClass;
+  }
+
+  public getInputToClass(): string {
+    return this.inputToClass;
   }
 
   public updateFrom(value: number) {

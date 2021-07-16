@@ -6,6 +6,7 @@ type States = Array<{
   isVertical?: boolean,
   step?: number,
   isRange?: boolean,
+  hasLabels?: boolean,
   inputFromClass?: string,
   inputToClass?: string,
 }>;
@@ -14,6 +15,7 @@ const states: States = [
   {
     min: 100,
     max: 200,
+    hasLabels: true,
   },
   {
     min: 100,

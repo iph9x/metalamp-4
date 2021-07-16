@@ -53,7 +53,8 @@ $grey: rgb(214, 214, 214);
       border-color: $blue;
     }
     &:disabled {
-      color: $grey;
+      background: transparent;
+      opacity: .7;
     }
   }
   &__checkbox {
